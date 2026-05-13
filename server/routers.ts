@@ -235,6 +235,34 @@ export const appRouter = router({
         name: ctx.user.name,
       };
     }),
+
+    // Cancel a subscription (sets cancel_at_period_end so the customer keeps access until the billing period ends)
+    cancelSubscription: protectedProcedure.input(z.object({
+      subscriptionId: z.string().min(1),
+    })).mutation(async ({ input, ctx }) => {
+      const customerId = ctx.user.stripeCustomerId;
+      if (!customerId) throw new Error("No Stripe customer linked to your account.");
+
+      // Verify the subscription belongs to this customer
+      const sub = await stripe.subscriptions.retrieve(input.subscriptionId);
+      const subCustomer = typeof sub.customer === "string" ? sub.customer : sub.customer?.id;
+      if (subCustomer !== customerId) {
+        throw new Error("This subscription does not belong to your account.");
+      }
+
+      // Cancel at period end so the customer retains access until the current billing cycle finishes
+      const updated = await stripe.subscriptions.update(input.subscriptionId, {
+        cancel_at_period_end: true,
+      });
+
+      return {
+        success: true,
+        cancelAtPeriodEnd: updated.cancel_at_period_end,
+        currentPeriodEnd: (updated as any).current_period_end
+          ? new Date((updated as any).current_period_end * 1000).toISOString()
+          : null,
+      };
+    }),
   }),
 
   admin: router({

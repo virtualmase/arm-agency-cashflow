@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
+import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 import {
   CreditCard, FileText, Download, ExternalLink,
-  Package, Clock, CheckCircle2, XCircle, AlertCircle, ArrowLeft
+  Package, Clock, CheckCircle2, XCircle, AlertCircle, ArrowLeft, Ban
 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function ClientPortal() {
   const { user, loading } = useAuth();
@@ -105,6 +111,24 @@ function PortalSummary() {
 // ── SUBSCRIPTIONS ──
 function SubscriptionsSection() {
   const { data: subscriptions, isLoading } = trpc.portal.mySubscriptions.useQuery();
+  const utils = trpc.useUtils();
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+
+  const cancelMutation = trpc.portal.cancelSubscription.useMutation({
+    onSuccess: (data) => {
+      toast.success(
+        data.currentPeriodEnd
+          ? `Subscription will cancel on ${new Date(data.currentPeriodEnd).toLocaleDateString()}. You retain access until then.`
+          : "Subscription cancellation scheduled."
+      );
+      setConfirmingId(null);
+      utils.portal.mySubscriptions.invalidate();
+    },
+    onError: (err) => {
+      toast.error(err.message);
+      setConfirmingId(null);
+    },
+  });
 
   return (
     <div className="mb-10">
@@ -137,7 +161,7 @@ function SubscriptionsSection() {
                 </div>
                 <StatusBadge status={sub.status} />
               </div>
-              <div className="flex flex-wrap gap-6 text-[12px]">
+              <div className="flex flex-wrap items-center gap-6 text-[12px]">
                 {sub.items.map((item, i) => (
                   <div key={i} className="text-[#3ddc84]">
                     ${(item.amount / 100).toLocaleString()}<span className="text-[#667066]">/{item.interval}</span>
@@ -146,15 +170,53 @@ function SubscriptionsSection() {
                 {sub.currentPeriodEnd && (
                   <div className="text-[#667066]">
                     <Clock size={12} className="inline mr-1" />
-                    Renews {new Date(sub.currentPeriodEnd).toLocaleDateString()}
+                    {sub.cancelAtPeriodEnd ? "Access until" : "Renews"} {new Date(sub.currentPeriodEnd).toLocaleDateString()}
                   </div>
                 )}
-                {sub.cancelAtPeriodEnd && (
+                {sub.cancelAtPeriodEnd ? (
                   <div className="text-[#e8a020]">
                     <AlertCircle size={12} className="inline mr-1" />
-                    Cancels at period end
+                    Cancellation scheduled
                   </div>
-                )}
+                ) : (sub.status === "active" || sub.status === "trialing") ? (
+                  <div className="ml-auto">
+                    <AlertDialog open={confirmingId === sub.id} onOpenChange={(open) => { if (!open) setConfirmingId(null); }}>
+                      <AlertDialogTrigger asChild>
+                        <button
+                          onClick={() => setConfirmingId(sub.id)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#ff4444]/30 text-[#ff4444] text-[10px] tracking-[0.1em] uppercase hover:border-[#ff4444] transition-all"
+                        >
+                          <Ban size={11} /> Cancel Subscription
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-[#0d100d] border border-white/[0.07] text-[#c8cfc8] font-mono max-w-md">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-[#eaf0ea] text-lg font-light tracking-tight">
+                            Cancel subscription?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="text-[#667066] text-[13px] leading-relaxed font-sans">
+                            Your subscription will remain active until the end of the current billing period
+                            {sub.currentPeriodEnd && (
+                              <span className="text-[#e8a020]"> ({new Date(sub.currentPeriodEnd).toLocaleDateString()})</span>
+                            )}. After that, you will lose access to the associated services. This action can be reversed by contacting support before the period ends.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="gap-3 mt-4">
+                          <AlertDialogCancel className="bg-transparent border border-white/[0.07] text-[#667066] text-[11px] tracking-[0.1em] uppercase hover:border-[#667066] hover:text-[#c8cfc8] font-mono">
+                            Keep Subscription
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => cancelMutation.mutate({ subscriptionId: sub.id })}
+                            disabled={cancelMutation.isPending}
+                            className="bg-[#ff4444] text-white border-none text-[11px] tracking-[0.1em] uppercase hover:bg-[#ff4444]/80 font-mono disabled:opacity-50"
+                          >
+                            {cancelMutation.isPending ? "Cancelling..." : "Confirm Cancellation"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                ) : null}
               </div>
             </div>
           ))}

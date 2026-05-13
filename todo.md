@@ -34,3 +34,6 @@
 - [x] Link Stripe customer ID to user on checkout completion
 - [x] Portal navigation accessible from main nav for logged-in users
 - [x] Tests for portal tRPC procedures (8 new tests, 22 total passing)
+- [x] Cancel Subscription button in portal with confirmation dialog
+- [x] Server-side tRPC procedure to cancel via Stripe API (cancel_at_period_end)
+- [x] Test for cancel subscription procedure (3 new tests, 25 total passing)

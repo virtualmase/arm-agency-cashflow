@@ -42,6 +42,8 @@ vi.mock("./stripe", () => ({
     },
     subscriptions: {
       list: vi.fn().mockResolvedValue({ data: [] }),
+      retrieve: vi.fn().mockResolvedValue({ id: "sub_test_123", customer: "cus_test_456", status: "active" }),
+      update: vi.fn().mockResolvedValue({ id: "sub_test_123", cancel_at_period_end: true, current_period_end: Math.floor(Date.now() / 1000) + 30 * 86400 }),
     },
     invoices: {
       list: vi.fn().mockResolvedValue({ data: [] }),
@@ -279,5 +281,30 @@ describe("portal.myInvoices", () => {
     const invoices = await caller.portal.myInvoices();
     expect(Array.isArray(invoices)).toBe(true);
     expect(invoices.length).toBe(0);
+  });
+});
+
+describe("portal.cancelSubscription", () => {
+  it("requires authentication", async () => {
+    const ctx = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.portal.cancelSubscription({ subscriptionId: "sub_test_123" })).rejects.toThrow();
+  });
+
+  it("rejects when user has no Stripe customer ID", async () => {
+    const ctx = createAuthContext("user"); // stripeCustomerId is null
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.portal.cancelSubscription({ subscriptionId: "sub_test_123" })).rejects.toThrow("No Stripe customer linked");
+  });
+
+  it("cancels subscription for user with matching Stripe customer", async () => {
+    const ctx = createAuthContext("user");
+    // Patch the user to have a Stripe customer ID matching the mock
+    ctx.user!.stripeCustomerId = "cus_test_456";
+    const caller = appRouter.createCaller(ctx);
+    const result = await caller.portal.cancelSubscription({ subscriptionId: "sub_test_123" });
+    expect(result.success).toBe(true);
+    expect(result.cancelAtPeriodEnd).toBe(true);
+    expect(result.currentPeriodEnd).toBeTruthy();
   });
 });
