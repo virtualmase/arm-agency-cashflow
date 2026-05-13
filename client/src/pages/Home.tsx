@@ -38,6 +38,9 @@ function Nav({ user }: { user: any }) {
         <a href="#capabilities" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Capabilities</a>
         <a href="#pricing" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Pricing</a>
         <a href="#contact" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Contact</a>
+        {user && (
+          <Link href="/portal" className="text-[12px] tracking-[0.08em] uppercase text-[#e8a020] hover:text-[#e8a020]/80 transition-colors no-underline hidden md:inline">My Portal</Link>
+        )}
         {user?.role === "admin" && (
           <Link href="/admin" className="text-[12px] tracking-[0.08em] uppercase text-[#3ddc84] hover:text-[#3ddc84]/80 transition-colors no-underline hidden md:inline">Dashboard</Link>
         )}

@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import AdminDashboard from "./pages/AdminDashboard";
 import EmployeeSatisfaction from "./pages/EmployeeSatisfaction";
+import ClientPortal from "./pages/ClientPortal";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/satisfaction" component={EmployeeSatisfaction} />
+      <Route path="/portal" component={ClientPortal} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

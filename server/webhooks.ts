@@ -1,6 +1,6 @@
 import { Router, raw } from "express";
 import { stripe } from "./stripe";
-import { updatePurchaseStatus } from "./db";
+import { updatePurchaseStatus, updateUserStripeCustomerId, updateUserSubscription } from "./db";
 import { notifyOwner } from "./_core/notification";
 import Stripe from "stripe";
 
@@ -33,30 +33,66 @@ webhookRouter.post("/api/stripe/webhook", raw({ type: "application/json" }), asy
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        const userId = session.metadata?.user_id ? parseInt(session.metadata.user_id) : null;
+        const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
+
+        // Persist Stripe customer ID to user record
+        if (userId && customerId) {
+          await updateUserStripeCustomerId(userId, customerId);
+          console.log(`[Webhook] Linked Stripe customer ${customerId} to user ${userId}`);
+        }
+
         if (session.mode === "payment") {
           await updatePurchaseStatus(session.id, "completed", session.payment_intent as string);
           await notifyOwner({
-            title: `Payment Received: ${session.metadata?.package_name || "Quick Start Package"}`,
-            content: `Amount: $${(session.amount_total || 0) / 100}\nCustomer: ${session.customer_email || "Unknown"}\nPackage: ${session.metadata?.package_name || "N/A"}`,
+            title: `Payment Received: ${session.metadata?.product_name || "Package"}`,
+            content: `Amount: $${(session.amount_total || 0) / 100}\nCustomer: ${session.customer_email || "Unknown"}\nProduct: ${session.metadata?.product_name || "N/A"}\nStream: ${session.metadata?.stream || "N/A"}`,
           });
         } else if (session.mode === "subscription") {
+          // Persist subscription ID to user record
+          const subscriptionId = typeof session.subscription === "string" ? session.subscription : (session.subscription as any)?.id;
+          if (userId && subscriptionId) {
+            await updateUserSubscription(userId, subscriptionId, "pro");
+            console.log(`[Webhook] Linked subscription ${subscriptionId} to user ${userId}`);
+          }
           await notifyOwner({
-            title: "New ARM Pro Subscriber",
-            content: `Customer: ${session.customer_email || "Unknown"}\nSubscription started.`,
+            title: `New Subscriber: ${session.metadata?.product_name || "Subscription"}`,
+            content: `Customer: ${session.customer_email || "Unknown"}\nProduct: ${session.metadata?.product_name || "N/A"}\nStream: ${session.metadata?.stream || "N/A"}\nSubscription: ${subscriptionId || "N/A"}`,
           });
         }
         break;
       }
-      case "invoice.paid": {
-        const invoice = event.data.object as Stripe.Invoice;
-        console.log(`[Webhook] Invoice paid: ${invoice.id}`);
+
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
+        console.log(`[Webhook] Subscription updated: ${subscription.id} → ${subscription.status}`);
         break;
       }
+
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         console.log(`[Webhook] Subscription cancelled: ${subscription.id}`);
+        // Note: We don't clear the user's subscription here because the user record
+        // should reflect the last known state. The portal fetches live status from Stripe.
         break;
       }
+
+      case "invoice.paid": {
+        const invoice = event.data.object as Stripe.Invoice;
+        console.log(`[Webhook] Invoice paid: ${invoice.id} — $${(invoice.amount_paid || 0) / 100}`);
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        console.log(`[Webhook] Invoice payment failed: ${invoice.id}`);
+        await notifyOwner({
+          title: "Payment Failed",
+          content: `Invoice: ${invoice.id}\nCustomer: ${invoice.customer_email || "Unknown"}\nAmount: $${(invoice.amount_due || 0) / 100}`,
+        });
+        break;
+      }
+
       default:
         console.log(`[Webhook] Unhandled event type: ${event.type}`);
     }

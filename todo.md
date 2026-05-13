@@ -27,3 +27,10 @@
 - [x] Added AI Infrastructure Audit $2500, Mandate Chain Design Workshop $1500, Custom MCP Tool $500
 - [x] Coreweaver managed subscription products defined in Stripe catalog
 - [x] Created 18+ Stripe products via MCP (all streams + quick-start packages)
+- [x] Client portal page (/portal) gated behind authentication
+- [x] Display user's active Stripe subscriptions with plan details and status
+- [x] Display user's one-time purchases / completed payments
+- [x] Download invoices as PDF from Stripe
+- [x] Link Stripe customer ID to user on checkout completion
+- [x] Portal navigation accessible from main nav for logged-in users
+- [x] Tests for portal tRPC procedures (8 new tests, 22 total passing)

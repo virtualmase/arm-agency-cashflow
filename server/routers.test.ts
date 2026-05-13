@@ -26,6 +26,10 @@ vi.mock("./db", () => ({
   getSubscriberCount: vi.fn().mockResolvedValue(3),
   getUserCount: vi.fn().mockResolvedValue(15),
   createEmailSequence: vi.fn().mockResolvedValue(undefined),
+  getUserPurchases: vi.fn().mockResolvedValue([
+    { id: 1, email: "test@example.com", name: "Test User", packageName: "GEO Mastery Course", amount: 29700, stripePaymentIntentId: "pi_test", stripeSessionId: "cs_test", status: "completed", createdAt: new Date() },
+  ]),
+  updateUserStripeCustomerId: vi.fn().mockResolvedValue(undefined),
 }));
 
 // Mock stripe
@@ -35,6 +39,12 @@ vi.mock("./stripe", () => ({
       sessions: {
         create: vi.fn().mockResolvedValue({ url: "https://checkout.stripe.com/test", id: "cs_test_123" }),
       },
+    },
+    subscriptions: {
+      list: vi.fn().mockResolvedValue({ data: [] }),
+    },
+    invoices: {
+      list: vi.fn().mockResolvedValue({ data: [] }),
     },
   },
   ALL_PRODUCTS: [
@@ -199,5 +209,75 @@ describe("leads.list", () => {
     const caller = appRouter.createCaller(ctx);
     const leads = await caller.leads.list({});
     expect(Array.isArray(leads)).toBe(true);
+  });
+});
+
+describe("portal.summary", () => {
+  it("requires authentication", async () => {
+    const ctx = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.portal.summary()).rejects.toThrow();
+  });
+
+  it("returns user summary for authenticated user", async () => {
+    const ctx = createAuthContext("user");
+    const caller = appRouter.createCaller(ctx);
+    const summary = await caller.portal.summary();
+    expect(summary).toHaveProperty("plan");
+    expect(summary).toHaveProperty("email");
+    expect(summary).toHaveProperty("name");
+    expect(summary).toHaveProperty("stripeCustomerId");
+    expect(summary).toHaveProperty("hasSubscription");
+    expect(summary.plan).toBe("starter");
+    expect(summary.email).toBe("test@example.com");
+  });
+});
+
+describe("portal.myPurchases", () => {
+  it("requires authentication", async () => {
+    const ctx = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.portal.myPurchases()).rejects.toThrow();
+  });
+
+  it("returns purchases for authenticated user", async () => {
+    const ctx = createAuthContext("user");
+    const caller = appRouter.createCaller(ctx);
+    const purchases = await caller.portal.myPurchases();
+    expect(Array.isArray(purchases)).toBe(true);
+    expect(purchases.length).toBe(1);
+    expect(purchases[0].packageName).toBe("GEO Mastery Course");
+  });
+});
+
+describe("portal.mySubscriptions", () => {
+  it("requires authentication", async () => {
+    const ctx = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.portal.mySubscriptions()).rejects.toThrow();
+  });
+
+  it("returns empty array when no Stripe customer ID", async () => {
+    const ctx = createAuthContext("user");
+    const caller = appRouter.createCaller(ctx);
+    const subs = await caller.portal.mySubscriptions();
+    expect(Array.isArray(subs)).toBe(true);
+    expect(subs.length).toBe(0);
+  });
+});
+
+describe("portal.myInvoices", () => {
+  it("requires authentication", async () => {
+    const ctx = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.portal.myInvoices()).rejects.toThrow();
+  });
+
+  it("returns empty array when no Stripe customer ID", async () => {
+    const ctx = createAuthContext("user");
+    const caller = appRouter.createCaller(ctx);
+    const invoices = await caller.portal.myInvoices();
+    expect(Array.isArray(invoices)).toBe(true);
+    expect(invoices.length).toBe(0);
   });
 });

@@ -12,7 +12,9 @@ import {
   createFeedback, getFeedbackList, getAverageSatisfaction,
   getSubscriberCount, getUserCount,
   createEmailSequence,
+  getUserPurchases, updateUserStripeCustomerId,
 } from "./db";
+import type Stripe from "stripe";
 
 export const appRouter = router({
   system: systemRouter,
@@ -158,6 +160,81 @@ export const appRouter = router({
     }),
     list: adminProcedure.query(async () => getFeedbackList()),
     averageSatisfaction: adminProcedure.query(async () => getAverageSatisfaction()),
+  }),
+
+  // ── Client Portal ──
+  portal: router({
+    // Get user's purchases from local DB
+    myPurchases: protectedProcedure.query(async ({ ctx }) => {
+      if (!ctx.user.email) return [];
+      return getUserPurchases(ctx.user.email);
+    }),
+
+    // Get user's active subscriptions from Stripe
+    mySubscriptions: protectedProcedure.query(async ({ ctx }) => {
+      const customerId = ctx.user.stripeCustomerId;
+      if (!customerId) return [];
+      try {
+        const subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 20, expand: ["data.items.data.price.product"] });
+        return subs.data.map(sub => ({
+          id: sub.id,
+          status: sub.status,
+          currentPeriodStart: (sub as any).current_period_start ? new Date((sub as any).current_period_start * 1000).toISOString() : null,
+          currentPeriodEnd: (sub as any).current_period_end ? new Date((sub as any).current_period_end * 1000).toISOString() : null,
+          cancelAtPeriodEnd: sub.cancel_at_period_end,
+          items: sub.items.data.map(item => {
+            const product = item.price.product as Stripe.Product;
+            return {
+              productName: typeof product === "object" ? product.name : "Unknown",
+              productDescription: typeof product === "object" ? product.description : null,
+              amount: item.price.unit_amount || 0,
+              currency: item.price.currency,
+              interval: item.price.recurring?.interval || null,
+            };
+          }),
+        }));
+      } catch (err) {
+        console.error("[Portal] Failed to fetch subscriptions:", err);
+        return [];
+      }
+    }),
+
+    // Get user's invoices from Stripe with PDF download links
+    myInvoices: protectedProcedure.query(async ({ ctx }) => {
+      const customerId = ctx.user.stripeCustomerId;
+      if (!customerId) return [];
+      try {
+        const invoices = await stripe.invoices.list({ customer: customerId, limit: 50 });
+        return invoices.data.map(inv => ({
+          id: inv.id,
+          number: inv.number,
+          status: inv.status,
+          amountDue: inv.amount_due,
+          amountPaid: inv.amount_paid,
+          currency: inv.currency,
+          created: new Date(inv.created * 1000).toISOString(),
+          periodStart: inv.period_start ? new Date(inv.period_start * 1000).toISOString() : null,
+          periodEnd: inv.period_end ? new Date(inv.period_end * 1000).toISOString() : null,
+          invoicePdf: inv.invoice_pdf,
+          hostedInvoiceUrl: inv.hosted_invoice_url,
+          description: inv.description || (inv.lines.data[0]?.description ?? null),
+        }));
+      } catch (err) {
+        console.error("[Portal] Failed to fetch invoices:", err);
+        return [];
+      }
+    }),
+
+    // Get portal summary (plan, customer status)
+    summary: protectedProcedure.query(async ({ ctx }) => {
+      return {
+        plan: ctx.user.plan,
+        stripeCustomerId: ctx.user.stripeCustomerId,
+        hasSubscription: !!ctx.user.stripeSubscriptionId,
+        email: ctx.user.email,
+        name: ctx.user.name,
+      };
+    }),
   }),
 
   admin: router({

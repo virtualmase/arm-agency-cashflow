@@ -176,3 +176,24 @@ export async function getUserCount() {
   const result = await db.select({ count: sql<number>`count(*)` }).from(users);
   return result[0]?.count ?? 0;
 }
+
+// ── Portal: User Purchases ──
+export async function getUserPurchases(email: string) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(purchases).where(eq(purchases.email, email)).orderBy(desc(purchases.createdAt));
+}
+
+// ── Portal: Update user Stripe customer ID ──
+export async function updateUserStripeCustomerId(userId: number, stripeCustomerId: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(users).set({ stripeCustomerId }).where(eq(users.id, userId));
+}
+
+// ── Portal: Update user subscription ──
+export async function updateUserSubscription(userId: number, subscriptionId: string | null, plan: "starter" | "pro" | "enterprise") {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(users).set({ stripeSubscriptionId: subscriptionId, plan }).where(eq(users.id, userId));
+}
