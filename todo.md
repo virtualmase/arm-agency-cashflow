@@ -1,0 +1,29 @@
+# Project TODO
+
+- [x] Dark terminal aesthetic theme (amber/green, IBM Plex Mono) applied globally
+- [x] Public marketing landing page with Hero, Capabilities, Architecture, Pricing, Contact sections
+- [x] Three-tier Stripe pricing: Starter (free), ARM Pro ($5/agent/mo), Enterprise (custom)
+- [x] Stripe checkout integration for all product buttons via universal checkout
+- [x] Quick-Start service packages with Stripe checkout (expanded to full Academy + Coreweaver catalog)
+- [x] Lead capture contact form persisted to database with owner notification
+- [x] Newsletter subscription form persisted to database with owner notification
+- [x] Admin dashboard (owner-only, role-gated) with revenue metrics and subscriber count
+- [x] Leads CRM table with status tracking in admin dashboard
+- [x] Employee satisfaction module with health KPIs, feedback form, and trend chart
+- [x] Automated lead follow-up email sequence (welcome, case study, demo invite)
+- [x] Weekly revenue & growth cron job with owner notification
+- [x] Exact plan names: Starter, ARM Pro, Enterprise (expanded to 5 streams)
+- [x] Exact CTAs: Stream-specific CTAs (Start Starter, Start Pro, Join as Node, etc.)
+- [x] Exact Quick-Start package names and prices as specified
+- [x] All form submissions persist to DB before notifications
+- [x] Expand to 5 revenue streams: Swell GEO, ARM Mandate, Arctura Network, Academy, Coreweaver
+- [x] Create all 16 Stripe products with checkout across all streams
+- [x] Multi-stream pricing page with stream-specific color coding (signal/amber/violet)
+- [x] One-time products: GEO Mastery $297, ARM Cert $997, Agency Operator $1997, Setup $2500/$10000
+- [x] Subscription products: Swell GEO ($1500-$3500/mo), ARM Mandate ($3000-$8000/mo), Arctura ($500-$2000/mo), Coreweaver ($500-$2000/mo)
+- [x] ARM Guarantee section on pricing page
+- [x] Ecosystem references in footer (swellmarketing.xyz, arctura.network, coreweaverlabs.com, arm-agency.com)
+- [x] Added original Quick-Start packages with exact names and prices to pricing page
+- [x] Added AI Infrastructure Audit $2500, Mandate Chain Design Workshop $1500, Custom MCP Tool $500
+- [x] Coreweaver managed subscription products defined in Stripe catalog
+- [x] Created 18+ Stripe products via MCP (all streams + quick-start packages)

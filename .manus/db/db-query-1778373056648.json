@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `stripeCustomerId` varchar(128) AFTER `role`;\nALTER TABLE `users` ADD COLUMN IF NOT EXISTS `stripeSubscriptionId` varchar(128) AFTER `stripeCustomerId`;\nALTER TABLE `users` ADD COLUMN IF NOT EXISTS `plan` enum('starter','pro','enterprise') NOT NULL DEFAULT 'starter' AFTER `stripeSubscriptionId`;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user VbTxR27A5p136Lf.56bd80bc6069 --database gw96qVq2pj3Yb7McgmPoZ3 --execute ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `stripeCustomerId` varchar(128) AFTER `role`;\nALTER TABLE `users` ADD COLUMN IF NOT EXISTS `stripeSubscriptionId` varchar(128) AFTER `stripeCustomerId`;\nALTER TABLE `users` ADD COLUMN IF NOT EXISTS `plan` enum('starter','pro','enterprise') NOT NULL DEFAULT 'starter' AFTER `stripeSubscriptionId`;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 886
+}

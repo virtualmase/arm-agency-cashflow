@@ -1,28 +1,174 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, adminProcedure, router } from "./_core/trpc";
+import { z } from "zod";
+import { notifyOwner } from "./_core/notification";
+import { stripe, ALL_PRODUCTS, getProductByKey } from "./stripe";
+import {
+  createLead, getLeads, updateLeadStatus, getLeadCount,
+  subscribeNewsletter, getNewsletterCount,
+  createPurchase, getPurchases, getRevenueTotal,
+  createFeedback, getFeedbackList, getAverageSatisfaction,
+  getSubscriberCount, getUserCount,
+  createEmailSequence,
+} from "./db";
 
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+      return { success: true } as const;
     }),
   }),
 
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  leads: router({
+    submit: publicProcedure.input(z.object({
+      firstName: z.string().min(1),
+      lastName: z.string().min(1),
+      email: z.string().email(),
+      company: z.string().optional(),
+      useCase: z.string().optional(),
+      message: z.string().optional(),
+      source: z.string().optional(),
+    })).mutation(async ({ input }) => {
+      const leadId = await createLead({
+        firstName: input.firstName,
+        lastName: input.lastName,
+        email: input.email,
+        company: input.company || null,
+        useCase: input.useCase || null,
+        message: input.message || null,
+        source: input.source || "contact_form",
+      });
+      const now = new Date();
+      await createEmailSequence({ leadId, email: input.email, step: 0, scheduledFor: now, status: "pending" });
+      await createEmailSequence({ leadId, email: input.email, step: 1, scheduledFor: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000), status: "pending" });
+      await createEmailSequence({ leadId, email: input.email, step: 2, scheduledFor: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000), status: "pending" });
+      await notifyOwner({
+        title: `New Lead: ${input.firstName} ${input.lastName}`,
+        content: `Email: ${input.email}\nCompany: ${input.company || 'N/A'}\nUse Case: ${input.useCase || 'N/A'}\nMessage: ${input.message || 'N/A'}`,
+      });
+      return { success: true, leadId };
+    }),
+    list: adminProcedure.input(z.object({ limit: z.number().optional(), offset: z.number().optional() }).optional()).query(async ({ input }) => {
+      return getLeads(input?.limit ?? 100, input?.offset ?? 0);
+    }),
+    updateStatus: adminProcedure.input(z.object({
+      id: z.number(),
+      status: z.enum(["new", "contacted", "qualified", "converted", "lost"]),
+    })).mutation(async ({ input }) => {
+      await updateLeadStatus(input.id, input.status);
+      return { success: true };
+    }),
+  }),
+
+  newsletter: router({
+    subscribe: publicProcedure.input(z.object({ email: z.string().email() })).mutation(async ({ input }) => {
+      await subscribeNewsletter(input.email);
+      await notifyOwner({ title: "New Newsletter Subscriber", content: `Email: ${input.email}` });
+      return { success: true };
+    }),
+  }),
+
+  stripe: router({
+    // Universal checkout for any product by key
+    createCheckout: publicProcedure.input(z.object({
+      productKey: z.string(),
+      email: z.string().email().optional(),
+    })).mutation(async ({ input, ctx }) => {
+      const origin = ctx.req.headers.origin || ctx.req.headers.referer?.replace(/\/$/, '') || "http://localhost:3000";
+      const product = getProductByKey(input.productKey);
+      if (!product) throw new Error(`Product not found: ${input.productKey}`);
+
+      const isSubscription = product.interval !== null;
+
+      const lineItem: any = {
+        price_data: {
+          currency: "usd",
+          product_data: { name: product.name, description: product.description },
+          unit_amount: product.priceCents,
+          ...(isSubscription ? { recurring: { interval: product.interval! } } : {}),
+        },
+        quantity: 1,
+      };
+
+      const session = await stripe.checkout.sessions.create({
+        mode: isSubscription ? "subscription" : "payment",
+        line_items: [lineItem],
+        customer_email: input.email || ctx.user?.email || undefined,
+        metadata: {
+          product_key: product.key,
+          product_name: product.name,
+          stream: product.stream,
+          user_id: ctx.user?.id?.toString() || "",
+        },
+        success_url: `${origin}/?product=${product.key}&success=true`,
+        cancel_url: `${origin}/#pricing`,
+        allow_promotion_codes: true,
+      });
+
+      // Track one-time purchases
+      if (!isSubscription) {
+        await createPurchase({
+          email: input.email || ctx.user?.email || "unknown",
+          name: ctx.user?.name || null,
+          packageName: product.name,
+          amount: product.priceCents,
+          stripeSessionId: session.id,
+          status: "pending",
+        });
+      }
+
+      return { url: session.url };
+    }),
+
+    // Get all products for frontend display
+    products: publicProcedure.query(() => {
+      return ALL_PRODUCTS.map(p => ({
+        key: p.key,
+        name: p.name,
+        description: p.description,
+        priceCents: p.priceCents,
+        interval: p.interval,
+        stream: p.stream,
+        tier: p.tier,
+        featured: p.featured,
+      }));
+    }),
+  }),
+
+  feedback: router({
+    submit: protectedProcedure.input(z.object({
+      satisfaction: z.number().min(1).max(5),
+      workload: z.number().min(1).max(5).optional(),
+      comments: z.string().optional(),
+    })).mutation(async ({ input, ctx }) => {
+      await createFeedback({
+        userId: ctx.user.id,
+        name: ctx.user.name || null,
+        satisfaction: input.satisfaction,
+        workload: input.workload || null,
+        comments: input.comments || null,
+      });
+      return { success: true };
+    }),
+    list: adminProcedure.query(async () => getFeedbackList()),
+    averageSatisfaction: adminProcedure.query(async () => getAverageSatisfaction()),
+  }),
+
+  admin: router({
+    stats: adminProcedure.query(async () => {
+      const [revenue, subscribers, leadCount, newsletterCount, userCount, avgSatisfaction] = await Promise.all([
+        getRevenueTotal(), getSubscriberCount(), getLeadCount(), getNewsletterCount(), getUserCount(), getAverageSatisfaction(),
+      ]);
+      return { revenue, subscribers, leadCount, newsletterCount, userCount, avgSatisfaction };
+    }),
+    purchases: adminProcedure.query(async () => getPurchases()),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

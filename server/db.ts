@@ -1,11 +1,11 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback } from "../drizzle/schema";
+import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
-// Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -19,25 +19,14 @@ export async function getDb() {
 }
 
 export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
-  }
-
+  if (!user.openId) throw new Error("User openId is required for upsert");
   const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot upsert user: database not available");
-    return;
-  }
-
+  if (!db) { console.warn("[Database] Cannot upsert user: database not available"); return; }
   try {
-    const values: InsertUser = {
-      openId: user.openId,
-    };
+    const values: InsertUser = { openId: user.openId };
     const updateSet: Record<string, unknown> = {};
-
     const textFields = ["name", "email", "loginMethod"] as const;
     type TextField = (typeof textFields)[number];
-
     const assignNullable = (field: TextField) => {
       const value = user[field];
       if (value === undefined) return;
@@ -45,48 +34,145 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values[field] = normalized;
       updateSet[field] = normalized;
     };
-
     textFields.forEach(assignNullable);
-
-    if (user.lastSignedIn !== undefined) {
-      values.lastSignedIn = user.lastSignedIn;
-      updateSet.lastSignedIn = user.lastSignedIn;
-    }
-    if (user.role !== undefined) {
-      values.role = user.role;
-      updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
-    }
-
-    if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
-    }
-
-    if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
-    }
-
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
-      set: updateSet,
-    });
-  } catch (error) {
-    console.error("[Database] Failed to upsert user:", error);
-    throw error;
-  }
+    if (user.lastSignedIn !== undefined) { values.lastSignedIn = user.lastSignedIn; updateSet.lastSignedIn = user.lastSignedIn; }
+    if (user.role !== undefined) { values.role = user.role; updateSet.role = user.role; }
+    else if (user.openId === ENV.ownerOpenId) { values.role = 'admin'; updateSet.role = 'admin'; }
+    if (!values.lastSignedIn) values.lastSignedIn = new Date();
+    if (Object.keys(updateSet).length === 0) updateSet.lastSignedIn = new Date();
+    await db.insert(users).values(values).onDuplicateKeyUpdate({ set: updateSet });
+  } catch (error) { console.error("[Database] Failed to upsert user:", error); throw error; }
 }
 
 export async function getUserByOpenId(openId: string) {
   const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot get user: database not available");
-    return undefined;
-  }
-
+  if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// ── Leads ──
+export async function createLead(lead: InsertLead) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(leads).values(lead);
+  return result[0].insertId;
+}
+
+export async function getLeads(limit = 100, offset = 0) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(leads).orderBy(desc(leads.createdAt)).limit(limit).offset(offset);
+}
+
+export async function updateLeadStatus(id: number, status: "new" | "contacted" | "qualified" | "converted" | "lost") {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(leads).set({ status }).where(eq(leads.id, id));
+}
+
+export async function getLeadCount() {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ count: sql<number>`count(*)` }).from(leads);
+  return result[0]?.count ?? 0;
+}
+
+// ── Newsletter ──
+export async function subscribeNewsletter(email: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(newsletters).values({ email }).onDuplicateKeyUpdate({ set: { active: true } });
+}
+
+export async function getNewsletterCount() {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ count: sql<number>`count(*)` }).from(newsletters).where(eq(newsletters.active, true));
+  return result[0]?.count ?? 0;
+}
+
+// ── Purchases ──
+export async function createPurchase(purchase: InsertPurchase) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(purchases).values(purchase);
+  return result[0].insertId;
+}
+
+export async function updatePurchaseStatus(sessionId: string, status: "completed" | "refunded", paymentIntentId?: string) {
+  const db = await getDb();
+  if (!db) return;
+  const updateData: Record<string, unknown> = { status };
+  if (paymentIntentId) updateData.stripePaymentIntentId = paymentIntentId;
+  await db.update(purchases).set(updateData).where(eq(purchases.stripeSessionId, sessionId));
+}
+
+export async function getPurchases(limit = 100) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(purchases).orderBy(desc(purchases.createdAt)).limit(limit);
+}
+
+export async function getRevenueTotal() {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ total: sql<number>`COALESCE(SUM(amount), 0)` }).from(purchases).where(eq(purchases.status, "completed"));
+  return result[0]?.total ?? 0;
+}
+
+// ── Email Sequences ──
+export async function createEmailSequence(seq: InsertEmailSequence) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(emailSequences).values(seq);
+}
+
+export async function getPendingEmails() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(emailSequences)
+    .where(and(eq(emailSequences.status, "pending"), sql`${emailSequences.scheduledFor} <= NOW()`))
+    .limit(50);
+}
+
+export async function markEmailSent(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(emailSequences).set({ status: "sent", sentAt: new Date() }).where(eq(emailSequences.id, id));
+}
+
+// ── Feedback ──
+export async function createFeedback(fb: InsertFeedback) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(feedback).values(fb);
+}
+
+export async function getFeedbackList(limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(feedback).orderBy(desc(feedback.createdAt)).limit(limit);
+}
+
+export async function getAverageSatisfaction() {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ avg: sql<number>`COALESCE(AVG(satisfaction), 0)` }).from(feedback);
+  return result[0]?.avg ?? 0;
+}
+
+// ── Admin Stats ──
+export async function getSubscriberCount() {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ count: sql<number>`count(*)` }).from(users).where(eq(users.plan, "pro"));
+  return result[0]?.count ?? 0;
+}
+
+export async function getUserCount() {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ count: sql<number>`count(*)` }).from(users);
+  return result[0]?.count ?? 0;
+}
