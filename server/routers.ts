@@ -108,7 +108,7 @@ export const appRouter = router({
           stream: product.stream,
           user_id: ctx.user?.id?.toString() || "",
         },
-        success_url: `${origin}/?product=${product.key}&success=true`,
+        success_url: `${origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/#pricing`,
         allow_promotion_codes: true,
       });
@@ -126,6 +126,33 @@ export const appRouter = router({
       }
 
       return { url: session.url };
+    }),
+
+    // Get checkout session details for thank you page
+    getCheckoutSession: publicProcedure.input(z.object({
+      sessionId: z.string(),
+    })).query(async ({ input }) => {
+      const session = await stripe.checkout.sessions.retrieve(input.sessionId, {
+        expand: ['line_items', 'payment_intent'],
+      });
+
+      if (!session) throw new Error('Session not found');
+
+      const amount = session.amount_total || 0;
+      const currency = session.currency || 'usd';
+      const email = session.customer_email || 'unknown';
+      const productName = session.metadata?.product_name || 'Product';
+      const status = session.payment_status;
+
+      return {
+        sessionId: session.id,
+        amount,
+        currency,
+        email,
+        productName,
+        status,
+        createdAt: new Date(session.created * 1000),
+      };
     }),
 
     // Get all products for frontend display

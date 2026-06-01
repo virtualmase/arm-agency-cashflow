@@ -37,3 +37,7 @@
 - [x] Cancel Subscription button in portal with confirmation dialog
 - [x] Server-side tRPC procedure to cancel via Stripe API (cancel_at_period_end)
 - [x] Test for cancel subscription procedure (3 new tests, 25 total passing)
+- [x] Create thank you page (/thank-you) with order summary and Stripe session fetch
+- [x] Update checkout success_url to redirect to thank you page with session_id
+- [x] Stripe sends receipt emails automatically on successful payment
+- [x] Added getCheckoutSession tRPC procedure to fetch order details (25 tests passing)
