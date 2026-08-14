@@ -8,6 +8,20 @@
       "when": 1778365354875,
       "tag": "0000_melodic_mariko_yashida",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1786667125695,
+      "tag": "0001_safe_terror",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1786667269239,
+      "tag": "0002_special_ravenous",
+      "breakpoints": true
     }
   ]
 }

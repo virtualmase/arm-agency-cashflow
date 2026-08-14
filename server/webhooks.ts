@@ -1,6 +1,6 @@
 import { Router, raw } from "express";
 import { stripe } from "./stripe";
-import { updatePurchaseStatus, updateUserStripeCustomerId, updateUserSubscription } from "./db";
+import { updatePurchaseStatus, updateUserStripeCustomerId, updateUserSubscription, createFunnelEvent } from "./db";
 import { notifyOwner } from "./_core/notification";
 import Stripe from "stripe";
 
@@ -60,6 +60,12 @@ webhookRouter.post("/api/stripe/webhook", raw({ type: "application/json" }), asy
             content: `Customer: ${session.customer_email || "Unknown"}\nProduct: ${session.metadata?.product_name || "N/A"}\nStream: ${session.metadata?.stream || "N/A"}\nSubscription: ${subscriptionId || "N/A"}`,
           });
         }
+        await createFunnelEvent({
+          eventName: "checkout_completed",
+          path: "/thank-you",
+          productKey: session.metadata?.product_key || null,
+          stream: session.metadata?.stream || null,
+        });
         break;
       }
 

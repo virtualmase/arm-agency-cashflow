@@ -21,10 +21,12 @@ export default function AdminDashboard() {
         </div>
         <h1 className="text-3xl font-light text-[#eaf0ea] tracking-tight mb-8">Revenue & Operations</h1>
         <StatsGrid />
+        <FunnelOverview />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           <RevenueChart />
-          <SatisfactionChart />
+          <RevenueByStream />
         </div>
+        <div className="mt-8"><SatisfactionChart /></div>
         <LeadsCRM />
         <PurchasesTable />
       </div>
@@ -54,8 +56,8 @@ function StatsGrid() {
   if (isLoading || !stats) return <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">{Array(6).fill(0).map((_, i) => <div key={i} className="p-6 bg-[#0d100d] border border-white/[0.07] animate-pulse h-24" />)}</div>;
 
   const items = [
-    { label: "Total Revenue", value: `$${(stats.revenue / 100).toLocaleString()}`, color: "#3ddc84" },
-    { label: "Pro Subscribers", value: stats.subscribers.toString(), color: "#e8a020" },
+    { label: "Recorded Purchase Revenue", value: `$${(stats.revenue / 100).toLocaleString()}`, color: "#3ddc84" },
+    { label: "Users on Pro Plan", value: stats.subscribers.toString(), color: "#e8a020" },
     { label: "Total Leads", value: stats.leadCount.toString(), color: "#e8a020" },
     { label: "Newsletter Subs", value: stats.newsletterCount.toString(), color: "#3ddc84" },
     { label: "Total Users", value: stats.userCount.toString(), color: "#c8cfc8" },
@@ -75,27 +77,61 @@ function StatsGrid() {
 }
 
 function RevenueChart() {
-  const mockData = [
-    { name: "Week 1", revenue: 0 },
-    { name: "Week 2", revenue: 2500 },
-    { name: "Week 3", revenue: 5800 },
-    { name: "Week 4", revenue: 7500 },
-  ];
+  const { data: overview, isLoading } = trpc.admin.growthOverview.useQuery();
+  const chartData = overview?.weeklyRevenue.map((row) => ({ ...row, revenue: row.revenue / 100 })) || [];
   return (
     <div className="p-6 bg-[#0d100d] border border-white/[0.07]">
-      <div className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1">Revenue Trend</div>
-      <div className="text-lg font-light text-[#eaf0ea] mb-4">Monthly Revenue Growth</div>
-      <ResponsiveContainer width="100%" height={200}>
-        <BarChart data={mockData}>
+      <div className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1">Completed Purchase Revenue</div>
+      <div className="text-lg font-light text-[#eaf0ea] mb-1">Weekly Cohorts</div>
+      <p className="text-[11px] text-[#667066] mb-4">Last eight weeks. Values are recorded completed one-time purchases, not a subscription MRR forecast.</p>
+      {isLoading ? <div className="animate-pulse h-[200px] bg-[#111411]" /> : <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1d1a" />
           <XAxis dataKey="name" tick={{ fill: "#667066", fontSize: 10 }} />
           <YAxis tick={{ fill: "#667066", fontSize: 10 }} />
-          <Tooltip contentStyle={{ background: "#0d100d", border: "1px solid rgba(255,255,255,0.07)", color: "#eaf0ea", fontSize: 12 }} />
+          <Tooltip formatter={(value: number) => [`$${Number(value).toLocaleString()}`, "Revenue"]} contentStyle={{ background: "#0d100d", border: "1px solid rgba(255,255,255,0.07)", color: "#eaf0ea", fontSize: 12 }} />
           <Bar dataKey="revenue" fill="#3ddc84" radius={[2, 2, 0, 0]} />
         </BarChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer>}
     </div>
   );
+}
+
+function RevenueByStream() {
+  const { data: overview, isLoading } = trpc.admin.growthOverview.useQuery();
+  const chartData = overview?.revenueByStream.map((row) => ({ ...row, revenue: row.revenue / 100 })) || [];
+  return (
+    <div className="p-6 bg-[#0d100d] border border-white/[0.07]">
+      <div className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1">Revenue Attribution</div>
+      <div className="text-lg font-light text-[#eaf0ea] mb-1">Revenue by Stream</div>
+      <p className="text-[11px] text-[#667066] mb-4">Completed purchase data in the same eight-week cohort window.</p>
+      {isLoading ? <div className="animate-pulse h-[200px] bg-[#111411]" /> : chartData.length === 0 ? <div className="h-[200px] flex items-center justify-center text-[13px] text-[#667066]">No completed purchase attribution in this period.</div> : <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#1a1d1a" />
+          <XAxis dataKey="stream" tick={{ fill: "#667066", fontSize: 10 }} />
+          <YAxis tick={{ fill: "#667066", fontSize: 10 }} />
+          <Tooltip formatter={(value: number) => [`$${Number(value).toLocaleString()}`, "Revenue"]} contentStyle={{ background: "#0d100d", border: "1px solid rgba(255,255,255,0.07)", color: "#eaf0ea", fontSize: 12 }} />
+          <Bar dataKey="revenue" fill="#e8a020" radius={[2, 2, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>}
+    </div>
+  );
+}
+
+function FunnelOverview() {
+  const { data: overview, isLoading } = trpc.admin.growthOverview.useQuery();
+  const items = [
+    { label: "Page Views", key: "pageViews", color: "#c8cfc8" },
+    { label: "CTA Clicks", key: "ctaClicks", color: "#e8a020" },
+    { label: "Leads", key: "leads", color: "#3ddc84" },
+    { label: "Checkouts Started", key: "checkoutsStarted", color: "#e8a020" },
+    { label: "Payments Confirmed", key: "checkoutsCompleted", color: "#3ddc84" },
+    { label: "Portal Views", key: "portalViews", color: "#a78bfa" },
+  ] as const;
+  return <section className="mt-8 p-6 bg-[#0d100d] border border-white/[0.07]">
+    <div className="flex items-baseline justify-between gap-4 mb-5"><div><div className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1">First-Party Funnel Signals</div><div className="text-lg font-light text-[#eaf0ea]">Last 30 days</div></div><div className="text-[10px] text-[#667066] max-w-[310px] text-right">Minimal event counts only. No cross-site tracking or customer PII is stored in this event log.</div></div>
+    {isLoading ? <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">{Array.from({ length: 6 }, (_, i) => <div key={i} className="h-20 animate-pulse bg-[#111411]" />)}</div> : <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">{items.map((item) => <div key={item.key} className="p-4 bg-[#0b1210] border border-white/[0.05]"><div className="text-2xl font-semibold" style={{ color: item.color }}>{overview?.funnel[item.key] || 0}</div><div className="mt-1 text-[9px] tracking-[0.11em] uppercase text-[#667066]">{item.label}</div></div>)}</div>}
+  </section>;
 }
 
 function SatisfactionChart() {

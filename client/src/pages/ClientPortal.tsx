@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
@@ -15,6 +16,11 @@ import {
 
 export default function ClientPortal() {
   const { user, loading } = useAuth();
+  const trackPortalView = trpc.analytics.track.useMutation();
+
+  useEffect(() => {
+    if (user) trackPortalView.mutate({ eventName: "portal_viewed", path: "/portal" });
+  }, [user?.id]);
 
   if (loading) return <PortalSkeleton />;
   if (!user) return <LoginPrompt />;

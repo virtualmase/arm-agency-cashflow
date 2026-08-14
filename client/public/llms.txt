@@ -1,0 +1,21 @@
+# ARM Agency
+
+ARM Agency helps accountable teams design, deploy, and govern autonomous AI workflows, agent infrastructure, and generative-engine visibility programs.
+
+## Primary offerings
+
+- AI Infrastructure Audit: a bounded assessment of AI infrastructure readiness, operational gaps, and deployment priorities.
+- Mandate Chain Design Workshop: a facilitated working session for decision rights, operating constraints, and implementation scope.
+- Custom MCP Tool: a scoped tool-development engagement for a defined workflow or integration need.
+- GEO Retainers: ongoing generative-engine optimization, entity architecture, structured-data maintenance, and content operations.
+- ARM Mandate Services: governed AI workflow and agent-infrastructure engagements for qualified organizations.
+
+## Customer paths
+
+- Browse public offerings: https://armcashflow-gw96qvq2.manus.space/#pricing
+- Request a qualified conversation: https://armcashflow-gw96qvq2.manus.space/#contact
+- Existing customers use the authenticated client portal at /portal.
+
+## Data and trust
+
+ARM Agency publishes only service descriptions and operating details it can support. Customer, revenue, uptime, deployment, and outcome claims are not assumed without documented evidence.

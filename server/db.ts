@@ -1,7 +1,7 @@
 import { eq, desc, sql, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback } from "../drizzle/schema";
-import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback } from "../drizzle/schema";
+import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback, funnelEvents } from "../drizzle/schema";
+import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback, InsertFunnelEvent } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -119,6 +119,39 @@ export async function getRevenueTotal() {
   if (!db) return 0;
   const result = await db.select({ total: sql<number>`COALESCE(SUM(amount), 0)` }).from(purchases).where(eq(purchases.status, "completed"));
   return result[0]?.total ?? 0;
+}
+
+export async function getCompletedPurchasesSince(since?: Date) {
+  const db = await getDb();
+  if (!db) return [];
+  const whereClause = since
+    ? and(eq(purchases.status, "completed"), sql`${purchases.createdAt} >= ${since}`)
+    : eq(purchases.status, "completed");
+  return db.select({
+    amount: purchases.amount,
+    packageName: purchases.packageName,
+    productKey: purchases.productKey,
+    stream: purchases.stream,
+    createdAt: purchases.createdAt,
+  }).from(purchases).where(whereClause).orderBy(desc(purchases.createdAt));
+}
+
+// ── First-party funnel instrumentation ──
+export async function createFunnelEvent(event: InsertFunnelEvent) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(funnelEvents).values(event);
+}
+
+export async function getFunnelEventCounts(since: Date) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    eventName: funnelEvents.eventName,
+    count: sql<number>`count(*)`,
+  }).from(funnelEvents)
+    .where(sql`${funnelEvents.createdAt} >= ${since}`)
+    .groupBy(funnelEvents.eventName);
 }
 
 // ── Email Sequences ──

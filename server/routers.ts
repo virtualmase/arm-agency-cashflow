@@ -8,11 +8,11 @@ import { stripe, ALL_PRODUCTS, getProductByKey } from "./stripe";
 import {
   createLead, getLeads, updateLeadStatus, getLeadCount,
   subscribeNewsletter, getNewsletterCount,
-  createPurchase, getPurchases, getRevenueTotal,
+  createPurchase, getPurchases, getRevenueTotal, getCompletedPurchasesSince,
   createFeedback, getFeedbackList, getAverageSatisfaction,
   getSubscriberCount, getUserCount,
   createEmailSequence,
-  getUserPurchases, updateUserStripeCustomerId,
+  getUserPurchases, updateUserStripeCustomerId, createFunnelEvent, getFunnelEventCounts,
 } from "./db";
 import type Stripe from "stripe";
 
@@ -50,6 +50,11 @@ export const appRouter = router({
       await createEmailSequence({ leadId, email: input.email, step: 0, scheduledFor: now, status: "pending" });
       await createEmailSequence({ leadId, email: input.email, step: 1, scheduledFor: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000), status: "pending" });
       await createEmailSequence({ leadId, email: input.email, step: 2, scheduledFor: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000), status: "pending" });
+      await createFunnelEvent({
+        eventName: "lead_submitted",
+        path: "/",
+        stream: input.useCase?.includes("geo") ? "swell" : input.useCase?.includes("coreweaver") ? "coreweaver" : input.useCase?.includes("academy") ? "academy" : input.useCase?.includes("arctura") ? "arctura" : "arm",
+      });
       await notifyOwner({
         title: `New Lead: ${input.firstName} ${input.lastName}`,
         content: `Email: ${input.email}\nCompany: ${input.company || 'N/A'}\nUse Case: ${input.useCase || 'N/A'}\nMessage: ${input.message || 'N/A'}`,
@@ -72,6 +77,18 @@ export const appRouter = router({
     subscribe: publicProcedure.input(z.object({ email: z.string().email() })).mutation(async ({ input }) => {
       await subscribeNewsletter(input.email);
       await notifyOwner({ title: "New Newsletter Subscriber", content: `Email: ${input.email}` });
+      return { success: true };
+    }),
+  }),
+
+  analytics: router({
+    track: publicProcedure.input(z.object({
+      eventName: z.enum(["page_view", "cta_click", "lead_submitted", "checkout_started", "checkout_completed", "portal_viewed"]),
+      path: z.string().max(256).optional(),
+      productKey: z.string().max(128).optional(),
+      stream: z.enum(["swell", "arm", "arctura", "academy", "coreweaver"]).optional(),
+    })).mutation(async ({ input }) => {
+      await createFunnelEvent(input);
       return { success: true };
     }),
   }),
@@ -102,6 +119,7 @@ export const appRouter = router({
         mode: isSubscription ? "subscription" : "payment",
         line_items: [lineItem],
         customer_email: input.email || ctx.user?.email || undefined,
+        client_reference_id: ctx.user?.id?.toString(),
         metadata: {
           product_key: product.key,
           product_name: product.name,
@@ -119,28 +137,38 @@ export const appRouter = router({
           email: input.email || ctx.user?.email || "unknown",
           name: ctx.user?.name || null,
           packageName: product.name,
+          productKey: product.key,
+          stream: product.stream,
           amount: product.priceCents,
           stripeSessionId: session.id,
           status: "pending",
         });
       }
+      await createFunnelEvent({ eventName: "checkout_started", path: "/", productKey: product.key, stream: product.stream });
 
       return { url: session.url };
     }),
 
     // Get checkout session details for thank you page
-    getCheckoutSession: publicProcedure.input(z.object({
+    getCheckoutSession: protectedProcedure.input(z.object({
       sessionId: z.string(),
-    })).query(async ({ input }) => {
+    })).query(async ({ input, ctx }) => {
       const session = await stripe.checkout.sessions.retrieve(input.sessionId, {
-        expand: ['line_items', 'payment_intent'],
+        expand: ['line_items', 'payment_intent', 'customer_details'],
       });
 
       if (!session) throw new Error('Session not found');
 
+      const sessionEmail = session.customer_details?.email || session.customer_email;
+      const belongsToUser = session.client_reference_id === ctx.user.id.toString()
+        || session.metadata?.user_id === ctx.user.id.toString()
+        || (!!ctx.user.email && sessionEmail === ctx.user.email);
+      if (!belongsToUser) {
+        throw new Error("This checkout session does not belong to your account.");
+      }
+
       const amount = session.amount_total || 0;
       const currency = session.currency || 'usd';
-      const email = session.customer_email || 'unknown';
       const productName = session.metadata?.product_name || 'Product';
       const status = session.payment_status;
 
@@ -148,7 +176,6 @@ export const appRouter = router({
         sessionId: session.id,
         amount,
         currency,
-        email,
         productName,
         status,
         createdAt: new Date(session.created * 1000),
@@ -194,7 +221,9 @@ export const appRouter = router({
     // Get user's purchases from local DB
     myPurchases: protectedProcedure.query(async ({ ctx }) => {
       if (!ctx.user.email) return [];
-      return getUserPurchases(ctx.user.email);
+      const purchases = await getUserPurchases(ctx.user.email);
+      // Defense in depth: a data-layer regression must not expose another user's purchases.
+      return purchases.filter(purchase => purchase.email === ctx.user.email);
     }),
 
     // Get user's active subscriptions from Stripe
@@ -276,6 +305,9 @@ export const appRouter = router({
       if (subCustomer !== customerId) {
         throw new Error("This subscription does not belong to your account.");
       }
+      if (sub.status !== "active" && sub.status !== "trialing") {
+        throw new Error("Only active or trialing subscriptions can be cancelled from the portal.");
+      }
 
       // Cancel at period end so the customer retains access until the current billing cycle finishes
       const updated = await stripe.subscriptions.update(input.subscriptionId, {
@@ -300,6 +332,49 @@ export const appRouter = router({
       return { revenue, subscribers, leadCount, newsletterCount, userCount, avgSatisfaction };
     }),
     purchases: adminProcedure.query(async () => getPurchases()),
+    growthOverview: adminProcedure.query(async () => {
+      const now = new Date();
+      const eightWeeksAgo = new Date(now.getTime() - 56 * 24 * 60 * 60 * 1000);
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const [purchases, eventRows] = await Promise.all([
+        getCompletedPurchasesSince(eightWeeksAgo),
+        getFunnelEventCounts(thirtyDaysAgo),
+      ]);
+      const weekStarts = Array.from({ length: 8 }, (_, index) => {
+        const date = new Date(now);
+        date.setUTCDate(date.getUTCDate() - (7 - index) * 7);
+        date.setUTCHours(0, 0, 0, 0);
+        date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
+        return date;
+      });
+      const weeklyRevenue = weekStarts.map((weekStart) => ({
+        name: weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }),
+        revenue: 0,
+      }));
+      const revenueByStream = new Map<string, number>();
+      for (const purchase of purchases) {
+        const purchaseDate = new Date(purchase.createdAt);
+        purchaseDate.setUTCHours(0, 0, 0, 0);
+        purchaseDate.setUTCDate(purchaseDate.getUTCDate() - ((purchaseDate.getUTCDay() + 6) % 7));
+        const bucketIndex = weekStarts.findIndex((week) => week.getTime() === purchaseDate.getTime());
+        if (bucketIndex >= 0) weeklyRevenue[bucketIndex].revenue += purchase.amount;
+        const stream = purchase.stream || "unattributed";
+        revenueByStream.set(stream, (revenueByStream.get(stream) || 0) + purchase.amount);
+      }
+      const eventCounts = Object.fromEntries(eventRows.map((row) => [row.eventName, Number(row.count)]));
+      return {
+        weeklyRevenue,
+        revenueByStream: Array.from(revenueByStream, ([stream, revenue]) => ({ stream, revenue })).sort((a, b) => b.revenue - a.revenue),
+        funnel: {
+          pageViews: eventCounts.page_view || 0,
+          ctaClicks: eventCounts.cta_click || 0,
+          leads: eventCounts.lead_submitted || 0,
+          checkoutsStarted: eventCounts.checkout_started || 0,
+          checkoutsCompleted: eventCounts.checkout_completed || 0,
+          portalViews: eventCounts.portal_viewed || 0,
+        },
+      };
+    }),
   }),
 });
 

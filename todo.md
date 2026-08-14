@@ -41,3 +41,17 @@
 - [x] Update checkout success_url to redirect to thank you page with session_id
 - [x] Stripe sends receipt emails automatically on successful payment
 - [x] Added getCheckoutSession tRPC procedure to fetch order details (25 tests passing)
+- [x] Produce a baseline funnel, product, technical SEO/GEO, analytics, and security audit with prioritized recommendations
+- [x] Define ICP-specific positioning, offer hierarchy, qualification paths, lifecycle messages, and success metrics for each revenue stream
+- [x] Add crawler-access controls, canonical metadata, XML sitemap, structured Organization and Service data, and AI-readable discovery files
+- [x] Add a citation-ready ARM FAQ and proof-oriented content architecture with verified, non-fabricated claims
+- [x] Upgrade conversion paths with clear primary journeys, friction-reducing CTAs, qualification capture, and thank-you next steps
+- [x] Harden client portal and dashboard navigation with effect-safe client guards and server-side authorization as the source of truth
+- [x] Add passing cross-user data-isolation tests for purchases, subscriptions, invoices, and cancellation actions
+- [x] Add revenue-funnel instrumentation and an owner dashboard for acquisition, conversion, retention, and customer-health signals
+- [x] Validate critical customer and owner flows, run automated tests and type checks, then checkpoint the production-ready release
+- [ ] Restore public availability for the primary custom domain before any paid acquisition or SEO launch
+- [x] Persist first-party funnel events and expose admin-only event summaries
+- [x] Replace mock revenue visuals with completed-purchase weekly cohorts
+- [x] Add an admin-only completed-revenue breakdown by product stream
+- [x] Extend the weekly owner report with first-party funnel signals and completed-purchase attribution

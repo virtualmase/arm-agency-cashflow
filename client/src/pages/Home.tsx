@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -12,12 +13,17 @@ const streamColors: Record<string, { accent: string; dim: string }> = {
 
 export default function Home() {
   const { user } = useAuth();
+  const trackPageView = trpc.analytics.track.useMutation();
+  useEffect(() => {
+    trackPageView.mutate({ eventName: "page_view", path: window.location.pathname });
+  }, []);
   return (
     <div className="min-h-screen text-[#c8cfc8] font-mono">
       <Nav user={user} />
       <Hero />
       <SignalStrip />
       <Capabilities />
+      <EngagementPath />
       <PricingSection />
       <QuickStartPackages />
       <ContactSection />
@@ -51,23 +57,24 @@ function Nav({ user }: { user: any }) {
 }
 
 function Hero() {
+  const trackCta = trpc.analytics.track.useMutation();
   return (
     <section className="min-h-screen flex flex-col justify-center px-6 lg:px-12 pt-32 pb-16 relative max-w-[1400px] mx-auto">
       <div className="flex items-center gap-2 text-[11px] tracking-[0.15em] uppercase text-[#e8a020] mb-8">
         <div className="w-5 h-px bg-[#e8a020]" />Autonomous Infrastructure
       </div>
       <h1 className="text-[clamp(2.5rem,6vw,5.5rem)] font-light leading-[1.05] tracking-tight text-[#eaf0ea] max-w-[900px]">
-        Architecture<br />for the <em className="not-italic text-[#e8a020]">agentic</em><br />era.
+        Accountable AI<br />built for <em className="not-italic text-[#e8a020]">production.</em>
       </h1>
       <p className="mt-6 text-base font-light text-[#c8cfc8] max-w-[520px] leading-[1.9] font-sans">
-        ARM Agency deploys, monitors, and optimizes autonomous systems at enterprise scale — building the infrastructure that lets AI operate reliably in production.
+        ARM Agency helps accountable teams scope, design, and operate AI workflows, agent infrastructure, and generative-engine visibility programs.
       </p>
       <div className="flex gap-4 mt-8">
-        <a href="#pricing" className="px-7 py-3 bg-[#e8a020] text-[#080a08] text-[12px] font-medium tracking-[0.1em] uppercase no-underline hover:opacity-85 transition-opacity">View Pricing</a>
-        <a href="#capabilities" className="px-7 py-3 border border-white/[0.07] text-[#c8cfc8] text-[12px] tracking-[0.1em] uppercase no-underline hover:border-[#c8cfc8] transition-colors">Explore Capabilities</a>
+        <a href="#contact" onClick={() => trackCta.mutate({ eventName: "cta_click", path: "/", productKey: "diagnostic", stream: "arm" })} className="px-7 py-3 bg-[#e8a020] text-[#080a08] text-[12px] font-medium tracking-[0.1em] uppercase no-underline hover:opacity-85 transition-opacity">Start with a diagnostic</a>
+        <a href="#pricing" onClick={() => trackCta.mutate({ eventName: "cta_click", path: "/" })} className="px-7 py-3 border border-white/[0.07] text-[#c8cfc8] text-[12px] tracking-[0.1em] uppercase no-underline hover:border-[#c8cfc8] transition-colors">Browse offers</a>
       </div>
       <div className="flex flex-wrap gap-8 lg:gap-12 mt-16 pt-8 border-t border-white/[0.07]">
-        {[{ val: "200+", label: "Enterprise Customers" }, { val: "50K+", label: "Agents Deployed" }, { val: "99.99%", label: "Uptime SLA" }, { val: "$10K", label: "MRR Target" }].map(s => (
+        {[{ val: "01", label: "Qualified discovery" }, { val: "02", label: "Bounded design" }, { val: "03", label: "Governed delivery" }, { val: "04", label: "Customer portal" }].map(s => (
           <div key={s.label}>
             <div className="text-2xl font-semibold text-[#eaf0ea] tracking-tight">{s.val}</div>
             <div className="text-[11px] text-[#667066] tracking-[0.1em] uppercase mt-0.5">{s.label}</div>
@@ -79,15 +86,15 @@ function Hero() {
           <div className="w-1.5 h-1.5 bg-[#3ddc84] rounded-full shadow-[0_0_6px_#3ddc84]" />arm-agent-cli v2.4.1 — connected
         </div>
         <div className="p-4 text-[12px] leading-[2]">
-          <div><span className="text-[#667066]">$</span> <span className="text-[#3ddc84]">arm</span> status --cluster prod-01</div>
-          <div className="text-[#667066]">Checking agent health...</div>
-          <div><span className="text-[#e8a020]">✓</span> <span className="text-[#eaf0ea]">12,440</span> <span className="text-[#667066]">agents active</span></div>
-          <div><span className="text-[#e8a020]">✓</span> <span className="text-[#eaf0ea]">BFT consensus</span> <span className="text-[#667066]">maintained</span></div>
-          <div><span className="text-[#e8a020]">✓</span> <span className="text-[#eaf0ea]">5 revenue streams</span> <span className="text-[#667066]">active</span></div>
+          <div><span className="text-[#667066]">$</span> <span className="text-[#3ddc84]">arm</span> route --readiness</div>
+          <div className="text-[#667066]">Select your operating motion...</div>
+          <div><span className="text-[#e8a020]">✓</span> <span className="text-[#eaf0ea]">diagnose</span> <span className="text-[#667066]">current state</span></div>
+          <div><span className="text-[#e8a020]">✓</span> <span className="text-[#eaf0ea]">design</span> <span className="text-[#667066]">accountable scope</span></div>
+          <div><span className="text-[#e8a020]">✓</span> <span className="text-[#eaf0ea]">operate</span> <span className="text-[#667066]">with clear ownership</span></div>
           <div className="text-[#667066]">──────────────────────────</div>
-          <div><span className="text-[#667066]">MRR Target:</span> <span className="text-[#3ddc84]">$10,000</span></div>
-          <div><span className="text-[#667066]">Streams:</span> <span className="text-[#eaf0ea]">5</span> <span className="text-[#667066]">active</span></div>
-          <div><span className="text-[#667066]">Products:</span> <span className="text-[#eaf0ea]">16</span> <span className="text-[#667066]">live</span></div>
+          <div><span className="text-[#667066]">Checkout:</span> <span className="text-[#3ddc84]">Stripe</span></div>
+          <div><span className="text-[#667066]">Billing:</span> <span className="text-[#eaf0ea]">receipt + portal</span></div>
+          <div><span className="text-[#667066]">Next:</span> <span className="text-[#eaf0ea]">qualified scope</span></div>
           <div><span className="text-[#667066]">$</span> <span className="inline-block w-1.5 h-3.5 bg-[#e8a020] animate-pulse" /></div>
         </div>
       </div>
@@ -136,13 +143,36 @@ function Capabilities() {
   );
 }
 
+function EngagementPath() {
+  const steps = [
+    { number: "01", title: "Diagnose", body: "Start with an AI Infrastructure Audit when the current state, decision constraints, and priorities need to be made explicit." },
+    { number: "02", title: "Design", body: "Use the Mandate Chain Design Workshop to align owners, operating constraints, and a practical implementation scope." },
+    { number: "03", title: "Operate", body: "Move into a qualified GEO or ARM operating engagement only after the team confirms fit, scope, and success criteria." },
+  ];
+  return (
+    <section className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto">
+      <div className="text-[11px] tracking-[0.2em] uppercase text-[#3ddc84] mb-4 flex items-center gap-2.5">How engagements work <div className="flex-1 max-w-[60px] h-px bg-[#1a7040]" /></div>
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-10 items-start">
+        <div>
+          <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[#eaf0ea] tracking-tight leading-[1.15] mb-4">A buying path that respects the complexity of production AI.</h2>
+          <p className="text-[15px] font-light text-[#c8cfc8] leading-[1.9] font-sans">The right starting point depends on the clarity of the problem. Bounded diagnostic work can be purchased directly. Ongoing services begin with scope confirmation so buyers know what will be delivered, who owns decisions, and what happens next.</p>
+          <a href="#contact" className="inline-block mt-7 text-[11px] tracking-[0.14em] uppercase text-[#e8a020] border-b border-[#e8a020] pb-1 no-underline hover:text-[#eaf0ea] hover:border-[#eaf0ea] transition-colors">Discuss your starting point →</a>
+        </div>
+        <div className="grid gap-px border border-white/[0.07]">
+          {steps.map(step => <div key={step.number} className="p-7 bg-[#0d100d] grid grid-cols-[48px_1fr] gap-5"><div className="text-[12px] text-[#3ddc84] tracking-[0.12em]">{step.number}</div><div><h3 className="text-lg font-medium text-[#eaf0ea] mb-2">{step.title}</h3><p className="text-[14px] leading-[1.8] text-[#667066] font-sans">{step.body}</p></div></div>)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function PricingSection() {
   return (
     <section id="pricing" className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto">
       <div className="text-[11px] tracking-[0.2em] uppercase text-[#e8a020] mb-4 flex items-center gap-2.5">Pricing <div className="flex-1 max-w-[60px] h-px bg-[#a06010]" /></div>
-      <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[#eaf0ea] tracking-tight leading-[1.15] max-w-[700px] mb-2">Five revenue streams. One sovereign infrastructure.</h2>
-      <p className="text-[15px] font-light text-[#c8cfc8] max-w-[580px] leading-[1.9] mb-4 font-sans">Choose your entry point and start cashflowing. Every engagement is governed by the ARM mandate chain.</p>
-      <div className="inline-block text-[10px] tracking-[0.15em] uppercase text-[#3ddc84] border border-[#1a7040] px-3 py-1 mb-12">Live Payments · Stripe Secured</div>
+      <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[#eaf0ea] tracking-tight leading-[1.15] max-w-[700px] mb-2">A clear path from diagnostic to operating program.</h2>
+      <p className="text-[15px] font-light text-[#c8cfc8] max-w-[620px] leading-[1.9] mb-4 font-sans">Choose a bounded starting point, a self-serve learning product, or a qualified operating engagement. Every offer names its delivery motion and checkout path.</p>
+      <div className="inline-block text-[10px] tracking-[0.15em] uppercase text-[#3ddc84] border border-[#1a7040] px-3 py-1 mb-12">Stripe Checkout · Buyer Receipt · Customer Portal</div>
 
       <StreamBlock label="Stream 01 · Swell Marketing" title="GEO Retainers" desc="Done-for-you Generative Engine Optimization. We build your entity signal, publish authority content, and monitor your LLM citations every month." color="signal"
         cards={[
@@ -186,10 +216,17 @@ function StreamBlock({ label, title, desc, color, cards }: { label: string; titl
 
 function PricingCard({ productKey, tier, name, tagline, price, period, features, cta, featured, color }: CardProps & { productKey: string; color: string }) {
   const c = streamColors[color] || streamColors.signal;
+  const trackCta = trpc.analytics.track.useMutation();
   const checkout = trpc.stripe.createCheckout.useMutation({
     onSuccess: (data) => { if (data.url) { toast.info("Redirecting to checkout..."); window.open(data.url, "_blank"); } },
     onError: (err) => toast.error(err.message),
   });
+  const requiresQualification = productKey.startsWith("swell-") || productKey.startsWith("arm-") || productKey.startsWith("arctura-");
+  const stream = productKey.startsWith("swell-") ? "swell" : productKey.startsWith("arm-") ? "arm" : "arctura";
+  const beginQualifiedConversation = () => {
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    toast.info(`Tell us about your ${name} objective so we can confirm scope and fit.`);
+  };
   return (
     <div className="p-8 bg-[#0b1210] border border-white/[0.07] relative transition-all hover:-translate-y-0.5"
       style={featured ? { borderLeftWidth: 2, borderLeftColor: c.accent, background: `linear-gradient(135deg, ${c.accent}08 0%, #0b1210 60%)` } : {}}>
@@ -204,18 +241,19 @@ function PricingCard({ productKey, tier, name, tagline, price, period, features,
       <ul className="space-y-2.5 mb-8">
         {features.map((f, i) => <li key={i} className="flex items-start gap-2.5 text-[14px] text-[#c8cfc8]"><span className="text-[12px] mt-0.5 shrink-0" style={{ color: c.accent }}>→</span>{f}</li>)}
       </ul>
-      <button onClick={() => checkout.mutate({ productKey })} disabled={checkout.isPending}
+      <button onClick={() => { trackCta.mutate({ eventName: "cta_click", path: "/", productKey, stream }); requiresQualification ? beginQualifiedConversation() : checkout.mutate({ productKey }); }} disabled={checkout.isPending}
         className="w-full py-3.5 px-6 border text-[11px] font-semibold tracking-[0.15em] uppercase text-center transition-all"
         style={{ borderColor: c.accent, color: featured ? "#080a08" : c.accent, background: featured ? c.accent : "transparent" }}
         onMouseEnter={(e) => { if (!featured) { e.currentTarget.style.background = c.accent; e.currentTarget.style.color = "#080a08"; } }}
         onMouseLeave={(e) => { if (!featured) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = c.accent; } }}>
-        {checkout.isPending ? "Loading..." : `${cta} →`}
+        {checkout.isPending ? "Loading..." : requiresQualification ? "Request scope →" : `${cta} →`}
       </button>
     </div>
   );
 }
 
 function QuickStartPackages() {
+  const trackCta = trpc.analytics.track.useMutation();
   const checkout = trpc.stripe.createCheckout.useMutation({
     onSuccess: (data) => { if (data.url) { toast.info("Redirecting to checkout..."); window.open(data.url, "_blank"); } },
     onError: (err) => toast.error(err.message),
@@ -247,7 +285,7 @@ function QuickStartPackages() {
               <div className="text-base font-semibold text-[#eaf0ea] mb-1.5">{pkg.name}</div>
               <div className="text-[13px] text-[#667066] mb-4 leading-relaxed">{pkg.desc}</div>
               <div className="text-3xl font-light mb-4" style={{ color: c.accent }}>{pkg.price}</div>
-              <button onClick={() => checkout.mutate({ productKey: pkg.key })} disabled={checkout.isPending}
+              <button onClick={() => { const stream = pkg.key.startsWith("academy-") ? "academy" : pkg.key.startsWith("coreweaver-") ? "coreweaver" : "arm"; trackCta.mutate({ eventName: "cta_click", path: "/", productKey: pkg.key, stream }); checkout.mutate({ productKey: pkg.key }); }} disabled={checkout.isPending}
                 className="w-full py-3 border text-[11px] font-semibold tracking-[0.15em] uppercase transition-all"
                 style={{ borderColor: c.accent, color: c.accent, background: "transparent" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = c.accent; e.currentTarget.style.color = "#080a08"; }}
@@ -259,8 +297,8 @@ function QuickStartPackages() {
         })}
       </div>
       <div className="mt-12 p-8 bg-[#0b1210] border border-white/[0.07] border-l-2 border-l-[#3ddc84]">
-        <div className="text-xl font-light text-[#eaf0ea] mb-3">The ARM Guarantee</div>
-        <p className="text-[14px] text-[#667066] leading-[1.7] font-sans">Every engagement is governed by the ARM mandate chain — sovereign, human-accountable, and auditable. If we don't deliver measurable GEO signal improvement within 60 days, we work for free until we do. No silent failures. No excuses. The Truth Ledger logs everything.</p>
+        <div className="text-xl font-light text-[#eaf0ea] mb-3">The ARM Service Standard</div>
+        <p className="text-[14px] text-[#667066] leading-[1.7] font-sans">Every engagement begins with an explicit scope, named decision owners, delivery cadence, and a practical next step. Service descriptions do not replace a written statement of work or guarantee a business outcome; the engagement terms define the commitments that apply.</p>
       </div>
     </section>
   );

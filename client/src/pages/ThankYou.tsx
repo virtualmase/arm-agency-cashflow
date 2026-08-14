@@ -3,9 +3,11 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Download, Mail, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function ThankYou() {
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -17,7 +19,7 @@ export default function ThankYou() {
 
   const { data: orderDetails, isLoading, error } = trpc.stripe.getCheckoutSession.useQuery(
     { sessionId: sessionId || "" },
-    { enabled: !!sessionId }
+    { enabled: !!sessionId && isAuthenticated }
   );
 
   const formatAmount = (cents: number, currency: string) => {
@@ -71,7 +73,6 @@ export default function ThankYou() {
               <div className="flex justify-between items-start pb-4 border-b border-border/50">
                 <div>
                   <p className="font-mono font-semibold text-foreground">{orderDetails.productName}</p>
-                  <p className="text-sm text-foreground/50 mt-1">Email: {orderDetails.email}</p>
                 </div>
                 <p className="font-mono text-lg font-bold text-green-500">
                   {formatAmount(orderDetails.amount, orderDetails.currency)}
@@ -129,7 +130,7 @@ export default function ThankYou() {
             onClick={() => (window.location.href = "/portal")}
             className="bg-green-600 hover:bg-green-700 text-white font-mono"
           >
-            View My Portal
+            {isAuthenticated ? "View My Portal" : "Sign In to View My Portal"}
           </Button>
           <Button
             onClick={() => (window.location.href = "/")}

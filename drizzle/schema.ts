@@ -50,6 +50,8 @@ export const purchases = mysqlTable("purchases", {
   email: varchar("email", { length: 320 }).notNull(),
   name: varchar("name", { length: 256 }),
   packageName: varchar("packageName", { length: 128 }).notNull(),
+  productKey: varchar("productKey", { length: 128 }),
+  stream: varchar("stream", { length: 64 }),
   amount: int("amount").notNull(),
   stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 128 }),
   stripeSessionId: varchar("stripeSessionId", { length: 256 }),
@@ -59,6 +61,18 @@ export const purchases = mysqlTable("purchases", {
 
 export type Purchase = typeof purchases.$inferSelect;
 export type InsertPurchase = typeof purchases.$inferInsert;
+
+export const funnelEvents = mysqlTable("funnelEvents", {
+  id: int("id").autoincrement().primaryKey(),
+  eventName: mysqlEnum("eventName", ["page_view", "cta_click", "lead_submitted", "checkout_started", "checkout_completed", "portal_viewed"]).notNull(),
+  path: varchar("path", { length: 256 }),
+  productKey: varchar("productKey", { length: 128 }),
+  stream: varchar("stream", { length: 64 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type FunnelEvent = typeof funnelEvents.$inferSelect;
+export type InsertFunnelEvent = typeof funnelEvents.$inferInsert;
 
 export const emailSequences = mysqlTable("emailSequences", {
   id: int("id").autoincrement().primaryKey(),

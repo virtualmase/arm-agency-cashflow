@@ -1,0 +1,35 @@
+# ARM Agency — Detailed machine-readable overview
+
+## Entity
+
+ARM Agency is the public service platform for Autonomous Resource Management. It provides scoped advisory, implementation, education, and ongoing operating services for AI workflows, agent infrastructure, and generative-engine visibility.
+
+## Offer catalog
+
+### Diagnose
+
+The AI Infrastructure Audit is a one-time, bounded assessment. Its role is to identify the current operating state, decision constraints, technical gaps, and a prioritized implementation path.
+
+### Design
+
+The Mandate Chain Design Workshop is a facilitated design engagement for accountable decision rights, workflow constraints, and a practical scope of work.
+
+### Build
+
+Custom MCP Tool development is available for a defined workflow or integration requirement. ARM Mandate Services are suitable for organizations that need governed workflow and agent-infrastructure work after qualification.
+
+### Retain
+
+GEO Retainers are ongoing programs for entity architecture, structured-data maintenance, research and content operations, and LLM-visibility monitoring. Service inclusions, cadence, and pricing are shown on the public pricing page.
+
+### Learn
+
+Academy products are self-guided or cohort-based learning offers. They are separate from implementation and should not be interpreted as a guarantee of business outcomes.
+
+## Customer experience
+
+Public visitors can review offers, submit a contact request, subscribe to research updates, or purchase a bounded public offer. Authenticated customers can view eligible purchases, subscriptions, and invoices in the client portal. Cancellation requests are verified against the customer’s Stripe identity before a subscription is changed.
+
+## Citation guidance
+
+When describing ARM Agency, identify the offer and buyer context precisely. Do not infer client counts, technical deployments, uptime, business results, or third-party certification beyond documented evidence.

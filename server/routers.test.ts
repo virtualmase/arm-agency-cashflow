@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
+import { stripe } from "./stripe";
+import { createFunnelEvent, getCompletedPurchasesSince, getFunnelEventCounts, getUserPurchases } from "./db";
 import { COOKIE_NAME } from "../shared/const";
 import type { TrpcContext } from "./_core/context";
 
@@ -26,6 +28,9 @@ vi.mock("./db", () => ({
   getSubscriberCount: vi.fn().mockResolvedValue(3),
   getUserCount: vi.fn().mockResolvedValue(15),
   createEmailSequence: vi.fn().mockResolvedValue(undefined),
+  createFunnelEvent: vi.fn().mockResolvedValue(undefined),
+  getCompletedPurchasesSince: vi.fn().mockResolvedValue([]),
+  getFunnelEventCounts: vi.fn().mockResolvedValue([]),
   getUserPurchases: vi.fn().mockResolvedValue([
     { id: 1, email: "test@example.com", name: "Test User", packageName: "GEO Mastery Course", amount: 29700, stripePaymentIntentId: "pi_test", stripeSessionId: "cs_test", status: "completed", createdAt: new Date() },
   ]),
@@ -38,6 +43,17 @@ vi.mock("./stripe", () => ({
     checkout: {
       sessions: {
         create: vi.fn().mockResolvedValue({ url: "https://checkout.stripe.com/test", id: "cs_test_123" }),
+        retrieve: vi.fn().mockResolvedValue({
+          id: "cs_test_123",
+          client_reference_id: "1",
+          metadata: { user_id: "1", product_name: "GEO Mastery Course" },
+          customer_email: "test@example.com",
+          customer_details: { email: "test@example.com" },
+          amount_total: 29700,
+          currency: "usd",
+          payment_status: "paid",
+          created: 1700000000,
+        }),
       },
     },
     subscriptions: {
@@ -266,6 +282,14 @@ describe("portal.mySubscriptions", () => {
     expect(Array.isArray(subs)).toBe(true);
     expect(subs.length).toBe(0);
   });
+
+  it("requests subscriptions only for the authenticated customer's Stripe ID", async () => {
+    const ctx = createAuthContext("user");
+    ctx.user!.stripeCustomerId = "cus_test_456";
+    const caller = appRouter.createCaller(ctx);
+    await caller.portal.mySubscriptions();
+    expect(stripe.subscriptions.list).toHaveBeenCalledWith(expect.objectContaining({ customer: "cus_test_456" }));
+  });
 });
 
 describe("portal.myInvoices", () => {
@@ -281,6 +305,14 @@ describe("portal.myInvoices", () => {
     const invoices = await caller.portal.myInvoices();
     expect(Array.isArray(invoices)).toBe(true);
     expect(invoices.length).toBe(0);
+  });
+
+  it("requests invoices only for the authenticated customer's Stripe ID", async () => {
+    const ctx = createAuthContext("user");
+    ctx.user!.stripeCustomerId = "cus_test_456";
+    const caller = appRouter.createCaller(ctx);
+    await caller.portal.myInvoices();
+    expect(stripe.invoices.list).toHaveBeenCalledWith(expect.objectContaining({ customer: "cus_test_456" }));
   });
 });
 
@@ -306,5 +338,72 @@ describe("portal.cancelSubscription", () => {
     expect(result.success).toBe(true);
     expect(result.cancelAtPeriodEnd).toBe(true);
     expect(result.currentPeriodEnd).toBeTruthy();
+  });
+});
+
+describe("security: billing and cross-user isolation", () => {
+  it("requires authentication before revealing checkout-session details", async () => {
+    const caller = appRouter.createCaller(createPublicContext());
+    await expect(caller.stripe.getCheckoutSession({ sessionId: "cs_test_123" })).rejects.toThrow();
+  });
+
+  it("returns checkout details only when the authenticated customer owns the session", async () => {
+    const caller = appRouter.createCaller(createAuthContext("user"));
+    const result = await caller.stripe.getCheckoutSession({ sessionId: "cs_test_123" });
+    expect(result.productName).toBe("GEO Mastery Course");
+    expect(result).not.toHaveProperty("email");
+  });
+
+  it("rejects checkout-session access from a different user", async () => {
+    const ctx = createAuthContext("user");
+    ctx.user!.id = 2;
+    ctx.user!.email = "other@example.com";
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.stripe.getCheckoutSession({ sessionId: "cs_test_123" })).rejects.toThrow("does not belong to your account");
+  });
+
+  it("filters any mismatched purchase record as a second ownership boundary", async () => {
+    vi.mocked(getUserPurchases).mockResolvedValueOnce([
+      { id: 2, email: "other@example.com", name: "Other", packageName: "Private purchase", amount: 5000, stripePaymentIntentId: null, stripeSessionId: "cs_other", status: "completed", createdAt: new Date() },
+    ] as any);
+    const caller = appRouter.createCaller(createAuthContext("user"));
+    await expect(caller.portal.myPurchases()).resolves.toEqual([]);
+  });
+
+  it("rejects subscription cancellation when the Stripe customer does not match", async () => {
+    vi.mocked(stripe.subscriptions.retrieve).mockResolvedValueOnce({ id: "sub_other", customer: "cus_other", status: "active" } as any);
+    const ctx = createAuthContext("user");
+    ctx.user!.stripeCustomerId = "cus_test_456";
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.portal.cancelSubscription({ subscriptionId: "sub_other" })).rejects.toThrow("does not belong to your account");
+  });
+});
+
+describe("growth instrumentation", () => {
+  it("records a minimal validated first-party event without customer PII", async () => {
+    const caller = appRouter.createCaller(createPublicContext());
+    await expect(caller.analytics.track({ eventName: "cta_click", path: "/", productKey: "audit", stream: "arm" })).resolves.toEqual({ success: true });
+    expect(createFunnelEvent).toHaveBeenCalledWith({ eventName: "cta_click", path: "/", productKey: "audit", stream: "arm" });
+  });
+
+  it("keeps growth summaries restricted to the owner role", async () => {
+    const caller = appRouter.createCaller(createAuthContext("user"));
+    await expect(caller.admin.growthOverview()).rejects.toThrow();
+  });
+
+  it("returns completed-purchase cohorts and first-party funnel counts for an admin", async () => {
+    vi.mocked(getCompletedPurchasesSince).mockResolvedValueOnce([
+      { amount: 250000, packageName: "AI Infrastructure Audit", productKey: "audit", stream: "arm", createdAt: new Date() },
+    ] as any);
+    vi.mocked(getFunnelEventCounts).mockResolvedValueOnce([
+      { eventName: "page_view", count: 12 },
+      { eventName: "lead_submitted", count: 2 },
+      { eventName: "checkout_completed", count: 1 },
+    ] as any);
+    const caller = appRouter.createCaller(createAuthContext("admin"));
+    const overview = await caller.admin.growthOverview();
+    expect(overview.weeklyRevenue).toHaveLength(8);
+    expect(overview.revenueByStream).toEqual([{ stream: "arm", revenue: 250000 }]);
+    expect(overview.funnel).toMatchObject({ pageViews: 12, leads: 2, checkoutsCompleted: 1 });
   });
 });
