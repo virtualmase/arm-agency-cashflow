@@ -77,6 +77,7 @@
 - [x] Audit current public image usage and document that semantic image metadata is deferred until an approved meaningful visual asset exists
 - [x] Create a reusable image SEO intake, review, and measurement workflow for all future authority content
 - [x] Add the first approved meaningful public visual asset with a descriptive filename, contextual alt text, dimensions, and accurate preview metadata
+- [x] Productize a bounded Image SEO and Visual Discovery Audit with defined scope, outputs, and acceptance criteria
 - [x] Publish a source-backed AI-discovery readiness guide and claim-safety evidence brief
 - [x] Create the authority-content portfolio review ledger and quality stop conditions
 - [ ] Continuously improve data quality, operational software, security, observability, and reporting based on verified needs
