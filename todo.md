@@ -80,6 +80,8 @@
 - [x] Publish a source-backed AI-discovery readiness guide and claim-safety evidence brief
 - [x] Create the authority-content portfolio review ledger and quality stop conditions
 - [ ] Continuously improve data quality, operational software, security, observability, and reporting based on verified needs
+- [x] Complete production JavaScript chunking and cacheability improvements without changing server-rendered public content or private-route protections
+- [x] Revalidate protected portal and admin routes after the client-bundle changes
 - [x] Explicitly validate protected-route authentication and the protected checkout-session path after HTTP security-header hardening
 - [x] Add response-level noindex protections for authenticated and operational HTML routes
 - [x] Establish the current customer-health, retention, referral, capacity, and employee-sustainability improvement loop

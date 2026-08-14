@@ -11,6 +11,7 @@ import type { HeadMeta } from "../../client/src/ssr/prefetch";
 
 const CANONICAL_ORIGIN = (process.env.CANONICAL_ORIGIN || "https://armcashflow-gw96qvq2.manus.space").replace(/\/$/, "");
 const SITE_NAME = process.env.SITE_NAME || "ARM Agency";
+const FRESH_STATIC_FILES = new Set(["robots.txt", "sitemap.xml", "llms.txt", "llms-full.txt", "AGENTS.md"]);
 
 const escapeHtml = (value: string) => value
   .replace(/&/g, "&amp;")
@@ -105,7 +106,17 @@ export function serveStatic(app: Express) {
     }
     next();
   });
-  app.use(express.static(distPath, { index: false, redirect: false }));
+  app.use(express.static(distPath, {
+    index: false,
+    redirect: false,
+    setHeaders(res, filePath) {
+      if (FRESH_STATIC_FILES.has(path.basename(filePath))) {
+        res.setHeader("Cache-Control", "no-cache");
+        return;
+      }
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    },
+  }));
   app.use("*", async (req, res) => {
     const template = await fs.promises.readFile(templatePath, "utf-8");
     try {
