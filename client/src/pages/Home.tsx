@@ -104,7 +104,7 @@ function Hero() {
 }
 
 function SignalStrip() {
-  const items = ["AI-Native Architecture", "Byzantine Fault Tolerance", "Agentic Workflow Orchestration", "Real-Time Attribution", "GEO Signal Governance", "Carbon-Aware Scheduling", "Mandate Chain Verification", "5 Revenue Streams", "16 Products Live"];
+  const items = ["AI Workflow Design", "Named Decision Owners", "Bounded Delivery", "Public-Surface Review", "GEO Content Governance", "Visual Discovery", "Documented Handoffs", "5 Revenue Streams"];
   return (
     <div className="py-5 px-6 bg-[#111411] border-y border-white/[0.07] overflow-hidden">
       <div className="flex gap-16 whitespace-nowrap" style={{ animation: "scroll 25s linear infinite" }}>
@@ -119,10 +119,10 @@ function SignalStrip() {
 
 function Capabilities() {
   const caps = [
-    { num: "01", label: "Architecture", title: "AI-Native Signal Infrastructure", desc: "Machine-readable systems architected from first principles — structured data, semantic layers, and knowledge graphs that AI agents can query, trust, and act on.", tag: "Signal Layer" },
-    { num: "02", label: "Orchestration", title: "Agentic Workflow Syndication", desc: "End-to-end orchestration of autonomous workflows across distributed systems. Agents coordinate, delegate, and self-correct under mandate constraints.", tag: "Workflow Layer" },
-    { num: "03", label: "Security", title: "Enterprise-Grade Fault Tolerance", desc: "Multi-layer security with Byzantine Fault Tolerance and mandate chain verification. Systems maintain consensus and recover from adversarial conditions.", tag: "Security Layer" },
-    { num: "04", label: "Visibility", title: "Real-Time Attribution & Observability", desc: "Live visibility into agent decisions, resource usage, and outcome attribution. Differential privacy protects sensitive data while maintaining transparency.", tag: "Observability Layer" },
+    { num: "01", label: "Architecture", title: "Decision-Ready AI Infrastructure", desc: "We help teams document workflows, systems, information boundaries, and decision owners before a larger implementation is funded or changed.", tag: "Decision Layer" },
+    { num: "02", label: "Orchestration", title: "Bounded Workflow Design", desc: "We define the user job, permitted actions, inputs, outputs, approval points, exceptions, and handoff conditions for a scoped workflow.", tag: "Workflow Layer" },
+    { num: "03", label: "Security", title: "Security and Governance Boundaries", desc: "We help teams clarify approved systems, access expectations, logging needs, prohibited data, review ownership, and safe failure behavior.", tag: "Governance Layer" },
+    { num: "04", label: "Visibility", title: "Operating Review and Observability", desc: "We establish the questions, evidence, review cadence, and named owners needed to assess a scoped operating workflow responsibly.", tag: "Review Layer" },
   ];
   return (
     <section id="capabilities" className="py-24 px-6 lg:px-12 bg-[#0d100d] max-w-[1400px] mx-auto">
@@ -175,18 +175,18 @@ function PricingSection() {
       <p className="text-[15px] font-light text-[#c8cfc8] max-w-[620px] leading-[1.9] mb-4 font-sans">Choose a bounded starting point, a self-serve learning product, or a qualified operating engagement. Every offer names its delivery motion and checkout path.</p>
       <div className="inline-block text-[10px] tracking-[0.15em] uppercase text-[#3ddc84] border border-[#1a7040] px-3 py-1 mb-12">Stripe Checkout · Buyer Receipt · Customer Portal</div>
 
-      <StreamBlock label="Stream 01 · Swell Marketing" title="GEO Retainers" desc="Done-for-you Generative Engine Optimization. We build your entity signal, publish authority content, and monitor your LLM citations every month." color="signal" insightSlug="geo-readiness"
+      <StreamBlock label="Stream 01 · Swell Marketing" title="GEO Retainers" desc="A qualified operating program for entity clarity, authority content, visual discovery foundations, and an evidence-aware public-surface review." color="signal" insightSlug="geo-readiness" secondaryInsightSlug="image-seo-fundamentals"
         cards={[
-          { key: "swell-geo-starter", tier: "Starter", name: "GEO Starter", tagline: "Foundation signal architecture", price: "$1,500", period: "/month", features: ["4 authority articles/month", "JSON-LD entity audit + build", "Monthly LLM citation report", "Share of Model baseline", "llms.txt deployment"], cta: "Start Starter" },
-          { key: "swell-geo-growth", tier: "Growth", name: "GEO Growth", tagline: "Full signal governance", price: "$2,500", period: "/month", features: ["8 authority articles/month", "JSON-LD build + maintenance", "Weekly LLM citation monitoring", "Monthly strategy call", "sameAs authority expansion", "Arctura Network distribution"], cta: "Start Growth", featured: true },
-          { key: "swell-geo-scale", tier: "Scale", name: "GEO Scale", tagline: "Maximum signal velocity", price: "$3,500", period: "/month", features: ["12 authority articles/month", "Full GEO Signal Governance", "Weekly reporting dashboard", "Bi-weekly strategy calls", "Priority support + SLA", "ARM Framework initialization"], cta: "Start Scale" },
+          { key: "swell-geo-starter", tier: "Starter", name: "GEO Starter", tagline: "Foundation review and content plan", price: "$1,500", period: "/month", features: ["Up to 4 authority-content briefs/month", "Structured-data and entity review", "Monthly public-surface review", "First-party conversion signal review", "AI-readable discovery-file review"], cta: "Start Starter" },
+          { key: "swell-geo-growth", tier: "Growth", name: "GEO Growth", tagline: "Content and discovery governance", price: "$2,500", period: "/month", features: ["Up to 8 authority-content briefs/month", "Structured-data maintenance plan", "Public discovery review cadence", "Monthly strategy call", "Entity relationship documentation", "Distribution planning"], cta: "Start Growth", featured: true },
+          { key: "swell-geo-scale", tier: "Scale", name: "GEO Scale", tagline: "Expanded governance cadence", price: "$3,500", period: "/month", features: ["Up to 12 authority-content briefs/month", "Content governance system", "Weekly reporting cadence", "Bi-weekly strategy calls", "Priority scoped support", "Annual roadmap review"], cta: "Start Scale" },
         ]} />
 
       <StreamBlock label="Stream 02 · ARM" title="Mandate Services" desc="Sovereign agentic infrastructure consulting. ARM designs, deploys, and governs AI agent stacks for businesses that need human-accountable autonomous systems." color="amber" insightSlug="ai-infrastructure-audit"
         cards={[
-          { key: "arm-mandate-core", tier: "Core", name: "ARM Core", tagline: "Mandate chain + agent deployment", price: "$3,000", period: "/month", features: ["Mandate chain design", "GEO entity graph build", "1 AURE agent deployment", "Truth Ledger setup", "Monthly audit report"], cta: "Start Core" },
-          { key: "arm-mandate-pro", tier: "Pro", name: "ARM Pro", tagline: "Full ARM stack + weekly briefings", price: "$5,000", period: "/month", features: ["Full ARM stack deployment", "3 AURE agents configured", "Weekly briefings from Aureus", "Quarterly strategy sessions", "Checkpoint recovery system", "Graceful escalation protocols"], cta: "Start Pro", featured: true },
-          { key: "arm-mandate-sovereign", tier: "Sovereign", name: "ARM Sovereign", tagline: "Enterprise-grade agent governance", price: "$8,000", period: "/month", features: ["Full agent swarm deployment", "Custom mandate chain design", "Dedicated Aureus operator time", "SLA guarantees + uptime", "Immutable audit trail", "Enterprise governance layer"], cta: "Start Sovereign" },
+          { key: "arm-mandate-core", tier: "Core", name: "ARM Core", tagline: "Mandate and workflow design", price: "$3,000", period: "/month", features: ["Mandate chain design", "Entity and content foundation", "Scoped workflow definition", "Decision record and review cadence", "Monthly operating review"], cta: "Start Core" },
+          { key: "arm-mandate-pro", tier: "Pro", name: "ARM Pro", tagline: "Governed implementation planning", price: "$5,000", period: "/month", features: ["Governed implementation plan", "Role and review model", "Scheduled operating brief", "Quarterly scope review", "Recovery and handoff plan", "Escalation pathway"], cta: "Start Pro", featured: true },
+          { key: "arm-mandate-sovereign", tier: "Sovereign", name: "ARM Sovereign", tagline: "Enterprise governance design", price: "$8,000", period: "/month", features: ["Enterprise governance design", "Custom mandate chain design", "Defined operator support scope", "Service terms agreed in writing", "Audit-evidence plan", "Governance review cadence"], cta: "Start Sovereign" },
         ]} />
 
       <StreamBlock label="Stream 03 · Arctura" title="Network Memberships" desc="Join the Arctura Collective — a sovereign network of humans, agents, and infrastructure operating as a unified signal network." color="violet" insightSlug="network-participation"
@@ -201,14 +201,17 @@ function PricingSection() {
 
 type CardProps = { key: string; tier: string; name: string; tagline: string; price: string; period: string; features: string[]; cta: string; featured?: boolean };
 
-function StreamBlock({ label, title, desc, color, cards, insightSlug }: { label: string; title: string; desc: string; color: string; cards: CardProps[]; insightSlug: string }) {
+function StreamBlock({ label, title, desc, color, cards, insightSlug, secondaryInsightSlug }: { label: string; title: string; desc: string; color: string; cards: CardProps[]; insightSlug: string; secondaryInsightSlug?: string }) {
   const c = streamColors[color] || streamColors.signal;
   return (
     <div className="mb-16">
       <div className="text-[10px] tracking-[0.2em] uppercase mb-2" style={{ color: c.dim }}>{label}</div>
       <h3 className="text-[clamp(1.5rem,3vw,2.5rem)] font-light tracking-tight mb-2" style={{ color: c.accent }}>{title}</h3>
       <p className="text-[14px] text-[#667066] max-w-[560px] mb-8 font-sans">{desc}</p>
-      <Link href={`/insights/${insightSlug}`} className="inline-block -mt-4 mb-6 text-[10px] tracking-[0.14em] uppercase no-underline border-b pb-1" style={{ color: c.accent, borderColor: c.dim }}>Read the operating guide →</Link>
+      <div className="flex flex-wrap gap-x-5 gap-y-3 -mt-4 mb-6">
+        <Link href={`/insights/${insightSlug}`} className="inline-block text-[10px] tracking-[0.14em] uppercase no-underline border-b pb-1" style={{ color: c.accent, borderColor: c.dim }}>Read the operating guide →</Link>
+        {secondaryInsightSlug ? <Link href={`/insights/${secondaryInsightSlug}`} className="inline-block text-[10px] tracking-[0.14em] uppercase no-underline border-b pb-1 text-[#e8a020] border-[#a06010]">Read the visual discovery guide →</Link> : null}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {cards.map(card => <PricingCard {...card} productKey={card.key} color={color} key={card.key} />)}
       </div>
@@ -266,12 +269,12 @@ function QuickStartPackages() {
     { key: "workshop", name: "Mandate Chain Design Workshop", desc: "Half-day workshop to encode your organization's authority structure into verifiable mandate chains.", price: "$1,500", color: "amber", label: "Quick-Start" },
     { key: "mcp_tool", name: "Custom MCP Tool", desc: "Custom MCP tool development tailored to your specific workflow and integration requirements.", price: "$500", color: "amber", label: "Quick-Start" },
     // Academy
-    { key: "academy-geo-mastery", name: "GEO Mastery Course", desc: "6 modules, 30+ lessons, JSON-LD templates, LLM citation tracker. Self-paced.", price: "$297", color: "signal", label: "Academy" },
-    { key: "academy-arm-cert", name: "ARM Framework Certification", desc: "4-week live cohort. Mandate chain design, agent deployment practicum, certified badge.", price: "$997", color: "signal", label: "Academy" },
-    { key: "academy-agency-operator", name: "Agency GEO Operator", desc: "6-week cohort for agency owners. Build a GEO service offering, deploy AURE agents.", price: "$1,997", color: "signal", label: "Academy" },
+    { key: "academy-geo-mastery", name: "GEO Mastery Course", desc: "Self-paced learning materials covering content, structured data, and public-surface fundamentals.", price: "$297", color: "signal", label: "Academy" },
+    { key: "academy-arm-cert", name: "ARM Framework Certification", desc: "A live learning cohort focused on mandate-chain design and governed implementation practice, subject to stated terms.", price: "$997", color: "signal", label: "Academy" },
+    { key: "academy-agency-operator", name: "Agency GEO Operator", desc: "A cohort for agency owners developing an evidence-safe GEO service operating model.", price: "$1,997", color: "signal", label: "Academy" },
     // Coreweaver Setup
-    { key: "coreweaver-setup-standard", name: "Agent Stack Setup — Standard", desc: "Full GBrain stack deployment + 2 agents. Mandate chain, audit trail, 30-day support.", price: "$2,500", color: "amber", label: "Coreweaver" },
-    { key: "coreweaver-setup-enterprise", name: "Agent Stack Setup — Enterprise", desc: "Enterprise-grade agent infrastructure. Custom swarm, full ARM governance, 90-day transition.", price: "$10,000", color: "amber", label: "Coreweaver" },
+    { key: "coreweaver-setup-standard", name: "Agent Stack Setup — Standard", desc: "A scoped agent-stack setup with agreed systems, mandate boundaries, acceptance tests, and handoff notes.", price: "$2,500", color: "amber", label: "Coreweaver" },
+    { key: "coreweaver-setup-enterprise", name: "Agent Stack Setup — Enterprise", desc: "An enterprise scoping and implementation plan with governance, transition, and support boundaries agreed in writing.", price: "$10,000", color: "amber", label: "Coreweaver" },
   ];
   return (
     <section className="py-24 px-6 lg:px-12 bg-[#0d100d] max-w-[1400px] mx-auto">
@@ -319,9 +322,9 @@ function ContactSection() {
       <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[#eaf0ea] tracking-tight leading-[1.15] mb-8">Ready to deploy?</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
-          <p className="text-[14px] text-[#667066] leading-[1.9] mb-8 font-sans">ARM Agency works with enterprise teams deploying autonomous agents into production. We respond within one business day. A 30-day production pilot is available for qualified teams.</p>
+          <p className="text-[14px] text-[#667066] leading-[1.9] mb-8 font-sans">ARM Agency works with accountable teams evaluating and operating scoped AI workflows, agent infrastructure, and discovery programs. Scope, timing, participants, and any pilot terms are confirmed during qualification.</p>
           <div className="space-y-3">
-            {[["Email", "ops@arm-agency.com"], ["Response", "Within 1 business day"], ["Demo", "60-minute live session"], ["Pilot", "30-day production pilot"], ["Streams", "5 active revenue streams"]].map(([l, v]) => (
+            {[["Email", "ops@arm-agency.com"], ["Response", "Confirmed after submission"], ["Conversation", "Scope and fit review"], ["Pilot", "Where fit is confirmed"], ["Streams", "5 revenue streams"]].map(([l, v]) => (
               <div key={l} className="flex gap-4 py-2 border-b border-white/[0.05]"><span className="text-[12px] text-[#667066] w-24 shrink-0">{l}</span><span className="text-[12px] text-[#eaf0ea]">{v}</span></div>
             ))}
           </div>
@@ -335,7 +338,7 @@ function ContactSection() {
           <div><label className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1 block">Organization</label><input type="text" value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} className="w-full bg-transparent border border-white/[0.07] px-3 py-2.5 text-[13px] text-[#eaf0ea] focus:border-[#e8a020] outline-none transition-colors" placeholder="Company name" /></div>
           <div><label className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1 block">Use case</label>
             <select value={form.useCase} onChange={e => setForm(f => ({ ...f, useCase: e.target.value }))} className="w-full bg-[#080a08] border border-white/[0.07] px-3 py-2.5 text-[13px] text-[#eaf0ea] focus:border-[#e8a020] outline-none transition-colors">
-              <option value="">Select one...</option><option value="geo-retainer">GEO Retainer (Swell Marketing)</option><option value="arm-mandate">ARM Mandate Services</option><option value="arctura-membership">Arctura Network Membership</option><option value="academy">Academy / Certification</option><option value="coreweaver">Coreweaver Infrastructure</option><option value="other">Other</option>
+              <option value="">Select one...</option><option value="geo-retainer">GEO Retainer (Swell Marketing)</option><option value="image-seo-audit">Image SEO &amp; Visual Discovery Audit</option><option value="arm-mandate">ARM Mandate Services</option><option value="arctura-membership">Arctura Network Membership</option><option value="academy">Academy / Certification</option><option value="coreweaver">Coreweaver Infrastructure</option><option value="other">Other</option>
             </select>
           </div>
           <div><label className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1 block">Tell us more</label><textarea value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} rows={4} className="w-full bg-transparent border border-white/[0.07] px-3 py-2.5 text-[13px] text-[#eaf0ea] focus:border-[#e8a020] outline-none transition-colors resize-none" placeholder="Describe your current infrastructure..." /></div>
@@ -368,7 +371,7 @@ function Footer() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
         <div className="col-span-2 md:col-span-1">
           <div className="flex items-center gap-2 mb-3"><div className="w-7 h-7 border border-[#e8a020] flex items-center justify-center text-[11px] font-semibold text-[#e8a020]">ARM</div><span className="text-[13px] font-medium text-[#eaf0ea]">ARM Agency</span></div>
-          <p className="text-[12px] text-[#667066] leading-relaxed font-sans">Enterprise infrastructure for autonomous AI systems. Five revenue streams, one sovereign infrastructure.</p>
+          <p className="text-[12px] text-[#667066] leading-relaxed font-sans">Accountable infrastructure, delivery systems, and discovery programs for AI-enabled operations.</p>
         </div>
         {[
           { title: "Streams", links: [["Swell GEO", "#pricing"], ["ARM Mandate", "#pricing"], ["Arctura Network", "#pricing"], ["Academy", "#pricing"], ["Coreweaver", "#pricing"]] },
