@@ -6,6 +6,8 @@ export type HeadMeta = {
   canonicalPath?: string;
   noindex?: boolean;
   notFound?: boolean;
+  imagePath?: string;
+  imageAlt?: string;
 };
 
 export type SsrPrefetch = Record<string, never>;
@@ -25,6 +27,7 @@ export async function prefetchForPath(url: string, _queryClient: QueryClient, _p
     "/insights/operator-learning-path": { title: `Operator Learning Path Guide · ${SITE}`, description: "A guide for deciding whether education or implementation support is the right next step.", canonicalPath: "/insights/operator-learning-path" },
     "/insights/bounded-agent-stack-setup": { title: `Bounded Agent-Stack Setup Guide · ${SITE}`, description: "A practical guide to evaluating a scoped agent-stack or MCP-enabled implementation.", canonicalPath: "/insights/bounded-agent-stack-setup" },
     "/insights/ai-discovery-readiness": { title: `AI Discovery Readiness Guide · ${SITE}`, description: "A fact-checked guide to durable SEO and AI-discovery foundations without external-platform guarantees.", canonicalPath: "/insights/ai-discovery-readiness" },
+    "/insights/image-seo-fundamentals": { title: `Image SEO Fundamentals Guide · ${SITE}`, description: "A source-backed guide to accurate image metadata, accessible alt text, responsive formats, and visual discovery foundations.", canonicalPath: "/insights/image-seo-fundamentals", imagePath: "/manus-storage/arm-agency-image-seo-foundations_38f4a915.svg", imageAlt: "ARM Agency image SEO foundations diagram" },
   };
   if (insightMeta[clean]) return insightMeta[clean];
   if (clean === "/thank-you") return { title: `Thank you · ${SITE}`, description: "Purchase confirmation and next steps for ARM Agency customers.", noindex: true };

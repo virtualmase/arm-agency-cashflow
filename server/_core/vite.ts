@@ -43,6 +43,11 @@ function buildHeadTags(head: HeadMeta) {
     const escapedUrl = escapeHtml(canonicalUrl);
     tags.push(`<meta property="og:url" content="${escapedUrl}" />`, `<link rel="canonical" href="${escapedUrl}" />`);
   }
+  if (head.imagePath) {
+    const imageUrl = escapeHtml(head.imagePath.startsWith("http") ? head.imagePath : `${CANONICAL_ORIGIN}${head.imagePath}`);
+    const imageAlt = escapeHtml(head.imageAlt || title);
+    tags.push(`<meta property="og:image" content="${imageUrl}" />`, `<meta property="og:image:alt" content="${imageAlt}" />`, `<meta name="twitter:image" content="${imageUrl}" />`, `<meta name="twitter:image:alt" content="${imageAlt}" />`);
+  }
   if (head.noindex || head.notFound) tags.push(`<meta name="robots" content="noindex, follow" />`);
   return tags.join("\n");
 }

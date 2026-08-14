@@ -10,6 +10,7 @@ describe("public stream guides", () => {
       ["operator-learning-path", "Academy"],
       ["bounded-agent-stack-setup", "Coreweaver"],
       ["ai-discovery-readiness", "Cross-stream operating guide"],
+      ["image-seo-fundamentals", "Cross-stream operating guide"],
     ] as const;
 
     expected.forEach(([slug, stream]) => {
@@ -27,5 +28,14 @@ describe("public stream guides", () => {
     const guide = insights["ai-discovery-readiness"];
     expect(guide.sources).toHaveLength(3);
     guide.sources?.forEach((source) => expect(source.href).toMatch(/^https:\/\/developers\.google\.com\//));
+  });
+
+  it("discloses authoritative search and performance guidance for image SEO", () => {
+    const guide = insights["image-seo-fundamentals"];
+    expect(guide.sources).toHaveLength(3);
+    expect(guide.sources?.[0].href).toBe("https://developers.google.com/search/docs/appearance/google-images");
+    expect(guide.sources?.slice(1).every((source) => source.href.startsWith("https://web.dev/"))).toBe(true);
+    expect(guide.image).toMatchObject({ src: expect.stringMatching(/^\/manus-storage\//), width: 1200, height: 630 });
+    expect(guide.image?.alt).toContain("five image SEO foundations");
   });
 });

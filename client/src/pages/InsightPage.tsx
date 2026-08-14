@@ -12,6 +12,7 @@ type Insight = {
   cta: string;
   ctaHref: string;
   sources?: Array<{ label: string; href: string }>;
+  image?: { src: string; alt: string; width: number; height: number; caption: string };
 };
 
 export const insights: Record<string, Insight> = {
@@ -122,6 +123,36 @@ export const insights: Record<string, Insight> = {
       { label: "Google: Robots meta tags and indexing controls", href: "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag" },
     ],
   },
+  "image-seo-fundamentals": {
+    stream: "Cross-stream operating guide",
+    eyebrow: "Evidence guide · visual discovery",
+    title: "Image SEO fundamentals: meaningful visuals, accurate metadata, and fast delivery",
+    description: "A practical guide to image filenames, alt text, visual context, responsive delivery, and metadata for teams that want discoverability without turning accessibility into keyword stuffing.",
+    decision: "Use this guide when deciding whether an image improves a buyer’s understanding, accessibility, performance, or public discovery—and what should be true before it is published.",
+    sections: [
+      { title: "Start with an image that earns its place", body: "A visual should explain, evidence, orient, or support a decision on the page. Decorative imagery can be appropriate, but it should not be used as manufactured proof, a substitute for a clear offer, or a stock visual that implies a client outcome that did not occur." },
+      { title: "Name assets for people and systems", body: "Use concise, lowercase, hyphen-separated names that truthfully describe the visual, such as arm-agency-founder-professional-headshot.webp. Avoid generic camera names, revision clutter, keyword lists, or claims the image cannot substantiate. A filename is a light contextual clue, not a ranking mechanism." },
+      { title: "Write alt text for the context, not a keyword field", body: "Alt text should describe the meaningful visual content or function in its page context. A useful description supports people using screen readers and helps clarify the image subject. Decorative images should use empty alt text; keyword strings and redundant phrases create a worse experience." },
+      { title: "Ship the right image, not simply the newest format", body: "Choose the format, dimensions, compression, and responsive approach based on the placement and measured experience. WebP or AVIF can reduce bytes for suitable raster images; SVG is often a better fit for logos and line diagrams. Include intrinsic width and height, use an img fallback within picture patterns, and avoid serving oversized hero assets to small devices." },
+      { title: "Use image metadata only when it is representative", body: "A page may benefit from a preferred preview image through accurate Open Graph or structured metadata. The image must be relevant to the page and visible content. Metadata can inform a platform’s selection, but it does not guarantee an image preview, rich result, ranking, or AI citation." },
+    ],
+    checklist: ["The visual helps a buyer understand the page or is deliberately decorative.", "The filename is concise, factual, lowercase, and hyphen-separated.", "The alt text describes meaningful content or correctly uses an empty value for decoration.", "Dimensions, loading strategy, format, and compression match the placement.", "Any caption, metadata, and visible claims accurately represent the asset and page."],
+    deliverables: ["Image inventory and placement review", "Filename and alt-text standards", "Responsive-format and performance recommendations", "Preferred-image and structured-data accuracy review", "Future asset intake and quality-assurance workflow"],
+    cta: "Review image SEO readiness",
+    ctaHref: "/#contact",
+    image: {
+      src: "/manus-storage/arm-agency-image-seo-foundations_38f4a915.svg",
+      alt: "Diagram showing ARM Agency's five image SEO foundations: truthful visual, descriptive asset name, contextual alt text, appropriate delivery, and accurate metadata.",
+      width: 1200,
+      height: 630,
+      caption: "Image SEO Foundations — an original ARM Agency visual explaining the standards described in this guide.",
+    },
+    sources: [
+      { label: "Google: Image SEO best practices", href: "https://developers.google.com/search/docs/appearance/google-images" },
+      { label: "web.dev: Image performance", href: "https://web.dev/learn/performance/image-performance" },
+      { label: "web.dev: Use WebP images", href: "https://web.dev/articles/serve-images-webp" },
+    ],
+  },
 };
 
 export default function InsightPage() {
@@ -138,6 +169,7 @@ export default function InsightPage() {
       <div className="text-[10px] tracking-[0.2em] uppercase text-[#3ddc84] mb-5">{insight.eyebrow} · {insight.stream}</div>
       <h1 className="text-[clamp(2.35rem,6vw,4.6rem)] leading-[1.05] font-light tracking-tight text-[#eaf0ea] max-w-3xl">{insight.title}</h1>
       <p className="mt-7 text-[17px] leading-[1.9] text-[#c8cfc8] font-sans max-w-2xl">{insight.description}</p>
+      {insight.image ? <figure className="mt-10 border border-white/[0.08] bg-[#0d100d]"><img src={insight.image.src} alt={insight.image.alt} width={insight.image.width} height={insight.image.height} decoding="async" className="block w-full h-auto"/><figcaption className="px-4 py-3 text-[11px] leading-[1.7] text-[#8e988e] font-sans border-t border-white/[0.08]">{insight.image.caption}</figcaption></figure> : null}
       <div className="mt-10 p-6 bg-[#0d100d] border border-white/[0.07] border-l-2 border-l-[#e8a020]"><div className="text-[10px] tracking-[0.16em] uppercase text-[#e8a020] mb-3">The decision this supports</div><p className="text-[15px] leading-[1.85] text-[#eaf0ea] font-sans">{insight.decision}</p></div>
       <div className="mt-14 space-y-10">{insight.sections.map((section) => <section key={section.title}><h2 className="text-2xl font-light text-[#eaf0ea] mb-3">{section.title}</h2><p className="text-[15px] leading-[1.9] text-[#c8cfc8] font-sans">{section.body}</p></section>)}</div>
       <div className="mt-16 grid md:grid-cols-2 gap-6"><section className="p-6 bg-[#0d100d] border border-white/[0.07]"><h2 className="text-lg font-light text-[#eaf0ea] mb-4">Readiness questions</h2><ul className="space-y-3">{insight.checklist.map((item) => <li key={item} className="flex gap-3 text-[14px] leading-[1.7] font-sans"><span className="text-[#3ddc84]">→</span>{item}</li>)}</ul></section><section className="p-6 bg-[#0d100d] border border-white/[0.07]"><h2 className="text-lg font-light text-[#eaf0ea] mb-4">What a scoped next step can deliver</h2><ul className="space-y-3">{insight.deliverables.map((item) => <li key={item} className="flex gap-3 text-[14px] leading-[1.7] font-sans"><span className="text-[#e8a020]">→</span>{item}</li>)}</ul></section></div>

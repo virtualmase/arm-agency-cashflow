@@ -73,7 +73,12 @@
 - [x] Deepen client-facing delivery, onboarding, and service-quality assets through iterative review
 - [x] Add a concrete evidence-based pipeline-learning review and then complete the commercial account-planning and partnership workstream
 - [ ] Maintain an iterative five-stream authority-content and conversion optimization program
+- [x] Establish image SEO standards for filenames, formats, dimensions, alt text, captions, metadata, and visual evidence controls
+- [x] Audit current public image usage and document that semantic image metadata is deferred until an approved meaningful visual asset exists
+- [x] Create a reusable image SEO intake, review, and measurement workflow for all future authority content
+- [x] Add the first approved meaningful public visual asset with a descriptive filename, contextual alt text, dimensions, and accurate preview metadata
 - [x] Publish a source-backed AI-discovery readiness guide and claim-safety evidence brief
+- [x] Create the authority-content portfolio review ledger and quality stop conditions
 - [ ] Continuously improve data quality, operational software, security, observability, and reporting based on verified needs
 - [x] Explicitly validate protected-route authentication and the protected checkout-session path after HTTP security-header hardening
 - [x] Add response-level noindex protections for authenticated and operational HTML routes
