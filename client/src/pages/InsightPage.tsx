@@ -11,6 +11,7 @@ type Insight = {
   deliverables: string[];
   cta: string;
   ctaHref: string;
+  sources?: Array<{ label: string; href: string }>;
 };
 
 export const insights: Record<string, Insight> = {
@@ -99,6 +100,28 @@ export const insights: Record<string, Insight> = {
     cta: "Scope a bounded setup",
     ctaHref: "/#contact",
   },
+  "ai-discovery-readiness": {
+    stream: "Cross-stream operating guide",
+    eyebrow: "Evidence guide · AI discovery",
+    title: "AI discovery readiness: improve the foundation, not the hype",
+    description: "A fact-checked guide for teams that want to improve how their public information can be discovered without treating generative-search visibility as a guarantee.",
+    decision: "Use this guide when deciding whether to invest in GEO or AI-discovery work. The useful question is which content, technical, measurement, and governance foundations can be improved—not whether anyone can promise an external model or search result.",
+    sections: [
+      { title: "Start with helpful, original information", body: "Google’s generative-search guidance emphasizes useful, reliable, people-first content and clear technical structure. A durable program gives buyers accurate answers about the service, its boundaries, the decisions it supports, and the source material behind material claims." },
+      { title: "Treat structured data as accurate representation", body: "Structured data can support rich-result eligibility when it accurately represents visible page content. It should not be used to imply ratings, reviews, affiliations, or results that the page cannot substantiate, and it does not guarantee a search feature or generative-search inclusion." },
+      { title: "Do not confuse optional files with ranking controls", body: "Machine-readable resources can be useful for systems that choose to use them. Google states that LLMS.txt and similar files do not help or harm Google Search visibility, so they should be maintained for a clear operational reason rather than marketed as a ranking mechanism." },
+      { title: "Measure signals without inventing certainty", body: "Review crawlability, indexability, content quality, Search Console data when available, qualified conversations, and first-party conversion signals. Be cautious with tools or services that claim access to internal model or search metrics they cannot verify." },
+    ],
+    checklist: ["Public pages explain the actual offer, constraints, and next decision in language a buyer can use.", "Important pages are crawlable and have a clear canonical and indexing policy.", "Structured data reflects user-visible content and contains no fabricated reviews, ratings, or outcomes.", "Measurement distinguishes controllable site work from third-party search or model behavior."],
+    deliverables: ["Evidence-aware public-surface and content review", "Prioritized technical and content foundation plan", "Claim-safety and structured-data review", "A defined measurement cadence with documented limits"],
+    cta: "Review AI-discovery readiness",
+    ctaHref: "/#contact",
+    sources: [
+      { label: "Google: Optimizing your website for generative AI features", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" },
+      { label: "Google: General structured data guidelines", href: "https://developers.google.com/search/docs/appearance/structured-data/sd-policies" },
+      { label: "Google: Robots meta tags and indexing controls", href: "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag" },
+    ],
+  },
 };
 
 export default function InsightPage() {
@@ -119,6 +142,7 @@ export default function InsightPage() {
       <div className="mt-14 space-y-10">{insight.sections.map((section) => <section key={section.title}><h2 className="text-2xl font-light text-[#eaf0ea] mb-3">{section.title}</h2><p className="text-[15px] leading-[1.9] text-[#c8cfc8] font-sans">{section.body}</p></section>)}</div>
       <div className="mt-16 grid md:grid-cols-2 gap-6"><section className="p-6 bg-[#0d100d] border border-white/[0.07]"><h2 className="text-lg font-light text-[#eaf0ea] mb-4">Readiness questions</h2><ul className="space-y-3">{insight.checklist.map((item) => <li key={item} className="flex gap-3 text-[14px] leading-[1.7] font-sans"><span className="text-[#3ddc84]">→</span>{item}</li>)}</ul></section><section className="p-6 bg-[#0d100d] border border-white/[0.07]"><h2 className="text-lg font-light text-[#eaf0ea] mb-4">What a scoped next step can deliver</h2><ul className="space-y-3">{insight.deliverables.map((item) => <li key={item} className="flex gap-3 text-[14px] leading-[1.7] font-sans"><span className="text-[#e8a020]">→</span>{item}</li>)}</ul></section></div>
       <section className="mt-16 p-8 bg-[#111411] border border-[#1a7040] text-center"><div className="text-[10px] tracking-[0.18em] uppercase text-[#3ddc84] mb-3">A bounded next step</div><h2 className="text-2xl font-light text-[#eaf0ea] mb-3">Need help applying this to your operating context?</h2><p className="text-[14px] leading-[1.8] text-[#c8cfc8] max-w-xl mx-auto font-sans mb-6">We begin by clarifying the decision, scope, ownership, and constraints. The appropriate next step may be a diagnostic, a workshop, a bounded implementation, or a respectful no-go decision.</p><a href={insight.ctaHref} className="inline-block px-6 py-3 bg-[#e8a020] text-[#080a08] text-[11px] font-medium tracking-[0.13em] uppercase no-underline hover:opacity-85">{insight.cta} →</a></section>
+      {insight.sources?.length ? <section className="mt-10 border-t border-white/[0.07] pt-7"><h2 className="text-[11px] tracking-[0.14em] uppercase text-[#667066] mb-4">Sources</h2><ul className="space-y-2">{insight.sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer" className="text-[12px] text-[#e8a020] hover:underline">{source.label} ↗</a></li>)}</ul></section> : null}
     </article>
   </main>;
 }

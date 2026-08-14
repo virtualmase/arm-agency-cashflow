@@ -75,6 +75,7 @@ export async function setupVite(app: Express, server: Server) {
       const { render } = await vite.ssrLoadModule("/src/entry-server.tsx");
       const prefetch = await buildSsrPrefetch(req, res);
       const result = await render(req.originalUrl, prefetch);
+      if (result.head.noindex || result.head.notFound) res.set("X-Robots-Tag", "noindex, follow");
       res.status(result.head.notFound ? 404 : 200).set("Cache-Control", "no-cache").type("html").end(
         composeHtml(template, result.html, result.head, result.dehydratedState)
       );
@@ -106,6 +107,7 @@ export function serveStatic(app: Express) {
       const { render } = await import(serverEntryPath);
       const prefetch = await buildSsrPrefetch(req, res);
       const result = await render(req.originalUrl, prefetch);
+      if (result.head.noindex || result.head.notFound) res.set("X-Robots-Tag", "noindex, follow");
       res.status(result.head.notFound ? 404 : 200).set("Cache-Control", "no-cache").type("html").end(
         composeHtml(template, result.html, result.head, result.dehydratedState)
       );

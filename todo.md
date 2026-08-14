@@ -52,6 +52,7 @@
 - [x] Validate critical customer and owner flows, run automated tests and type checks, then checkpoint the production-ready release
 - [ ] Restore public availability for the primary custom domain before any paid acquisition or SEO launch
 - [ ] After August 24, verify `arm-agency.xyz` serves the live site, confirm canonical routing and Stripe return URLs, then clear the launch hold
+- [x] Add a reusable technical launch-verification script for primary-domain, public-route, private-route, canonical, and security-header checks
 - [x] Audit the complete client lifecycle for missing pre-sale, delivery, renewal, and referral assets
 - [x] Create productized delivery playbooks and client-facing scopes for the highest-priority offers
 - [x] Build sales enablement assets: qualification rubric, discovery script, proposal/SOW outline, and objection handling
@@ -68,6 +69,15 @@
 - [x] Implement reconciliation-exception tracking and recurring security-review reminders from the operating runbook
 - [x] Add an owner-only operating decision log with a signal, decision, owner, due date, and review status
 - [x] Document backend decision workflows, security-review cadence, observability boundaries, and reconciliation routines
+- [x] Establish long-term quality gates, portfolio governance, and a continuously prioritized improvement backlog
+- [x] Deepen client-facing delivery, onboarding, and service-quality assets through iterative review
+- [x] Add a concrete evidence-based pipeline-learning review and then complete the commercial account-planning and partnership workstream
+- [ ] Maintain an iterative five-stream authority-content and conversion optimization program
+- [x] Publish a source-backed AI-discovery readiness guide and claim-safety evidence brief
+- [ ] Continuously improve data quality, operational software, security, observability, and reporting based on verified needs
+- [x] Explicitly validate protected-route authentication and the protected checkout-session path after HTTP security-header hardening
+- [x] Add response-level noindex protections for authenticated and operational HTML routes
+- [x] Establish the current customer-health, retention, referral, capacity, and employee-sustainability improvement loop
 - [x] Persist first-party funnel events and expose admin-only event summaries
 - [x] Replace mock revenue visuals with completed-purchase weekly cohorts
 - [x] Add an admin-only completed-revenue breakdown by product stream

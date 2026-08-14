@@ -9,6 +9,7 @@ describe("public stream guides", () => {
       ["network-participation", "Arctura Network"],
       ["operator-learning-path", "Academy"],
       ["bounded-agent-stack-setup", "Coreweaver"],
+      ["ai-discovery-readiness", "Cross-stream operating guide"],
     ] as const;
 
     expected.forEach(([slug, stream]) => {
@@ -20,5 +21,11 @@ describe("public stream guides", () => {
       expect(guide.deliverables.length).toBeGreaterThanOrEqual(3);
       expect(guide.ctaHref).toMatch(/^\//);
     });
+  });
+
+  it("discloses authoritative source links for the evidence-backed AI-discovery guide", () => {
+    const guide = insights["ai-discovery-readiness"];
+    expect(guide.sources).toHaveLength(3);
+    guide.sources?.forEach((source) => expect(source.href).toMatch(/^https:\/\/developers\.google\.com\//));
   });
 });
