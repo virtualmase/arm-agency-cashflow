@@ -82,6 +82,7 @@
 - [x] Publish a source-backed AI-discovery readiness guide and claim-safety evidence brief
 - [x] Create the authority-content portfolio review ledger and quality stop conditions
 - [ ] Continuously improve data quality, operational software, security, observability, and reporting based on verified needs
+- [x] Replace unsupported static employee-satisfaction status indicators with clearly sourced feedback-based metrics or empty states
 - [x] Remediate unsupported public capability, performance, uptime, and third-party-discovery claims found in the landing-page offer copy
 - [x] Complete production JavaScript chunking and cacheability improvements without changing server-rendered public content or private-route protections
 - [x] Revalidate protected portal and admin routes after the client-bundle changes

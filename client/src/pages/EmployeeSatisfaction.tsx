@@ -39,7 +39,7 @@ export default function EmployeeSatisfaction() {
           Employee Satisfaction <div className="flex-1 max-w-[60px] h-px bg-[#1a7040]" />
         </div>
         <h1 className="text-3xl font-light text-[#eaf0ea] tracking-tight mb-2">Team Health & Wellbeing</h1>
-        <p className="text-[14px] text-[#667066] mb-8 font-sans">Your feedback drives our operational improvements. All submissions are tracked and reviewed weekly.</p>
+        <p className="text-[14px] text-[#667066] mb-8 font-sans">Use this space to share satisfaction, workload, and operational concerns. Feedback is retained for internal review; only authorized owners can view team-level aggregates.</p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <FeedbackForm userId={user.id} userName={user.name} />
@@ -116,33 +116,48 @@ function FeedbackForm({ userId, userName }: { userId: number; userName: string |
 }
 
 function HealthKPIs({ isAdmin }: { isAdmin: boolean }) {
+  const { data: feedbackList, isLoading } = trpc.feedback.list.useQuery(undefined, { enabled: isAdmin });
+  const { data: averageSatisfaction } = trpc.feedback.averageSatisfaction.useQuery(undefined, { enabled: isAdmin });
+
+  if (!isAdmin) {
+    return (
+      <div className="p-8 bg-[#0d100d] border border-white/[0.07]">
+        <div className="text-[10px] tracking-[0.15em] uppercase text-[#e8a020] mb-1">Feedback Process</div>
+        <div className="text-lg font-light text-[#eaf0ea] mb-6">What happens after you submit</div>
+        <div className="space-y-4 text-[13px] leading-[1.8] text-[#c8cfc8] font-sans">
+          <p>Your submission records your satisfaction, workload, and optional context for authorized internal review.</p>
+          <p>Team-level aggregates and individual comments are not presented as live system telemetry. If a concern needs an immediate response, use the appropriate internal escalation channel in addition to this form.</p>
+          <p className="text-[#667066]">No operational-status or wellbeing conclusion is shown here without supporting feedback data.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const entries = feedbackList || [];
+  const workloadEntries = entries.filter((feedback) => typeof feedback.workload === "number").length;
+  const mostRecent = entries[0]?.createdAt ? new Date(entries[0].createdAt).toLocaleDateString() : "No feedback yet";
   const kpis = [
-    { label: "Agent Uptime", value: "99.99%", status: "healthy", color: "#3ddc84" },
-    { label: "BFT Consensus", value: "Maintained", status: "healthy", color: "#3ddc84" },
-    { label: "Active Streams", value: "5/5", status: "healthy", color: "#3ddc84" },
-    { label: "Mandate Chains", value: "Verified", status: "healthy", color: "#3ddc84" },
-    { label: "Truth Ledger", value: "Synced", status: "healthy", color: "#3ddc84" },
-    { label: "Carbon Budget", value: "72% Used", status: "warning", color: "#e8a020" },
+    { label: "Feedback entries", value: isLoading ? "Loading…" : String(entries.length) },
+    { label: "Average satisfaction", value: isLoading ? "Loading…" : averageSatisfaction == null ? "No data" : `${Number(averageSatisfaction).toFixed(1)} / 5` },
+    { label: "Workload ratings", value: isLoading ? "Loading…" : String(workloadEntries) },
+    { label: "Most recent entry", value: isLoading ? "Loading…" : mostRecent },
   ];
 
   return (
     <div className="p-8 bg-[#0d100d] border border-white/[0.07]">
-      <div className="text-[10px] tracking-[0.15em] uppercase text-[#e8a020] mb-1">System Health</div>
-      <div className="text-lg font-light text-[#eaf0ea] mb-6">Agent & Infrastructure KPIs</div>
+      <div className="text-[10px] tracking-[0.15em] uppercase text-[#e8a020] mb-1">Feedback Review Signals</div>
+      <div className="text-lg font-light text-[#eaf0ea] mb-6">Owner-only aggregate view</div>
       <div className="space-y-4">
         {kpis.map(kpi => (
-          <div key={kpi.label} className="flex items-center justify-between py-3 border-b border-white/[0.05]">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full" style={{ background: kpi.color, boxShadow: `0 0 6px ${kpi.color}` }} />
-              <span className="text-[13px] text-[#c8cfc8]">{kpi.label}</span>
-            </div>
-            <span className="text-[13px] font-medium" style={{ color: kpi.color }}>{kpi.value}</span>
+          <div key={kpi.label} className="flex items-center justify-between py-3 border-b border-white/[0.05] gap-4">
+            <span className="text-[13px] text-[#c8cfc8]">{kpi.label}</span>
+            <span className="text-[13px] font-medium text-[#3ddc84] text-right">{kpi.value}</span>
           </div>
         ))}
       </div>
       <div className="mt-6 p-4 bg-[#0b1210] border border-white/[0.05]">
-        <div className="text-[10px] tracking-[0.12em] uppercase text-[#667066] mb-2">System Status</div>
-        <div className="text-[13px] text-[#3ddc84]">All systems operational. No anomalies detected in the last 30 days.</div>
+        <div className="text-[10px] tracking-[0.12em] uppercase text-[#667066] mb-2">Interpretation boundary</div>
+        <div className="text-[13px] text-[#c8cfc8] leading-[1.7] font-sans">These values describe submitted feedback only. They do not establish a wellbeing, workload, or operational conclusion without owner review and context.</div>
       </div>
     </div>
   );
