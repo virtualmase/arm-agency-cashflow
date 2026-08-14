@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import { stripe } from "./stripe";
-import { createFunnelEvent, getCompletedPurchasesSince, getFunnelEventCounts, getUserPurchases } from "./db";
+import { createFunnelEvent, createOperatingDecision, getCompletedPurchasesSince, getFunnelEventCounts, getOperatingDecisions, getPendingPurchaseExceptionCount, getUserPurchases, updateOperatingDecisionStatus } from "./db";
 import { COOKIE_NAME } from "../shared/const";
 import type { TrpcContext } from "./_core/context";
 
@@ -21,6 +21,7 @@ vi.mock("./db", () => ({
   createPurchase: vi.fn().mockResolvedValue(1),
   getPurchases: vi.fn().mockResolvedValue([]),
   getRevenueTotal: vi.fn().mockResolvedValue(250000),
+  getPendingPurchaseExceptionCount: vi.fn().mockResolvedValue(0),
   updatePurchaseStatus: vi.fn().mockResolvedValue(undefined),
   createFeedback: vi.fn().mockResolvedValue(undefined),
   getFeedbackList: vi.fn().mockResolvedValue([]),
@@ -31,6 +32,9 @@ vi.mock("./db", () => ({
   createFunnelEvent: vi.fn().mockResolvedValue(undefined),
   getCompletedPurchasesSince: vi.fn().mockResolvedValue([]),
   getFunnelEventCounts: vi.fn().mockResolvedValue([]),
+  createOperatingDecision: vi.fn().mockResolvedValue(1),
+  getOperatingDecisions: vi.fn().mockResolvedValue([]),
+  updateOperatingDecisionStatus: vi.fn().mockResolvedValue(undefined),
   getUserPurchases: vi.fn().mockResolvedValue([
     { id: 1, email: "test@example.com", name: "Test User", packageName: "GEO Mastery Course", amount: 29700, stripePaymentIntentId: "pi_test", stripeSessionId: "cs_test", status: "completed", createdAt: new Date() },
   ]),
@@ -207,6 +211,7 @@ describe("admin.stats", () => {
     const caller = appRouter.createCaller(ctx);
     const stats = await caller.admin.stats();
     expect(stats).toHaveProperty("revenue");
+    expect(stats).toHaveProperty("pendingPurchaseExceptions");
     expect(stats).toHaveProperty("subscribers");
     expect(stats).toHaveProperty("leadCount");
     expect(stats).toHaveProperty("newsletterCount");
@@ -405,5 +410,39 @@ describe("growth instrumentation", () => {
     expect(overview.weeklyRevenue).toHaveLength(8);
     expect(overview.revenueByStream).toEqual([{ stream: "arm", revenue: 250000 }]);
     expect(overview.funnel).toMatchObject({ pageViews: 12, leads: 2, checkoutsCompleted: 1 });
+  });
+});
+
+describe("owner operating decisions", () => {
+  const entry = {
+    signal: "Checkout abandonment increased",
+    evidence: "Owner dashboard shows more checkout_started than checkout_completed.",
+    decision: "Review payment flow and CTA-message fit before increasing traffic.",
+    owner: "Growth owner",
+    dueDate: "2026-08-20T12:00:00.000Z",
+  };
+
+  it("keeps decision-log access restricted to admins", async () => {
+    const caller = appRouter.createCaller(createAuthContext("user"));
+    await expect(caller.admin.operatingDecisions()).rejects.toThrow();
+    await expect(caller.admin.createOperatingDecision(entry)).rejects.toThrow();
+  });
+
+  it("allows an admin to create a decision and update its review status", async () => {
+    const caller = appRouter.createCaller(createAuthContext("admin"));
+    await expect(caller.admin.createOperatingDecision(entry)).resolves.toEqual({ success: true, id: 1 });
+    expect(createOperatingDecision).toHaveBeenCalledWith(expect.objectContaining({ signal: entry.signal, status: "open" }));
+    await expect(caller.admin.updateOperatingDecisionStatus({ id: 1, status: "completed" })).resolves.toEqual({ success: true });
+    expect(updateOperatingDecisionStatus).toHaveBeenCalledWith(1, "completed");
+  });
+
+  it("returns decision records to the admin owner", async () => {
+    vi.mocked(getOperatingDecisions).mockResolvedValueOnce([
+      { id: 1, signal: entry.signal, evidence: entry.evidence, decision: entry.decision, owner: entry.owner, dueDate: new Date(entry.dueDate), status: "open", createdAt: new Date(), updatedAt: new Date() },
+    ] as any);
+    const caller = appRouter.createCaller(createAuthContext("admin"));
+    const decisions = await caller.admin.operatingDecisions();
+    expect(decisions).toHaveLength(1);
+    expect(decisions[0].status).toBe("open");
   });
 });

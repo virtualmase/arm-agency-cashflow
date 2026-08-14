@@ -51,6 +51,23 @@
 - [x] Add revenue-funnel instrumentation and an owner dashboard for acquisition, conversion, retention, and customer-health signals
 - [x] Validate critical customer and owner flows, run automated tests and type checks, then checkpoint the production-ready release
 - [ ] Restore public availability for the primary custom domain before any paid acquisition or SEO launch
+- [ ] After August 24, verify `arm-agency.xyz` serves the live site, confirm canonical routing and Stripe return URLs, then clear the launch hold
+- [x] Audit the complete client lifecycle for missing pre-sale, delivery, renewal, and referral assets
+- [x] Create productized delivery playbooks and client-facing scopes for the highest-priority offers
+- [x] Build sales enablement assets: qualification rubric, discovery script, proposal/SOW outline, and objection handling
+- [x] Build an evidence-safe content and distribution backlog tied to the five revenue streams
+- [x] Define owner and employee operating cadences, handoffs, service-quality controls, and customer-health reviews
+- [x] Produce an August 24 launch-activation runbook for domain, checkout, content, analytics, and customer support
+- [x] Establish production-grade agency operating standards, lifecycle gaps, ownership, and scorecards
+- [x] Productize AI Infrastructure Audit with scope, intake, workplan, findings, executive readout, and acceptance criteria
+- [x] Productize Mandate Chain Design Workshop with pre-work, facilitation agenda, decision log, and output template
+- [x] Productize Custom MCP Tool delivery with specification, test plan, handoff, and support boundaries
+- [x] Build a consistent sales qualification, discovery, proposal, and statement-of-work system
+- [x] Create five-stream evidence-safe authority content assets and publish linked conversion pages for each stream
+- [x] Define client onboarding, delivery governance, renewal, referral, and employee-sustainability operating controls
+- [x] Implement reconciliation-exception tracking and recurring security-review reminders from the operating runbook
+- [x] Add an owner-only operating decision log with a signal, decision, owner, due date, and review status
+- [x] Document backend decision workflows, security-review cadence, observability boundaries, and reconciliation routines
 - [x] Persist first-party funnel events and expose admin-only event summaries
 - [x] Replace mock revenue visuals with completed-purchase weekly cohorts
 - [x] Add an admin-only completed-revenue breakdown by product stream

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getPendingEmails, markEmailSent, getRevenueTotal, getSubscriberCount, getLeadCount, getNewsletterCount, getCompletedPurchasesSince, getFunnelEventCounts } from "./db";
+import { getPendingEmails, markEmailSent, getRevenueTotal, getPendingPurchaseExceptionCount, getSubscriberCount, getLeadCount, getNewsletterCount, getCompletedPurchasesSince, getFunnelEventCounts } from "./db";
 import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
 
@@ -44,8 +44,9 @@ scheduledRouter.post("/api/scheduled/email-sequences", async (req, res) => {
 scheduledRouter.post("/api/scheduled/weekly-report", async (req, res) => {
   try {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const [revenue, subscribers, leadCount, newsletterCount, weeklyPurchases, funnelEvents] = await Promise.all([
+    const [revenue, pendingPurchaseExceptions, subscribers, leadCount, newsletterCount, weeklyPurchases, funnelEvents] = await Promise.all([
       getRevenueTotal(),
+      getPendingPurchaseExceptionCount(),
       getSubscriberCount(),
       getLeadCount(),
       getNewsletterCount(),
@@ -69,10 +70,12 @@ scheduledRouter.post("/api/scheduled/weekly-report", async (req, res) => {
       `Total Revenue: $${(revenue / 100).toLocaleString()}`,
       `Completed Purchase Revenue (7d): $${(weeklyRevenue / 100).toLocaleString()}`,
       `Revenue by Stream (7d): ${streamSummary}`,
+      `Payment Reconciliation Exceptions: ${pendingPurchaseExceptions} pending purchase record(s) older than 24 hours`,
       `Pro Subscribers: ${subscribers}`,
       `Total Leads: ${leadCount}`,
       `Newsletter Subscribers: ${newsletterCount}`,
       `Funnel Signals (7d): ${eventCounts.page_view || 0} views · ${eventCounts.cta_click || 0} CTA clicks · ${eventCounts.lead_submitted || 0} leads · ${eventCounts.checkout_started || 0} checkouts · ${eventCounts.checkout_completed || 0} confirmed payments · ${eventCounts.portal_viewed || 0} portal views`,
+      `Security Review Prompt: Confirm recent admin-role changes, portal authorization changes, and Stripe webhook delivery exceptions have been reviewed.`,
       `─────────────────────────────`,
       `Report generated: ${new Date().toISOString()}`,
     ].join("\n");

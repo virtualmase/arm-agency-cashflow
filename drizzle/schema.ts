@@ -74,6 +74,21 @@ export const funnelEvents = mysqlTable("funnelEvents", {
 export type FunnelEvent = typeof funnelEvents.$inferSelect;
 export type InsertFunnelEvent = typeof funnelEvents.$inferInsert;
 
+export const operatingDecisions = mysqlTable("operatingDecisions", {
+  id: int("id").autoincrement().primaryKey(),
+  signal: varchar("signal", { length: 256 }).notNull(),
+  evidence: text("evidence"),
+  decision: text("decision").notNull(),
+  owner: varchar("owner", { length: 128 }).notNull(),
+  dueDate: timestamp("dueDate"),
+  status: mysqlEnum("status", ["open", "completed", "deferred"]).default("open").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type OperatingDecision = typeof operatingDecisions.$inferSelect;
+export type InsertOperatingDecision = typeof operatingDecisions.$inferInsert;
+
 export const emailSequences = mysqlTable("emailSequences", {
   id: int("id").autoincrement().primaryKey(),
   leadId: int("leadId").notNull(),

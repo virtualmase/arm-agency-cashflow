@@ -43,6 +43,7 @@ function Nav({ user }: { user: any }) {
       <div className="flex items-center gap-6">
         <a href="#capabilities" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Capabilities</a>
         <a href="#pricing" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Pricing</a>
+        <Link href="/insights/ai-infrastructure-audit" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Guides</Link>
         <a href="#contact" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Contact</a>
         {user && (
           <Link href="/portal" className="text-[12px] tracking-[0.08em] uppercase text-[#e8a020] hover:text-[#e8a020]/80 transition-colors no-underline hidden md:inline">My Portal</Link>
@@ -174,21 +175,21 @@ function PricingSection() {
       <p className="text-[15px] font-light text-[#c8cfc8] max-w-[620px] leading-[1.9] mb-4 font-sans">Choose a bounded starting point, a self-serve learning product, or a qualified operating engagement. Every offer names its delivery motion and checkout path.</p>
       <div className="inline-block text-[10px] tracking-[0.15em] uppercase text-[#3ddc84] border border-[#1a7040] px-3 py-1 mb-12">Stripe Checkout · Buyer Receipt · Customer Portal</div>
 
-      <StreamBlock label="Stream 01 · Swell Marketing" title="GEO Retainers" desc="Done-for-you Generative Engine Optimization. We build your entity signal, publish authority content, and monitor your LLM citations every month." color="signal"
+      <StreamBlock label="Stream 01 · Swell Marketing" title="GEO Retainers" desc="Done-for-you Generative Engine Optimization. We build your entity signal, publish authority content, and monitor your LLM citations every month." color="signal" insightSlug="geo-readiness"
         cards={[
           { key: "swell-geo-starter", tier: "Starter", name: "GEO Starter", tagline: "Foundation signal architecture", price: "$1,500", period: "/month", features: ["4 authority articles/month", "JSON-LD entity audit + build", "Monthly LLM citation report", "Share of Model baseline", "llms.txt deployment"], cta: "Start Starter" },
           { key: "swell-geo-growth", tier: "Growth", name: "GEO Growth", tagline: "Full signal governance", price: "$2,500", period: "/month", features: ["8 authority articles/month", "JSON-LD build + maintenance", "Weekly LLM citation monitoring", "Monthly strategy call", "sameAs authority expansion", "Arctura Network distribution"], cta: "Start Growth", featured: true },
           { key: "swell-geo-scale", tier: "Scale", name: "GEO Scale", tagline: "Maximum signal velocity", price: "$3,500", period: "/month", features: ["12 authority articles/month", "Full GEO Signal Governance", "Weekly reporting dashboard", "Bi-weekly strategy calls", "Priority support + SLA", "ARM Framework initialization"], cta: "Start Scale" },
         ]} />
 
-      <StreamBlock label="Stream 02 · ARM" title="Mandate Services" desc="Sovereign agentic infrastructure consulting. ARM designs, deploys, and governs AI agent stacks for businesses that need human-accountable autonomous systems." color="amber"
+      <StreamBlock label="Stream 02 · ARM" title="Mandate Services" desc="Sovereign agentic infrastructure consulting. ARM designs, deploys, and governs AI agent stacks for businesses that need human-accountable autonomous systems." color="amber" insightSlug="ai-infrastructure-audit"
         cards={[
           { key: "arm-mandate-core", tier: "Core", name: "ARM Core", tagline: "Mandate chain + agent deployment", price: "$3,000", period: "/month", features: ["Mandate chain design", "GEO entity graph build", "1 AURE agent deployment", "Truth Ledger setup", "Monthly audit report"], cta: "Start Core" },
           { key: "arm-mandate-pro", tier: "Pro", name: "ARM Pro", tagline: "Full ARM stack + weekly briefings", price: "$5,000", period: "/month", features: ["Full ARM stack deployment", "3 AURE agents configured", "Weekly briefings from Aureus", "Quarterly strategy sessions", "Checkpoint recovery system", "Graceful escalation protocols"], cta: "Start Pro", featured: true },
           { key: "arm-mandate-sovereign", tier: "Sovereign", name: "ARM Sovereign", tagline: "Enterprise-grade agent governance", price: "$8,000", period: "/month", features: ["Full agent swarm deployment", "Custom mandate chain design", "Dedicated Aureus operator time", "SLA guarantees + uptime", "Immutable audit trail", "Enterprise governance layer"], cta: "Start Sovereign" },
         ]} />
 
-      <StreamBlock label="Stream 03 · Arctura" title="Network Memberships" desc="Join the Arctura Collective — a sovereign network of humans, agents, and infrastructure operating as a unified signal network." color="violet"
+      <StreamBlock label="Stream 03 · Arctura" title="Network Memberships" desc="Join the Arctura Collective — a sovereign network of humans, agents, and infrastructure operating as a unified signal network." color="violet" insightSlug="network-participation"
         cards={[
           { key: "arctura-node", tier: "Node", name: "Node Member", tagline: "Signal network access", price: "$500", period: "/month", features: ["Arctura signal network access", "ARM Framework license", "Weekly Signal Report", "Community access"], cta: "Join as Node" },
           { key: "arctura-hub", tier: "Hub", name: "Hub Member", tagline: "Co-creation + revenue share", price: "$1,000", period: "/month", features: ["Full ARM Framework license", "Co-creation rights", "Referral revenue share", "Monthly council call", "Priority network routing"], cta: "Join as Hub", featured: true },
@@ -200,13 +201,14 @@ function PricingSection() {
 
 type CardProps = { key: string; tier: string; name: string; tagline: string; price: string; period: string; features: string[]; cta: string; featured?: boolean };
 
-function StreamBlock({ label, title, desc, color, cards }: { label: string; title: string; desc: string; color: string; cards: CardProps[] }) {
+function StreamBlock({ label, title, desc, color, cards, insightSlug }: { label: string; title: string; desc: string; color: string; cards: CardProps[]; insightSlug: string }) {
   const c = streamColors[color] || streamColors.signal;
   return (
     <div className="mb-16">
       <div className="text-[10px] tracking-[0.2em] uppercase mb-2" style={{ color: c.dim }}>{label}</div>
       <h3 className="text-[clamp(1.5rem,3vw,2.5rem)] font-light tracking-tight mb-2" style={{ color: c.accent }}>{title}</h3>
       <p className="text-[14px] text-[#667066] max-w-[560px] mb-8 font-sans">{desc}</p>
+      <Link href={`/insights/${insightSlug}`} className="inline-block -mt-4 mb-6 text-[10px] tracking-[0.14em] uppercase no-underline border-b pb-1" style={{ color: c.accent, borderColor: c.dim }}>Read the operating guide →</Link>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {cards.map(card => <PricingCard {...card} productKey={card.key} color={color} key={card.key} />)}
       </div>
@@ -276,6 +278,7 @@ function QuickStartPackages() {
       <div className="text-[10px] tracking-[0.2em] uppercase text-[#667066] mb-2">Quick-Start · Academy · Infrastructure</div>
       <h2 className="text-[clamp(1.5rem,3vw,2.5rem)] font-light text-[#eaf0ea] tracking-tight mb-2">One-Time Packages</h2>
       <p className="text-[14px] text-[#667066] max-w-[560px] mb-10 font-sans">Quick-start service packages, education products, and infrastructure setup fees. Pay once, own it forever.</p>
+      <div className="flex flex-wrap gap-5 -mt-5 mb-8"><Link href="/insights/operator-learning-path" className="text-[10px] tracking-[0.14em] uppercase text-[#3ddc84] no-underline border-b border-[#1a7040] pb-1">Read the Academy guide →</Link><Link href="/insights/bounded-agent-stack-setup" className="text-[10px] tracking-[0.14em] uppercase text-[#e8a020] no-underline border-b border-[#a06010] pb-1">Read the implementation guide →</Link></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {packages.map(pkg => {
           const c = streamColors[pkg.color];

@@ -8,11 +8,12 @@ import { stripe, ALL_PRODUCTS, getProductByKey } from "./stripe";
 import {
   createLead, getLeads, updateLeadStatus, getLeadCount,
   subscribeNewsletter, getNewsletterCount,
-  createPurchase, getPurchases, getRevenueTotal, getCompletedPurchasesSince,
+  createPurchase, getPurchases, getRevenueTotal, getPendingPurchaseExceptionCount, getCompletedPurchasesSince,
   createFeedback, getFeedbackList, getAverageSatisfaction,
   getSubscriberCount, getUserCount,
   createEmailSequence,
   getUserPurchases, updateUserStripeCustomerId, createFunnelEvent, getFunnelEventCounts,
+  createOperatingDecision, getOperatingDecisions, updateOperatingDecisionStatus,
 } from "./db";
 import type Stripe from "stripe";
 
@@ -326,12 +327,37 @@ export const appRouter = router({
 
   admin: router({
     stats: adminProcedure.query(async () => {
-      const [revenue, subscribers, leadCount, newsletterCount, userCount, avgSatisfaction] = await Promise.all([
-        getRevenueTotal(), getSubscriberCount(), getLeadCount(), getNewsletterCount(), getUserCount(), getAverageSatisfaction(),
+      const [revenue, pendingPurchaseExceptions, subscribers, leadCount, newsletterCount, userCount, avgSatisfaction] = await Promise.all([
+        getRevenueTotal(), getPendingPurchaseExceptionCount(), getSubscriberCount(), getLeadCount(), getNewsletterCount(), getUserCount(), getAverageSatisfaction(),
       ]);
-      return { revenue, subscribers, leadCount, newsletterCount, userCount, avgSatisfaction };
+      return { revenue, pendingPurchaseExceptions, subscribers, leadCount, newsletterCount, userCount, avgSatisfaction };
     }),
     purchases: adminProcedure.query(async () => getPurchases()),
+    operatingDecisions: adminProcedure.query(async () => getOperatingDecisions()),
+    createOperatingDecision: adminProcedure.input(z.object({
+      signal: z.string().min(3).max(256),
+      evidence: z.string().max(5000).optional(),
+      decision: z.string().min(3).max(5000),
+      owner: z.string().min(2).max(128),
+      dueDate: z.string().datetime().optional(),
+    })).mutation(async ({ input }) => {
+      const id = await createOperatingDecision({
+        signal: input.signal,
+        evidence: input.evidence || null,
+        decision: input.decision,
+        owner: input.owner,
+        dueDate: input.dueDate ? new Date(input.dueDate) : null,
+        status: "open",
+      });
+      return { success: true, id };
+    }),
+    updateOperatingDecisionStatus: adminProcedure.input(z.object({
+      id: z.number(),
+      status: z.enum(["open", "completed", "deferred"]),
+    })).mutation(async ({ input }) => {
+      await updateOperatingDecisionStatus(input.id, input.status);
+      return { success: true };
+    }),
     growthOverview: adminProcedure.query(async () => {
       const now = new Date();
       const eightWeeksAgo = new Date(now.getTime() - 56 * 24 * 60 * 60 * 1000);

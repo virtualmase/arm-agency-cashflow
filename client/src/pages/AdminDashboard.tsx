@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
@@ -27,6 +28,7 @@ export default function AdminDashboard() {
           <RevenueByStream />
         </div>
         <div className="mt-8"><SatisfactionChart /></div>
+        <OperatingDecisionLog />
         <LeadsCRM />
         <PurchasesTable />
       </div>
@@ -53,10 +55,11 @@ function DashboardNav() {
 
 function StatsGrid() {
   const { data: stats, isLoading } = trpc.admin.stats.useQuery();
-  if (isLoading || !stats) return <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">{Array(6).fill(0).map((_, i) => <div key={i} className="p-6 bg-[#0d100d] border border-white/[0.07] animate-pulse h-24" />)}</div>;
+  if (isLoading || !stats) return <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">{Array(7).fill(0).map((_, i) => <div key={i} className="p-6 bg-[#0d100d] border border-white/[0.07] animate-pulse h-24" />)}</div>;
 
   const items = [
     { label: "Recorded Purchase Revenue", value: `$${(stats.revenue / 100).toLocaleString()}`, color: "#3ddc84" },
+    { label: "Pending Reconciliation", value: stats.pendingPurchaseExceptions.toString(), color: stats.pendingPurchaseExceptions > 0 ? "#ff4444" : "#3ddc84" },
     { label: "Users on Pro Plan", value: stats.subscribers.toString(), color: "#e8a020" },
     { label: "Total Leads", value: stats.leadCount.toString(), color: "#e8a020" },
     { label: "Newsletter Subs", value: stats.newsletterCount.toString(), color: "#3ddc84" },
@@ -65,7 +68,7 @@ function StatsGrid() {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
       {items.map(item => (
         <div key={item.label} className="p-6 bg-[#0d100d] border border-white/[0.07]">
           <div className="text-2xl font-semibold tracking-tight" style={{ color: item.color }}>{item.value}</div>
@@ -131,6 +134,38 @@ function FunnelOverview() {
   return <section className="mt-8 p-6 bg-[#0d100d] border border-white/[0.07]">
     <div className="flex items-baseline justify-between gap-4 mb-5"><div><div className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1">First-Party Funnel Signals</div><div className="text-lg font-light text-[#eaf0ea]">Last 30 days</div></div><div className="text-[10px] text-[#667066] max-w-[310px] text-right">Minimal event counts only. No cross-site tracking or customer PII is stored in this event log.</div></div>
     {isLoading ? <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">{Array.from({ length: 6 }, (_, i) => <div key={i} className="h-20 animate-pulse bg-[#111411]" />)}</div> : <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">{items.map((item) => <div key={item.key} className="p-4 bg-[#0b1210] border border-white/[0.05]"><div className="text-2xl font-semibold" style={{ color: item.color }}>{overview?.funnel[item.key] || 0}</div><div className="mt-1 text-[9px] tracking-[0.11em] uppercase text-[#667066]">{item.label}</div></div>)}</div>}
+  </section>;
+}
+
+function OperatingDecisionLog() {
+  const utils = trpc.useUtils();
+  const { data: decisions, isLoading } = trpc.admin.operatingDecisions.useQuery();
+  const [form, setForm] = useState({ signal: "", evidence: "", decision: "", owner: "Agency owner", dueDate: "" });
+  const createDecision = trpc.admin.createOperatingDecision.useMutation({
+    onSuccess: () => {
+      toast.success("Operating decision recorded");
+      setForm({ signal: "", evidence: "", decision: "", owner: "Agency owner", dueDate: "" });
+      utils.admin.operatingDecisions.invalidate();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  const updateStatus = trpc.admin.updateOperatingDecisionStatus.useMutation({
+    onSuccess: () => utils.admin.operatingDecisions.invalidate(),
+    onError: (error) => toast.error(error.message),
+  });
+  const statusStyles: Record<string, string> = { open: "text-[#e8a020] border-[#a06010]", completed: "text-[#3ddc84] border-[#1a7040]", deferred: "text-[#a78bfa] border-[#7b5ea7]" };
+
+  return <section className="mt-8 p-6 bg-[#0d100d] border border-white/[0.07]">
+    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6"><div><div className="text-[10px] tracking-[0.15em] uppercase text-[#667066] mb-1">Owner Decision Log</div><div className="text-lg font-light text-[#eaf0ea]">Turn signals into accountable actions</div></div><p className="text-[11px] leading-[1.6] text-[#667066] max-w-md">Use this log for a material funnel, delivery, payment, security, or team-health signal that needs an owner, a decision, and a review date.</p></div>
+    <form onSubmit={(event) => { event.preventDefault(); createDecision.mutate({ signal: form.signal, evidence: form.evidence || undefined, decision: form.decision, owner: form.owner, dueDate: form.dueDate ? new Date(`${form.dueDate}T12:00:00.000Z`).toISOString() : undefined }); }} className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-[#0b1210] border border-white/[0.05]">
+      <input required value={form.signal} onChange={(event) => setForm((current) => ({ ...current, signal: event.target.value }))} placeholder="Signal or issue" className="bg-transparent border border-white/[0.07] px-3 py-2.5 text-[13px] text-[#eaf0ea] outline-none focus:border-[#e8a020]" />
+      <input required value={form.owner} onChange={(event) => setForm((current) => ({ ...current, owner: event.target.value }))} placeholder="Accountable owner" className="bg-transparent border border-white/[0.07] px-3 py-2.5 text-[13px] text-[#eaf0ea] outline-none focus:border-[#e8a020]" />
+      <textarea value={form.evidence} onChange={(event) => setForm((current) => ({ ...current, evidence: event.target.value }))} placeholder="Evidence or context (optional)" rows={3} className="bg-transparent border border-white/[0.07] px-3 py-2.5 text-[13px] text-[#eaf0ea] outline-none focus:border-[#e8a020] resize-none" />
+      <textarea required value={form.decision} onChange={(event) => setForm((current) => ({ ...current, decision: event.target.value }))} placeholder="Decision and next action" rows={3} className="bg-transparent border border-white/[0.07] px-3 py-2.5 text-[13px] text-[#eaf0ea] outline-none focus:border-[#e8a020] resize-none" />
+      <input type="date" value={form.dueDate} onChange={(event) => setForm((current) => ({ ...current, dueDate: event.target.value }))} className="bg-[#080a08] border border-white/[0.07] px-3 py-2.5 text-[13px] text-[#eaf0ea] outline-none focus:border-[#e8a020]" />
+      <button type="submit" disabled={createDecision.isPending} className="bg-[#e8a020] text-[#080a08] text-[11px] font-semibold tracking-[0.14em] uppercase disabled:opacity-50">{createDecision.isPending ? "Recording..." : "Record decision →"}</button>
+    </form>
+    <div className="mt-5 space-y-3">{isLoading ? <div className="h-20 animate-pulse bg-[#111411]" /> : !decisions?.length ? <div className="py-7 text-center text-[13px] text-[#667066]">No operating decisions recorded. Use the weekly review to convert a material signal into a named action.</div> : decisions.map((entry) => <div key={entry.id} className="p-4 bg-[#0b1210] border border-white/[0.05] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_140px] gap-4"><div><div className="flex flex-wrap items-center gap-2 mb-2"><span className={`text-[9px] tracking-[0.12em] uppercase px-2 py-0.5 border ${statusStyles[entry.status] || statusStyles.open}`}>{entry.status}</span><span className="text-[11px] text-[#667066]">Owner: {entry.owner}</span>{entry.dueDate && <span className="text-[11px] text-[#667066]">Review: {new Date(entry.dueDate).toLocaleDateString()}</span>}</div><h3 className="text-[14px] font-medium text-[#eaf0ea]">{entry.signal}</h3>{entry.evidence && <p className="mt-1 text-[12px] leading-[1.7] text-[#667066] font-sans">Evidence: {entry.evidence}</p>}<p className="mt-2 text-[13px] leading-[1.75] text-[#c8cfc8] font-sans">Decision: {entry.decision}</p></div><select value={entry.status} onChange={(event) => updateStatus.mutate({ id: entry.id, status: event.target.value as "open" | "completed" | "deferred" })} className="h-9 bg-[#080a08] border border-white/[0.07] px-2 text-[11px] text-[#eaf0ea] outline-none"><option value="open">OPEN</option><option value="completed">COMPLETED</option><option value="deferred">DEFERRED</option></select></div>)}</div>
   </section>;
 }
 

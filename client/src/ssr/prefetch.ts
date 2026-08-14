@@ -18,6 +18,14 @@ export async function prefetchForPath(url: string, _queryClient: QueryClient, _p
   try { path = decodeURI(path); } catch { /* retain raw path */ }
   const clean = path.replace(/\/+$/, "") || "/";
   if (clean === "/") return { title: SITE, description: DESCRIPTION, canonicalPath: "/" };
+  const insightMeta: Record<string, HeadMeta> = {
+    "/insights/ai-infrastructure-audit": { title: `What an AI Infrastructure Audit Examines · ${SITE}`, description: "A practical decision guide for teams evaluating an AI infrastructure audit.", canonicalPath: "/insights/ai-infrastructure-audit" },
+    "/insights/geo-readiness": { title: `GEO Readiness Guide · ${SITE}`, description: "Questions to answer before starting a generative-engine optimization engagement.", canonicalPath: "/insights/geo-readiness" },
+    "/insights/network-participation": { title: `Network Participation Guide · ${SITE}`, description: "A practical guide to evaluating a network participation model and its operating boundaries.", canonicalPath: "/insights/network-participation" },
+    "/insights/operator-learning-path": { title: `Operator Learning Path Guide · ${SITE}`, description: "A guide for deciding whether education or implementation support is the right next step.", canonicalPath: "/insights/operator-learning-path" },
+    "/insights/bounded-agent-stack-setup": { title: `Bounded Agent-Stack Setup Guide · ${SITE}`, description: "A practical guide to evaluating a scoped agent-stack or MCP-enabled implementation.", canonicalPath: "/insights/bounded-agent-stack-setup" },
+  };
+  if (insightMeta[clean]) return insightMeta[clean];
   if (clean === "/thank-you") return { title: `Thank you · ${SITE}`, description: "Purchase confirmation and next steps for ARM Agency customers.", noindex: true };
   if (clean === "/portal" || clean === "/admin" || clean === "/satisfaction") {
     return { title: SITE, description: DESCRIPTION, noindex: true };

@@ -1,7 +1,7 @@
 import { eq, desc, sql, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback, funnelEvents } from "../drizzle/schema";
-import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback, InsertFunnelEvent } from "../drizzle/schema";
+import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback, funnelEvents, operatingDecisions } from "../drizzle/schema";
+import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback, InsertFunnelEvent, InsertOperatingDecision } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -121,6 +121,15 @@ export async function getRevenueTotal() {
   return result[0]?.total ?? 0;
 }
 
+export async function getPendingPurchaseExceptionCount(minAgeHours = 24) {
+  const db = await getDb();
+  if (!db) return 0;
+  const cutoff = new Date(Date.now() - minAgeHours * 60 * 60 * 1000);
+  const result = await db.select({ count: sql<number>`count(*)` }).from(purchases)
+    .where(and(eq(purchases.status, "pending"), sql`${purchases.createdAt} <= ${cutoff}`));
+  return result[0]?.count ?? 0;
+}
+
 export async function getCompletedPurchasesSince(since?: Date) {
   const db = await getDb();
   if (!db) return [];
@@ -152,6 +161,26 @@ export async function getFunnelEventCounts(since: Date) {
   }).from(funnelEvents)
     .where(sql`${funnelEvents.createdAt} >= ${since}`)
     .groupBy(funnelEvents.eventName);
+}
+
+// ── Owner operating decision log ──
+export async function createOperatingDecision(entry: InsertOperatingDecision) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(operatingDecisions).values(entry);
+  return result[0].insertId;
+}
+
+export async function getOperatingDecisions(limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(operatingDecisions).orderBy(desc(operatingDecisions.createdAt)).limit(limit);
+}
+
+export async function updateOperatingDecisionStatus(id: number, status: "open" | "completed" | "deferred") {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(operatingDecisions).set({ status }).where(eq(operatingDecisions.id, id));
 }
 
 // ── Email Sequences ──

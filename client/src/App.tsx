@@ -9,6 +9,7 @@ import ThankYou from "./pages/ThankYou";
 import AdminDashboard from "./pages/AdminDashboard";
 import EmployeeSatisfaction from "./pages/EmployeeSatisfaction";
 import ClientPortal from "./pages/ClientPortal";
+import InsightPage from "./pages/InsightPage";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/satisfaction" component={EmployeeSatisfaction} />
       <Route path="/portal" component={ClientPortal} />
+      <Route path="/insights/:slug" component={InsightPage} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
