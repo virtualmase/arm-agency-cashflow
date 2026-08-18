@@ -22,7 +22,7 @@ The category is deliberately distinct from generic “AI SEO,” content-volume 
 
 | Audience | Core decision | Entry question | Primary content route | Qualified next step |
 | --- | --- | --- | --- | --- |
-| Marketing or growth leader | Whether GEO work has a responsible starting point | “What foundations should be true before we add content or an AI-search initiative?” | AI Discovery Readiness → GEO Readiness | Public-surface and readiness conversation. |
+| Marketing or growth leader | Whether GEO work has a responsible starting point | “What foundations should be true before we add content or an AI-search initiative?” | AI Discovery Readiness → AI Discovery Measurement → GEO Readiness | Public-surface and readiness conversation. |
 | Website or technical owner | Whether technical discovery work is required and bounded | “Which crawlability, indexing, canonical, and structured-data questions need ownership?” | Technical SEO for AI Discovery → Structured Data Governance | Technical discovery review. |
 | Subject-matter or content owner | How to publish useful authority content without manufactured proof | “How do we make expert knowledge reviewable, sourceable, and useful to buyers?” | Evidence-Led Content Architecture → Image SEO Fundamentals | Content and evidence workshop. |
 | Agency or operator | Whether training or implementation support is more appropriate | “Who owns the work after learning, and what must be in place?” | Operator Learning Path → GEO Readiness | Academy fit conversation or scoped program. |
@@ -34,10 +34,11 @@ The existing **AI Discovery Readiness** guide becomes the cross-stream hub. It s
 
 | Cluster | Hub or spoke | Planned URL | Decision covered | Internal-link requirement |
 | --- | --- | --- | --- | --- |
-| AI Discovery Operating System | Hub | `/insights/ai-discovery-readiness` | Which public, technical, governance, and measurement foundations are controllable? | Links to all three new spokes plus GEO Readiness and Image SEO Fundamentals. |
+| AI Discovery Operating System | Hub | `/insights/ai-discovery-readiness` | Which public, technical, governance, and measurement foundations are controllable? | Links to all four new spokes plus GEO Readiness and Image SEO Fundamentals. |
 | Technical foundations | Spoke | `/insights/technical-seo-ai-discovery` | Which crawling, indexing, canonical, rendering, and performance issues should be resolved first? | Links back to the hub, Structured Data Governance, and GEO Readiness. |
 | Structured information | Spoke | `/insights/structured-data-governance` | How should visible claims and structured data remain accurate, reviewed, and implementable? | Links back to the hub, Technical SEO, and Evidence-Led Content Architecture. |
 | Evidence-led authority content | Spoke | `/insights/evidence-led-content-architecture` | How can experts create trustworthy decision content without overclaiming? | Links back to the hub, Image SEO, and GEO Readiness. |
+| Measurement and conversion learning | Spoke | `/insights/ai-discovery-measurement` | Which discovery and first-party signals are available, and what do they not establish? | Links back to the hub, Technical SEO, and Evidence-Led Content Architecture. |
 | Visual discovery | Existing spoke | `/insights/image-seo-fundamentals` | How should meaningful visuals, accessible text alternatives, and delivery metadata be handled? | Links to the hub and Evidence-Led Content Architecture. |
 | Service readiness | Existing spoke | `/insights/geo-readiness` | Is a GEO operating engagement appropriate, and what must be clarified? | Links to the hub, Technical SEO, and Evidence-Led Content Architecture. |
 
@@ -49,10 +50,14 @@ The public experience must remain evidence-safe. Pages will not publish customer
 
 ## Initial release and measurement
 
-The first release adds the three planned spokes, related-reading modules across the insight library, SSR metadata, sitemap coverage, and citation-supported source sections. Each page will include one primary qualified route to contact or a bounded offer. The main measurement inputs are first-party CTA events, qualified contact submissions, source-review completion, technical findings, and owner decisions—not external-platform guarantees.
+The first release now includes four new spokes, related-reading modules across the insight library, SSR metadata, sitemap coverage, and citation-supported source sections. Each page includes one primary qualified route to contact or a bounded offer. The main measurement inputs are first-party CTA events, qualified contact submissions, source-review completion, technical findings, and owner decisions—not external-platform guarantees.
 
 | Review cadence | Owner question | Evidence reviewed | Action boundary |
 | --- | --- | --- | --- |
 | Weekly | Which guide-to-CTA paths produced qualified questions? | First-party funnel events, lead context, and content changes. | Adjust internal links, CTA clarity, or unanswered decision content. |
 | Monthly | Which cluster is incomplete or unsupported? | Claim registry, source currency, service changes, and page inventory. | Add, revise, consolidate, or pause content. |
 | Quarterly | Does the category remain differentiated and credible? | Buyer feedback, delivery learnings, attribution quality, and workload capacity. | Reprioritize the next silo or retire vague positioning. |
+
+## Next iteration
+
+The next editorial review should use verified first-party funnel and qualified-conversation evidence to choose a single uncovered buyer decision. Until enough verified learning exists, maintain and review the existing eleven-guide library rather than expanding it for page count. Any new page must meet the same source, boundary, internal-link, and qualified-route rules before publication.
