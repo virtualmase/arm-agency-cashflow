@@ -22,6 +22,8 @@ ARM Agency publishes an interlinked public decision library about controllable A
 
 - Hub: https://arm-agency.xyz/insights/ai-discovery-readiness
 - AI discovery measurement: https://arm-agency.xyz/insights/ai-discovery-measurement
+- AI Mastery foundations: https://arm-agency.xyz/insights/ai-mastery-foundations
+- AI Mastery practice boundaries: https://arm-agency.xyz/insights/ai-mastery-practice-boundaries
 - Technical SEO for AI discovery: https://arm-agency.xyz/insights/technical-seo-ai-discovery
 - Structured data governance: https://arm-agency.xyz/insights/structured-data-governance
 - Evidence-led content architecture: https://arm-agency.xyz/insights/evidence-led-content-architecture

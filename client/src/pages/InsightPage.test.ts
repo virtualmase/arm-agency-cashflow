@@ -15,6 +15,8 @@ describe("public stream guides", () => {
       ["structured-data-governance", "AI Discovery Operating System"],
       ["evidence-led-content-architecture", "AI Discovery Operating System"],
       ["ai-discovery-measurement", "AI Discovery Operating System"],
+      ["ai-mastery-foundations", "Academy"],
+      ["ai-mastery-practice-boundaries", "Academy"],
     ] as const;
 
     expected.forEach(([slug, stream]) => {
@@ -58,5 +60,18 @@ describe("public stream guides", () => {
       expect(guide.sections.some((section) => section.citations?.length)).toBe(true);
       expect(guide.related?.some((item) => item.slug === "ai-discovery-readiness")).toBe(true);
     });
+  });
+
+  it("keeps the AI Mastery guides source-backed and linked to Academy, diagnostic, and bounded-delivery decisions", () => {
+    ["ai-mastery-foundations", "ai-mastery-practice-boundaries"].forEach((slug) => {
+      expect(insights[slug].sources?.map((source) => source.href)).toEqual(expect.arrayContaining([
+        "https://www.nist.gov/itl/ai-risk-management-framework",
+        "https://airc.nist.gov/airmf-resources/playbook/govern/",
+        "https://oecd.ai/en/wonk/socio-technical-approach-ai-literacy",
+      ]));
+      expect(insights[slug].related?.length).toBeGreaterThanOrEqual(3);
+    });
+    expect(insights["ai-mastery-foundations"].related?.map((item) => item.slug)).toContain("operator-learning-path");
+    expect(insights["ai-mastery-practice-boundaries"].related?.map((item) => item.slug)).toContain("bounded-agent-stack-setup");
   });
 });

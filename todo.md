@@ -113,3 +113,8 @@
 - [x] Define a responsible AI-discovery measurement and first-party conversion-learning decision framework without third-party visibility guarantees
 - [x] Research and publish a source-backed AI-discovery measurement guide with internal links, metadata, library coverage, and qualified conversion routing
 - [x] Validate the measurement guide’s rendering, citations, boundaries, and authority-silo connections before publishing
+- [x] Define the AI Mastery audience, capability decision map, service boundaries, and Academy-to-implementation qualification paths
+- [x] Research and record primary sources for AI literacy, risk management, governance, workforce capability, and human oversight
+- [x] Build an interlinked, citation-backed AI Mastery guide cluster with Academy, diagnostic, and bounded-implementation routes
+- [x] Add public metadata, sitemap, authority-library coverage, source references, and regression tests for AI Mastery routes
+- [ ] Validate AI Mastery guide rendering, citations, claim boundaries, internal links, and qualified conversion paths before publication

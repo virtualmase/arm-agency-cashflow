@@ -15,10 +15,10 @@ export const insightLibraryGroups = [
     slugs: ["ai-infrastructure-audit", "bounded-agent-stack-setup"],
   },
   {
-    label: "Operator and Network Decisions",
-    title: "Choose learning, participation, or implementation based on the work that follows.",
-    body: "These guides help agency operators and prospective network participants evaluate readiness, purpose, contribution boundaries, and the responsible next step.",
-    slugs: ["operator-learning-path", "network-participation"],
+    label: "AI Mastery and Operator Decisions",
+    title: "Build accountable internal capability before treating AI as an outsourced black box.",
+    body: "These guides help agency operators and accountable leaders choose an appropriate learning path, define bounded practice conditions, and recognize when a diagnostic or implementation scope is the better next step.",
+    slugs: ["operator-learning-path", "ai-mastery-foundations", "ai-mastery-practice-boundaries", "network-participation"],
   },
 ] as const;
 

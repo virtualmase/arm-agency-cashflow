@@ -21,4 +21,13 @@ describe("public authority library", () => {
       "geo-readiness",
     ]));
   });
+
+  it("places AI Mastery guides alongside the operator learning path", () => {
+    const masteryGroup = insightLibraryGroups.find((group) => group.label === "AI Mastery and Operator Decisions");
+    expect(masteryGroup?.slugs).toEqual(expect.arrayContaining([
+      "operator-learning-path",
+      "ai-mastery-foundations",
+      "ai-mastery-practice-boundaries",
+    ]));
+  });
 });
