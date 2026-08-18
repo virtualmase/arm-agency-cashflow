@@ -36,3 +36,7 @@ The cluster will prefer primary sources with durable applicability: NIST’s AI 
 ## Review cadence
 
 The content owner should review source currency and service fit quarterly, and revise or pause a guide if the underlying framework, service boundary, or evidence basis changes. First-party guide-to-CTA and qualified-conversation signals should determine whether a third AI Mastery page is warranted; page count alone is not a trigger.
+
+### Post-publication baseline — August 18, 2026
+
+The initial route-specific funnel review returned no recorded events for either AI Mastery guide immediately after primary-domain publication. This is an expected baseline for a newly released cluster, not evidence of engagement or lack of fit. Do not expand the cluster until a later review can compare guide views, CTA activity, qualified-conversation context, and source-review status over a meaningful observation window.
