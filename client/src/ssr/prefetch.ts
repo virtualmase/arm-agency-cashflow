@@ -20,6 +20,7 @@ export async function prefetchForPath(url: string, _queryClient: QueryClient, _p
   try { path = decodeURI(path); } catch { /* retain raw path */ }
   const clean = path.replace(/\/+$/, "") || "/";
   if (clean === "/") return { title: SITE, description: DESCRIPTION, canonicalPath: "/" };
+  if (clean === "/insights") return { title: `Authority Library · ${SITE}`, description: "Decision-led public guides for AI discovery, technical SEO, structured-data governance, accountable AI operations, and operator readiness.", canonicalPath: "/insights" };
   const insightMeta: Record<string, HeadMeta> = {
     "/insights/ai-infrastructure-audit": { title: `What an AI Infrastructure Audit Examines · ${SITE}`, description: "A practical decision guide for teams evaluating an AI infrastructure audit.", canonicalPath: "/insights/ai-infrastructure-audit" },
     "/insights/geo-readiness": { title: `GEO Readiness Guide · ${SITE}`, description: "Questions to answer before starting a generative-engine optimization engagement.", canonicalPath: "/insights/geo-readiness" },

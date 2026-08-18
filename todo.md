@@ -107,3 +107,5 @@
 - [x] Add hub-and-spoke internal linking, page-level technical metadata, and source/reference sections without unsupported outcome claims
 - [x] Validate server-rendered authority content, canonical metadata, internal links, citations, and conversion boundaries on public routes
 - [x] Establish a repeatable content-silo editorial cadence tied to five-stream authority and first-party conversion learning
+- [x] Build an indexable public authority-library page that groups the AI Discovery Operating System and five-stream decision guides
+- [x] Add library-level navigation, canonical metadata, sitemap coverage, and regression tests for the content index

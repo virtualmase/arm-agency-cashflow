@@ -13,6 +13,13 @@ describe("SSR indexing policy", () => {
     expect(meta.canonicalPath).toBe("/insights/ai-discovery-readiness");
   });
 
+  it("keeps the public authority library indexable with its canonical path", async () => {
+    const meta = await prefetchForPath("/insights", {} as any, {});
+    expect(meta.noindex).toBeUndefined();
+    expect(meta.canonicalPath).toBe("/insights");
+    expect(meta.notFound).toBeUndefined();
+  });
+
   it("keeps the AI Discovery Operating System spokes indexable with their own canonicals", async () => {
     const routes = [
       "/insights/technical-seo-ai-discovery",

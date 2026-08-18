@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import ThankYou from "./pages/ThankYou";
 import ClientPortal from "./pages/ClientPortal";
 import InsightPage from "./pages/InsightPage";
+import InsightsIndex from "./pages/InsightsIndex";
 
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const EmployeeSatisfaction = lazy(() => import("./pages/EmployeeSatisfaction"));
@@ -22,6 +23,7 @@ function Router() {
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/satisfaction" component={EmployeeSatisfaction} />
         <Route path="/portal" component={ClientPortal} />
+        <Route path="/insights" component={InsightsIndex} />
         <Route path="/insights/:slug" component={InsightPage} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
