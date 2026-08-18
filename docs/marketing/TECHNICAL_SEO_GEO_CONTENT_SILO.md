@@ -61,3 +61,7 @@ The first release now includes four new spokes, related-reading modules across t
 ## Next iteration
 
 The next editorial review should use verified first-party funnel and qualified-conversation evidence to choose a single uncovered buyer decision. Until enough verified learning exists, maintain and review the existing eleven-guide library rather than expanding it for page count. Any new page must meet the same source, boundary, internal-link, and qualified-route rules before publication.
+
+### Verified signal snapshot — August 18, 2026
+
+The first 30-day review found 37 recorded homepage views and one Academy checkout-start event, with no content-path-specific CTA, qualified-lead, or completed-purchase evidence. This is **not sufficient** to attribute demand to a particular authority guide or justify another guide based on a speculative topic. The next review should verify public-route events after the current production content has had time to be discovered, then compare guide-path CTA events with qualified lead context before choosing one additional buyer-decision page.
