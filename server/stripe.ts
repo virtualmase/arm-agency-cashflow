@@ -36,7 +36,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "swell-geo-starter",
     name: "GEO Starter",
-    description: "Foundation signal architecture. 4 articles/month, JSON-LD entity audit + build, monthly LLM citation report.",
+    description: "A qualified foundation engagement for entity clarity, structured-data parity, public-surface readiness, and an agreed evidence review cadence.",
     priceCents: 150000,
     interval: "month",
     stream: "swell",
@@ -45,7 +45,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "swell-geo-growth",
     name: "GEO Growth",
-    description: "Full signal governance. 8 articles/month, JSON-LD build + maintenance, weekly LLM citation monitoring, monthly strategy call.",
+    description: "A qualified operating engagement for technical, evidence, content, authority, and measurement work under a written scope and acceptance criteria.",
     priceCents: 250000,
     interval: "month",
     stream: "swell",
@@ -55,7 +55,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "swell-geo-scale",
     name: "GEO Scale",
-    description: "Maximum signal velocity. 12 articles/month, full GEO Signal Governance, weekly reporting, bi-weekly strategy calls, priority support.",
+    description: "A qualified multi-entity or multi-market representation program with documented governance, reporting, support boundaries, and change control.",
     priceCents: 350000,
     interval: "month",
     stream: "swell",
@@ -65,7 +65,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "arm-mandate-core",
     name: "ARM Core",
-    description: "Mandate chain design, GEO entity graph, agent deployment, Truth Ledger setup, monthly audit.",
+    description: "A qualified operating engagement for mandate-chain design, decision records, bounded workflows, and a documented governance review cadence.",
     priceCents: 300000,
     interval: "month",
     stream: "arm",
@@ -74,7 +74,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "arm-mandate-pro",
     name: "ARM Pro",
-    description: "Full ARM stack deployment + governance. 3 AURE agents, weekly briefings, quarterly strategy sessions.",
+    description: "A qualified governed-implementation engagement with explicit roles, review gates, evidence requirements, recovery paths, and handoff terms.",
     priceCents: 500000,
     interval: "month",
     stream: "arm",
@@ -84,7 +84,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "arm-mandate-sovereign",
     name: "ARM Sovereign",
-    description: "Enterprise ARM deployment. Full agent swarm, custom mandate chain, dedicated Aureus operator, SLA guarantees.",
+    description: "A qualified enterprise governance engagement with custom mandate boundaries, operator responsibilities, audit evidence, and service terms agreed in writing.",
     priceCents: 800000,
     interval: "month",
     stream: "arm",
@@ -94,7 +94,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "arctura-node",
     name: "Node Member",
-    description: "Arctura signal network access. ARM Framework license, weekly Signal Report, community access.",
+    description: "An eligibility-reviewed network participation tier governed by the current written membership terms, access boundary, and participation expectations.",
     priceCents: 50000,
     interval: "month",
     stream: "arctura",
@@ -103,7 +103,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "arctura-hub",
     name: "Hub Member",
-    description: "Full ARM Framework license, co-creation rights, referral revenue share, monthly council call.",
+    description: "An eligibility-reviewed collaboration tier whose access, contribution model, commercial terms, and governance rights are confirmed in writing.",
     priceCents: 100000,
     interval: "month",
     stream: "arctura",
@@ -113,7 +113,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "arctura-sovereign",
     name: "Sovereign Node",
-    description: "White-label ARM methodology, dedicated agent mesh slot, revenue share on referrals, sovereign governance rights.",
+    description: "A qualified operator relationship with scope, infrastructure boundaries, governance rights, economics, and support obligations agreed in writing.",
     priceCents: 200000,
     interval: "month",
     stream: "arctura",
@@ -123,7 +123,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "academy-geo-mastery",
     name: "GEO Mastery Course",
-    description: "6 modules, 30+ lessons, JSON-LD templates, LLM citation tracker, community access. Self-paced.",
+    description: "Self-paced learning materials for evidence-led content, structured data, entity clarity, and public-surface readiness without outcome guarantees.",
     priceCents: 29700,
     interval: null,
     stream: "academy",
@@ -131,7 +131,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "academy-arm-cert",
     name: "ARM Framework Certification",
-    description: "4-week live cohort. Mandate chain design, agent deployment practicum, certified badge.",
+    description: "A live cohort on mandate-chain design and governed implementation practice, delivered under the current published cohort and assessment terms.",
     priceCents: 99700,
     interval: null,
     stream: "academy",
@@ -139,7 +139,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "academy-agency-operator",
     name: "Agency GEO Operator",
-    description: "6-week cohort for agency owners. Build a GEO service offering, deploy AURE agents for clients.",
+    description: "A cohort for agency operators building bounded, evidence-safe representation services with explicit delivery and claim-governance controls.",
     priceCents: 199700,
     interval: null,
     stream: "academy",
@@ -148,7 +148,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "coreweaver-managed-starter",
     name: "Managed Agent Infra — Starter",
-    description: "Managed GBrain stack + 1 agent. Monthly health checks, uptime monitoring, patch management.",
+    description: "A qualified managed-infrastructure engagement with an agreed system boundary, operating checks, maintenance responsibilities, and escalation path.",
     priceCents: 50000,
     interval: "month",
     stream: "coreweaver",
@@ -156,7 +156,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "coreweaver-managed-pro",
     name: "Managed Agent Infra — Pro",
-    description: "Managed GBrain stack + up to 5 agents. Daily sync, priority support, custom integrations.",
+    description: "A qualified managed-infrastructure engagement with scoped agents, integrations, review cadence, support boundaries, and change control.",
     priceCents: 200000,
     interval: "month",
     stream: "coreweaver",
@@ -165,7 +165,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "coreweaver-setup-standard",
     name: "Agent Stack Setup — Standard",
-    description: "Full GBrain stack deployment + 2 agents. Mandate chain, audit trail, 30-day handoff support.",
+    description: "A bounded agent-stack setup with agreed systems, mandate boundaries, acceptance tests, audit notes, and a documented handoff.",
     priceCents: 250000,
     interval: null,
     stream: "coreweaver",
@@ -173,7 +173,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "coreweaver-setup-enterprise",
     name: "Agent Stack Setup — Enterprise",
-    description: "Enterprise-grade agent infrastructure. Custom swarm architecture, full ARM governance, 90-day managed transition.",
+    description: "A scoped enterprise implementation with architecture, governance, acceptance tests, transition responsibilities, and support terms agreed in writing.",
     priceCents: 1000000,
     interval: null,
     stream: "coreweaver",
@@ -182,7 +182,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "audit",
     name: "AI Infrastructure Audit",
-    description: "Comprehensive audit of your AI infrastructure readiness, signal gaps, and deployment architecture.",
+    description: "A bounded assessment of current systems, evidence, constraints, prioritized risks, and next actions, concluded with an executive readout.",
     priceCents: 250000,
     interval: null,
     stream: "arm",
@@ -190,7 +190,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "workshop",
     name: "Mandate Chain Design Workshop",
-    description: "Half-day workshop to encode your organization's authority structure into verifiable mandate chains.",
+    description: "A facilitated design engagement with defined pre-work, decision-rights mapping, a written decision record, and agreed follow-through.",
     priceCents: 150000,
     interval: null,
     stream: "arm",
@@ -198,7 +198,7 @@ export const ALL_PRODUCTS: ProductConfig[] = [
   {
     key: "mcp_tool",
     name: "Custom MCP Tool",
-    description: "Custom MCP tool development tailored to your specific workflow and integration requirements.",
+    description: "A bounded MCP implementation with agreed data access, tool behavior, acceptance tests, security constraints, and handoff documentation.",
     priceCents: 50000,
     interval: null,
     stream: "arm",
