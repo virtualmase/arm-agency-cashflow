@@ -1,17 +1,20 @@
 import { Link, useRoute } from "wouter";
 
+type Source = { label: string; href: string };
+
 type Insight = {
   stream: string;
   eyebrow: string;
   title: string;
   description: string;
   decision: string;
-  sections: Array<{ title: string; body: string }>;
+  sections: Array<{ title: string; body: string; citations?: Source[] }>;
   checklist: string[];
   deliverables: string[];
   cta: string;
   ctaHref: string;
-  sources?: Array<{ label: string; href: string }>;
+  sources?: Source[];
+  related?: Array<{ slug: string; label: string; description: string }>;
   image?: { src: string; alt: string; width: number; height: number; caption: string };
 };
 
@@ -122,6 +125,94 @@ export const insights: Record<string, Insight> = {
       { label: "Google: General structured data guidelines", href: "https://developers.google.com/search/docs/appearance/structured-data/sd-policies" },
       { label: "Google: Robots meta tags and indexing controls", href: "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag" },
     ],
+    related: [
+      { slug: "technical-seo-ai-discovery", label: "Technical SEO for AI Discovery", description: "Map crawlability, rendering, canonical, and public-route responsibilities." },
+      { slug: "structured-data-governance", label: "Structured Data Governance", description: "Keep machine-readable statements aligned with visible, reviewable information." },
+      { slug: "evidence-led-content-architecture", label: "Evidence-Led Content Architecture", description: "Create useful decision content without content-volume or citation promises." },
+      { slug: "geo-readiness", label: "GEO Readiness", description: "Decide whether a governed GEO engagement is appropriate." },
+      { slug: "image-seo-fundamentals", label: "Image SEO Fundamentals", description: "Apply meaningful-visual, alt-text, and metadata standards." },
+    ],
+  },
+  "technical-seo-ai-discovery": {
+    stream: "AI Discovery Operating System",
+    eyebrow: "Technical guide · discoverability foundations",
+    title: "Technical SEO for AI discovery: build a responsibility map, not a visibility hack",
+    description: "A practical guide to the public-route, rendering, canonical, linking, and indexing decisions that make an organization’s information easier to reach and review.",
+    decision: "Use this guide when a technical or marketing owner needs to decide what can be improved on the site itself before making any claim about third-party search or model visibility.",
+    sections: [
+      { title: "Start with pages people and crawlers can reach", body: "The useful unit is a public page that answers a real buyer decision, returns a meaningful response, and can be reached through ordinary links. Google describes crawling, rendering, and indexing as separate steps; a public page still needs to be reachable and eligible before it can be considered for discovery.", citations: [{ label: "Google: JavaScript SEO basics", href: "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics" }, { label: "Google: Generative AI optimization guidance", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" }] },
+      { title: "Render public decision content early and consistently", body: "A JavaScript application can be discoverable, but rendering and diagnosis are more complex when important content is only assembled after the initial response. Server-side or pre-rendering can improve the experience for users and crawlers. It is an implementation choice and risk-reduction measure, not a ranking promise.", citations: [{ label: "Google: JavaScript SEO basics", href: "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics" }] },
+      { title: "Treat canonicals, titles, and status codes as operating controls", body: "A canonical should consistently identify the preferred public URL, while titles and descriptions should describe the actual page purpose. Private customer routes should use authentication, noindex boundaries, and appropriate response behavior. These controls reduce ambiguity; they do not force indexing or an external-system appearance.", citations: [{ label: "Google: JavaScript SEO basics", href: "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics" }] },
+      { title: "Link the next decision, not just another page", body: "A topic cluster works when a reader can move from a broad operating question to the specific technical, content, or service decision they need next. Use descriptive anchor text and ordinary links to connect that path. Avoid producing a separate page for every phrasing variation merely to influence a search or generative system.", citations: [{ label: "Google: Generative AI optimization guidance", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" }] },
+    ],
+    checklist: ["Important public pages have stable, direct URLs and meaningful HTTP responses.", "Public decision content is present in the server-rendered response where practical.", "Canonical, title, description, and noindex decisions have a named owner.", "Internal links connect a reader to the next relevant decision rather than a generic archive."],
+    deliverables: ["Public-route and rendering review", "Canonical, indexability, and internal-link responsibility map", "Prioritized technical discovery backlog", "Documented verification and review cadence"],
+    cta: "Review technical discovery foundations",
+    ctaHref: "/#contact",
+    sources: [
+      { label: "Google: JavaScript SEO basics", href: "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics" },
+      { label: "Google: Optimizing your website for generative AI features", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" },
+      { label: "web.dev: Build agent-friendly websites", href: "https://web.dev/articles/ai-agent-site-ux" },
+    ],
+    related: [
+      { slug: "ai-discovery-readiness", label: "AI Discovery Operating System", description: "Return to the cross-functional discovery foundation and its operating limits." },
+      { slug: "structured-data-governance", label: "Structured Data Governance", description: "Connect page information to accurate, visible machine-readable statements." },
+      { slug: "geo-readiness", label: "GEO Readiness", description: "Apply technical findings to a qualified service-readiness decision." },
+    ],
+  },
+  "structured-data-governance": {
+    stream: "AI Discovery Operating System",
+    eyebrow: "Technical guide · information integrity",
+    title: "Structured data governance: make public statements reviewable before they are machine-readable",
+    description: "A guide to keeping structured data aligned with visible page content, named owners, and controlled updates—without treating schema as a shortcut to rich results or AI visibility.",
+    decision: "Use this guide when a team needs to decide what information belongs in structured data, who can approve it, and how to prevent hidden, stale, or unsupported statements from entering public markup.",
+    sections: [
+      { title: "Mark up what a reader can actually see", body: "Structured data should represent the main content of the page, remain relevant to that page, and avoid hidden or misleading additions. A page’s visible statement and its machine-readable statement should be the same claim viewed through two interfaces.", citations: [{ label: "Google: General structured data guidelines", href: "https://developers.google.com/search/docs/appearance/structured-data/sd-policies" }] },
+      { title: "Use one public source of truth", body: "The strongest implementation starts with an accurate service page, guide, or organizational record. JSON-LD can provide explicit clues about page meaning, but it should be generated from information that already has a responsible owner, a review path, and a visible context.", citations: [{ label: "Google: Introduction to structured data", href: "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data" }] },
+      { title: "Govern updates as a change-management task", body: "Pricing, operating terms, service details, and organization facts change. Treat material markup updates like public-content changes: identify the owner, record the evidence, confirm visible alignment, validate the output, and schedule a review. This makes the work maintainable without creating a false sense of external-platform control.", citations: [{ label: "Google: General structured data guidelines", href: "https://developers.google.com/search/docs/appearance/structured-data/sd-policies" }] },
+      { title: "Test eligibility without promising an appearance", body: "Google recommends validation during development and monitoring after deployment. Correct structured data can make a feature eligible, but Google explicitly does not guarantee that it will appear. The operating goal is accurate representation and accountable maintenance, not a claimed rich-result outcome.", citations: [{ label: "Google: General structured data guidelines", href: "https://developers.google.com/search/docs/appearance/structured-data/sd-policies" }, { label: "Google: Introduction to structured data", href: "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data" }] },
+    ],
+    checklist: ["Each marked-up statement is visible, current, relevant, and approved by an accountable owner.", "The selected type reflects the page’s actual primary purpose.", "No reviews, ratings, affiliations, customer outcomes, or other proof signals are invented or hidden in markup.", "Validation and post-deployment review have a named operating owner."],
+    deliverables: ["Structured-data inventory and visible-content comparison", "Claim owner and evidence record", "Prioritized schema implementation or remediation plan", "Validation and review checklist"],
+    cta: "Review public information integrity",
+    ctaHref: "/#contact",
+    sources: [
+      { label: "Google: General structured data guidelines", href: "https://developers.google.com/search/docs/appearance/structured-data/sd-policies" },
+      { label: "Google: Introduction to structured data", href: "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data" },
+      { label: "Google: Optimizing your website for generative AI features", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" },
+    ],
+    related: [
+      { slug: "ai-discovery-readiness", label: "AI Discovery Operating System", description: "Return to the broader technical, content, governance, and measurement foundation." },
+      { slug: "technical-seo-ai-discovery", label: "Technical SEO for AI Discovery", description: "Confirm the public routes and rendering conditions that support accurate information." },
+      { slug: "evidence-led-content-architecture", label: "Evidence-Led Content Architecture", description: "Create visible statements that are strong enough to govern in structured data." },
+    ],
+  },
+  "evidence-led-content-architecture": {
+    stream: "AI Discovery Operating System",
+    eyebrow: "Content guide · authority without hype",
+    title: "Evidence-led content architecture: build a decision library, not a content treadmill",
+    description: "A system for turning subject-matter knowledge into linked, reviewable buyer guidance with sources, stated boundaries, and a clear next decision.",
+    decision: "Use this guide when a content or subject-matter owner needs to decide which expertise deserves a public page, how to substantiate it, and where a reader should go next without resorting to manufactured proof.",
+    sections: [
+      { title: "Start with the buyer’s next decision", body: "An authority page earns its place when it resolves a concrete question: whether a team is ready, what belongs in scope, who owns a decision, or what evidence is missing. A list of keyword variations is not a content strategy. Google’s current guidance favors unique, useful, non-commodity information organized for people.", citations: [{ label: "Google: Optimizing your website for generative AI features", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" }] },
+      { title: "Separate practitioner advice from external facts", body: "ARM’s operational point of view should be clearly identified as a method or recommendation. When a page describes search-system behavior, technical eligibility, or markup policy, link to the primary authority. This gives readers a way to assess the claim rather than asking them to trust a generic assertion.", citations: [{ label: "Google: General structured data guidelines", href: "https://developers.google.com/search/docs/appearance/structured-data/sd-policies" }] },
+      { title: "Use headings and links as a reader’s path", body: "Clear headings let a reader scan the question, evidence, and boundary of a page. Related links should point to the next decision: from AI-discovery fundamentals to technical implementation, information governance, visual discovery, or service readiness. Connected pages are useful when the relationships are genuine, not when they exist only to manufacture page count.", citations: [{ label: "Google: Optimizing your website for generative AI features", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" }, { label: "web.dev: Build agent-friendly websites", href: "https://web.dev/articles/ai-agent-site-ux" }] },
+      { title: "Maintain claims like operating assets", body: "A source can change, a service boundary can evolve, and an example can stop being representative. Assign a claim owner, evidence location, review date, and stop condition for material pages. If support is missing, revise, qualify, or remove the statement rather than using more persuasive language.", citations: [{ label: "Google: Optimizing your website for generative AI features", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" }] },
+    ],
+    checklist: ["The page supports one identifiable buyer or operator decision.", "External-system claims link to a primary source and ARM recommendations are framed as recommendations.", "Important boundaries, assumptions, and exclusions are visible to the reader.", "The page offers a relevant next reading path and a qualified conversion route."],
+    deliverables: ["Decision-led content map", "Source and claim register", "Hub-and-spoke internal-link plan", "Editorial QA and scheduled review cadence"],
+    cta: "Build a decision-led content system",
+    ctaHref: "/#contact",
+    sources: [
+      { label: "Google: Optimizing your website for generative AI features", href: "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide" },
+      { label: "Google: General structured data guidelines", href: "https://developers.google.com/search/docs/appearance/structured-data/sd-policies" },
+      { label: "web.dev: Build agent-friendly websites", href: "https://web.dev/articles/ai-agent-site-ux" },
+    ],
+    related: [
+      { slug: "ai-discovery-readiness", label: "AI Discovery Operating System", description: "See where public content fits with technical, governance, and measurement work." },
+      { slug: "image-seo-fundamentals", label: "Image SEO Fundamentals", description: "Apply the same truthfulness and context standards to meaningful visuals." },
+      { slug: "geo-readiness", label: "GEO Readiness", description: "Move from a decision library to a qualified GEO operating conversation." },
+    ],
   },
   "image-seo-fundamentals": {
     stream: "Cross-stream operating guide",
@@ -171,9 +262,10 @@ export default function InsightPage() {
       <p className="mt-7 text-[17px] leading-[1.9] text-[#c8cfc8] font-sans max-w-2xl">{insight.description}</p>
       {insight.image ? <figure className="mt-10 border border-white/[0.08] bg-[#0d100d]"><img src={insight.image.src} alt={insight.image.alt} width={insight.image.width} height={insight.image.height} decoding="async" className="block w-full h-auto"/><figcaption className="px-4 py-3 text-[11px] leading-[1.7] text-[#8e988e] font-sans border-t border-white/[0.08]">{insight.image.caption}</figcaption></figure> : null}
       <div className="mt-10 p-6 bg-[#0d100d] border border-white/[0.07] border-l-2 border-l-[#e8a020]"><div className="text-[10px] tracking-[0.16em] uppercase text-[#e8a020] mb-3">The decision this supports</div><p className="text-[15px] leading-[1.85] text-[#eaf0ea] font-sans">{insight.decision}</p></div>
-      <div className="mt-14 space-y-10">{insight.sections.map((section) => <section key={section.title}><h2 className="text-2xl font-light text-[#eaf0ea] mb-3">{section.title}</h2><p className="text-[15px] leading-[1.9] text-[#c8cfc8] font-sans">{section.body}</p></section>)}</div>
+      <div className="mt-14 space-y-10">{insight.sections.map((section) => <section key={section.title}><h2 className="text-2xl font-light text-[#eaf0ea] mb-3">{section.title}</h2><p className="text-[15px] leading-[1.9] text-[#c8cfc8] font-sans">{section.body}</p>{section.citations?.length ? <p className="mt-3 text-[11px] leading-[1.7] text-[#8e988e] font-sans">Sources: {section.citations.map((source, index) => <span key={source.href}>{index ? " · " : ""}<a href={source.href} target="_blank" rel="noreferrer" className="text-[#e8a020] hover:underline">[{index + 1}] {source.label}</a></span>)}</p> : null}</section>)}</div>
       <div className="mt-16 grid md:grid-cols-2 gap-6"><section className="p-6 bg-[#0d100d] border border-white/[0.07]"><h2 className="text-lg font-light text-[#eaf0ea] mb-4">Readiness questions</h2><ul className="space-y-3">{insight.checklist.map((item) => <li key={item} className="flex gap-3 text-[14px] leading-[1.7] font-sans"><span className="text-[#3ddc84]">→</span>{item}</li>)}</ul></section><section className="p-6 bg-[#0d100d] border border-white/[0.07]"><h2 className="text-lg font-light text-[#eaf0ea] mb-4">What a scoped next step can deliver</h2><ul className="space-y-3">{insight.deliverables.map((item) => <li key={item} className="flex gap-3 text-[14px] leading-[1.7] font-sans"><span className="text-[#e8a020]">→</span>{item}</li>)}</ul></section></div>
       <section className="mt-16 p-8 bg-[#111411] border border-[#1a7040] text-center"><div className="text-[10px] tracking-[0.18em] uppercase text-[#3ddc84] mb-3">A bounded next step</div><h2 className="text-2xl font-light text-[#eaf0ea] mb-3">Need help applying this to your operating context?</h2><p className="text-[14px] leading-[1.8] text-[#c8cfc8] max-w-xl mx-auto font-sans mb-6">We begin by clarifying the decision, scope, ownership, and constraints. The appropriate next step may be a diagnostic, a workshop, a bounded implementation, or a respectful no-go decision.</p><a href={insight.ctaHref} className="inline-block px-6 py-3 bg-[#e8a020] text-[#080a08] text-[11px] font-medium tracking-[0.13em] uppercase no-underline hover:opacity-85">{insight.cta} →</a></section>
+      {insight.related?.length ? <section className="mt-10"><h2 className="text-[11px] tracking-[0.14em] uppercase text-[#667066] mb-4">Continue the decision path</h2><div className="grid md:grid-cols-3 gap-4">{insight.related.map((item) => <Link key={item.slug} href={`/insights/${item.slug}`} className="block p-5 bg-[#0d100d] border border-white/[0.07] no-underline hover:border-[#3ddc84]/60 transition-colors"><h3 className="text-[14px] font-medium text-[#eaf0ea] mb-2">{item.label} <span className="text-[#3ddc84]">→</span></h3><p className="text-[12px] leading-[1.7] text-[#8e988e] font-sans">{item.description}</p></Link>)}</div></section> : null}
       {insight.sources?.length ? <section className="mt-10 border-t border-white/[0.07] pt-7"><h2 className="text-[11px] tracking-[0.14em] uppercase text-[#667066] mb-4">Sources</h2><ul className="space-y-2">{insight.sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer" className="text-[12px] text-[#e8a020] hover:underline">{source.label} ↗</a></li>)}</ul></section> : null}
     </article>
   </main>;

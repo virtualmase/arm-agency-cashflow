@@ -11,6 +11,9 @@ describe("public stream guides", () => {
       ["bounded-agent-stack-setup", "Coreweaver"],
       ["ai-discovery-readiness", "Cross-stream operating guide"],
       ["image-seo-fundamentals", "Cross-stream operating guide"],
+      ["technical-seo-ai-discovery", "AI Discovery Operating System"],
+      ["structured-data-governance", "AI Discovery Operating System"],
+      ["evidence-led-content-architecture", "AI Discovery Operating System"],
     ] as const;
 
     expected.forEach(([slug, stream]) => {
@@ -37,5 +40,21 @@ describe("public stream guides", () => {
     expect(guide.sources?.slice(1).every((source) => source.href.startsWith("https://web.dev/"))).toBe(true);
     expect(guide.image).toMatchObject({ src: expect.stringMatching(/^\/manus-storage\//), width: 1200, height: 630 });
     expect(guide.image?.alt).toContain("five image SEO foundations");
+  });
+
+  it("interlinks the AI Discovery Operating System through citation-backed technical and content spokes", () => {
+    const hub = insights["ai-discovery-readiness"];
+    expect(hub.related?.map((item) => item.slug)).toEqual(expect.arrayContaining([
+      "technical-seo-ai-discovery",
+      "structured-data-governance",
+      "evidence-led-content-architecture",
+    ]));
+
+    ["technical-seo-ai-discovery", "structured-data-governance", "evidence-led-content-architecture"].forEach((slug) => {
+      const guide = insights[slug];
+      expect(guide.sources?.length).toBeGreaterThanOrEqual(3);
+      expect(guide.sections.some((section) => section.citations?.length)).toBe(true);
+      expect(guide.related?.some((item) => item.slug === "ai-discovery-readiness")).toBe(true);
+    });
   });
 });

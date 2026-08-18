@@ -41,6 +41,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://arm-agency.xyz/insights/technical-seo-ai-discovery</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://arm-agency.xyz/insights/structured-data-governance</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://arm-agency.xyz/insights/evidence-led-content-architecture</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://arm-agency.xyz/insights/image-seo-fundamentals</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

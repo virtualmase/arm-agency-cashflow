@@ -57,7 +57,7 @@
 - [x] Change primary-host canonical, Open Graph, sitemap, and AI-discovery metadata from the temporary deployment host to arm-agency.xyz
 - [x] Verify canonical metadata, public discovery files, and private-route indexing boundaries on arm-agency.xyz
 - [ ] Verify offer and lead-capture routing plus the safe Stripe return configuration on arm-agency.xyz
-- [ ] Enforce authenticated checkout creation so Stripe return, portal linkage, and buyer ownership are bound to the purchasing account
+- [x] Enforce authenticated checkout creation so Stripe return, portal linkage, and buyer ownership are bound to the purchasing account
 - [ ] Record client-success capacity, support ownership, and owner launch approval before any initial promotion
 - [x] Add a reusable technical launch-verification script for primary-domain, public-route, private-route, canonical, and security-header checks
 - [x] Audit the complete client lifecycle for missing pre-sale, delivery, renewal, and referral assets
@@ -101,3 +101,9 @@
 - [x] Replace mock revenue visuals with completed-purchase weekly cohorts
 - [x] Add an admin-only completed-revenue breakdown by product stream
 - [x] Extend the weekly owner report with first-party funnel signals and completed-purchase attribution
+- [x] Define ARM Agency’s blue-ocean technical SEO and GEO category narrative, audience jobs, and differentiation boundaries
+- [x] Research and record authoritative, primary external sources for technical SEO, structured data, AI discovery, and content quality claims
+- [x] Build an interlinked public authority-content silo with citation-backed cluster pages and revenue-stream qualification paths
+- [x] Add hub-and-spoke internal linking, page-level technical metadata, and source/reference sections without unsupported outcome claims
+- [x] Validate server-rendered authority content, canonical metadata, internal links, citations, and conversion boundaries on public routes
+- [x] Establish a repeatable content-silo editorial cadence tied to five-stream authority and first-party conversion learning

@@ -44,7 +44,7 @@ function Nav({ user }: { user: any }) {
       <div className="flex items-center gap-6">
         <a href="#capabilities" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Capabilities</a>
         <a href="#pricing" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Pricing</a>
-        <Link href="/insights/ai-infrastructure-audit" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Guides</Link>
+        <Link href="/insights/ai-discovery-readiness" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Guides</Link>
         <a href="#contact" className="text-[12px] tracking-[0.08em] uppercase text-[#667066] hover:text-[#e8a020] transition-colors no-underline hidden md:inline">Contact</a>
         {user && (
           <Link href="/portal" className="text-[12px] tracking-[0.08em] uppercase text-[#e8a020] hover:text-[#e8a020]/80 transition-colors no-underline hidden md:inline">My Portal</Link>

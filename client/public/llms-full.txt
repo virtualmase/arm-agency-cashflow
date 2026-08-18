@@ -26,6 +26,12 @@ GEO Retainers are ongoing programs for entity architecture, structured-data main
 
 Academy products are self-guided or cohort-based learning offers. They are separate from implementation and should not be interpreted as a guarantee of business outcomes.
 
+## AI Discovery Operating System
+
+ARM Agency’s public authority library is organized around buyer and operator decisions rather than keyword volume or model-citation promises. The central guide, **AI Discovery Readiness**, connects to three supporting guides: **Technical SEO for AI Discovery**, **Structured Data Governance**, and **Evidence-Led Content Architecture**. The cluster also links to existing GEO Readiness and Image SEO Fundamentals guides where those are the reader’s next decision.
+
+The library describes controllable foundations: useful public information, accessible technical delivery, visible-content and structured-data alignment, source and claim review, and first-party conversion learning. It does not claim control of Google Search, generative models, rankings, citations, rich-result display, traffic, or revenue outcomes.
+
 ## Customer experience
 
 Public visitors can review offers, submit a contact request, subscribe to research updates, or purchase a bounded public offer. Authenticated customers can view eligible purchases, subscriptions, and invoices in the client portal. Cancellation requests are verified against the customer’s Stripe identity before a subscription is changed.
