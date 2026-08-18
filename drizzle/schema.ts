@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, index, uniqueIndex } from "drizzle-orm/mysql-core";
 
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
@@ -88,6 +88,49 @@ export const operatingDecisions = mysqlTable("operatingDecisions", {
 
 export type OperatingDecision = typeof operatingDecisions.$inferSelect;
 export type InsertOperatingDecision = typeof operatingDecisions.$inferInsert;
+
+export const swellPublicationMonitor = mysqlTable("swellPublicationMonitor", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  sourceSitemapUrl: varchar("sourceSitemapUrl", { length: 1024 }).notNull(),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
+  enabled: boolean("enabled").default(false).notNull(),
+  retentionDays: int("retentionDays").default(90).notNull(),
+  lastCheckedAt: timestamp("lastCheckedAt"),
+  lastCheckSummary: text("lastCheckSummary"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+  uniqueIndex("swell_monitor_task_uid_unique").on(table.scheduleCronTaskUid),
+]);
+
+export type SwellPublicationMonitor = typeof swellPublicationMonitor.$inferSelect;
+export type InsertSwellPublicationMonitor = typeof swellPublicationMonitor.$inferInsert;
+
+export const swellEditorialReviews = mysqlTable("swellEditorialReviews", {
+  id: int("id").autoincrement().primaryKey(),
+  sourceUrl: varchar("sourceUrl", { length: 1024 }).notNull(),
+  sourceLastmod: varchar("sourceLastmod", { length: 64 }).notNull(),
+  sourceTitle: varchar("sourceTitle", { length: 512 }).notNull(),
+  sourceDescription: text("sourceDescription"),
+  detectedAt: timestamp("detectedAt").defaultNow().notNull(),
+  status: mysqlEnum("status", ["pending_review", "approved", "declined", "published", "expired"]).default("pending_review").notNull(),
+  generatedBrief: text("generatedBrief").notNull(),
+  suggestedSources: text("suggestedSources"),
+  suggestedLinks: text("suggestedLinks"),
+  claimNotes: text("claimNotes"),
+  reviewNotes: text("reviewNotes"),
+  reviewedAt: timestamp("reviewedAt"),
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+  uniqueIndex("swell_editorial_source_version_unique").on(table.sourceUrl, table.sourceLastmod),
+  index("swell_editorial_status_detected_idx").on(table.status, table.detectedAt),
+  index("swell_editorial_expires_idx").on(table.expiresAt),
+]);
+
+export type SwellEditorialReview = typeof swellEditorialReviews.$inferSelect;
+export type InsertSwellEditorialReview = typeof swellEditorialReviews.$inferInsert;
 
 export const emailSequences = mysqlTable("emailSequences", {
   id: int("id").autoincrement().primaryKey(),

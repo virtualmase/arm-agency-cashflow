@@ -1,7 +1,7 @@
-import { eq, desc, sql, and } from "drizzle-orm";
+import { eq, desc, sql, and, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback, funnelEvents, operatingDecisions } from "../drizzle/schema";
-import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback, InsertFunnelEvent, InsertOperatingDecision } from "../drizzle/schema";
+import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback, funnelEvents, operatingDecisions, swellPublicationMonitor, swellEditorialReviews } from "../drizzle/schema";
+import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback, InsertFunnelEvent, InsertOperatingDecision, InsertSwellPublicationMonitor, InsertSwellEditorialReview } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -181,6 +181,84 @@ export async function updateOperatingDecisionStatus(id: number, status: "open" |
   const db = await getDb();
   if (!db) return;
   await db.update(operatingDecisions).set({ status }).where(eq(operatingDecisions.id, id));
+}
+
+// ── Swell publication monitor and owner-only editorial review queue ──
+export async function getSwellPublicationMonitor() {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(swellPublicationMonitor).limit(1);
+  return rows[0];
+}
+
+export async function getSwellPublicationMonitorByTaskUid(taskUid: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(swellPublicationMonitor)
+    .where(eq(swellPublicationMonitor.scheduleCronTaskUid, taskUid)).limit(1);
+  return rows[0];
+}
+
+export async function upsertSwellPublicationMonitor(monitor: InsertSwellPublicationMonitor) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(swellPublicationMonitor).values(monitor).onDuplicateKeyUpdate({
+    set: {
+      sourceSitemapUrl: monitor.sourceSitemapUrl,
+      scheduleCronTaskUid: monitor.scheduleCronTaskUid,
+      enabled: monitor.enabled,
+      retentionDays: monitor.retentionDays,
+      lastCheckedAt: monitor.lastCheckedAt,
+      lastCheckSummary: monitor.lastCheckSummary,
+    },
+  });
+}
+
+export async function updateSwellMonitorRun(taskUid: string, summary: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(swellPublicationMonitor).set({ lastCheckedAt: new Date(), lastCheckSummary: summary })
+    .where(eq(swellPublicationMonitor.scheduleCronTaskUid, taskUid));
+}
+
+export async function getSwellEditorialReviews(limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(swellEditorialReviews).orderBy(desc(swellEditorialReviews.detectedAt)).limit(limit);
+}
+
+export async function getSwellEditorialReviewBySourceVersion(sourceUrl: string, sourceLastmod: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(swellEditorialReviews)
+    .where(and(eq(swellEditorialReviews.sourceUrl, sourceUrl), eq(swellEditorialReviews.sourceLastmod, sourceLastmod))).limit(1);
+  return rows[0];
+}
+
+export async function createSwellEditorialReview(review: InsertSwellEditorialReview) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(swellEditorialReviews).values(review);
+  return result[0].insertId;
+}
+
+export async function updateSwellEditorialReviewStatus(
+  id: number,
+  status: "approved" | "declined" | "published",
+  reviewNotes?: string | null
+) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(swellEditorialReviews).set({ status, reviewNotes: reviewNotes ?? null, reviewedAt: new Date() })
+    .where(eq(swellEditorialReviews.id, id));
+}
+
+export async function expireStaleSwellEditorialReviews(now = new Date()) {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.update(swellEditorialReviews).set({ status: "expired" })
+    .where(and(eq(swellEditorialReviews.status, "pending_review"), lt(swellEditorialReviews.expiresAt, now)));
+  return Number(result[0].affectedRows ?? 0);
 }
 
 // ── Email Sequences ──

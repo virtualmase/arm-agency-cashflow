@@ -1,12 +1,20 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
-import { getPendingEmails, markEmailSent, getRevenueTotal, getPendingPurchaseExceptionCount, getSubscriberCount, getLeadCount, getNewsletterCount, getCompletedPurchasesSince, getFunnelEventCounts } from "./db";
+import { getPendingEmails, markEmailSent, getRevenueTotal, getPendingPurchaseExceptionCount, getSubscriberCount, getLeadCount, getNewsletterCount, getCompletedPurchasesSince, getFunnelEventCounts, getSwellPublicationMonitorByTaskUid, getSwellEditorialReviewBySourceVersion, createSwellEditorialReview, expireStaleSwellEditorialReviews, updateSwellMonitorRun } from "./db";
 import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
+import { sdk } from "./_core/sdk";
 import { timingSafeEqual } from "node:crypto";
+import { SWELL_SITEMAP_URL, buildSwellEditorialPrompt, extractSourceMetadata, parseSwellResourceSitemap, type SwellResourceCandidate } from "./swellEditorial";
 
 const scheduledRouter = Router();
 
-function requireScheduledJobSecret(req: Request, res: Response, next: NextFunction) {
+async function requireScheduledJobSecret(req: Request, res: Response, next: NextFunction) {
+  try {
+    const user = await sdk.authenticateRequest(req);
+    if (user.isCron && user.taskUid) return next();
+  } catch {
+    // Existing bearer-secret jobs remain supported while new Heartbeat callbacks use cron authentication.
+  }
   const configured = process.env.SCHEDULED_JOB_SECRET;
   const supplied = req.headers.authorization?.replace(/^Bearer\s+/i, "");
   if (!configured || !supplied) return res.status(401).json({ error: "unauthorized" });
@@ -113,6 +121,99 @@ scheduledRouter.post("/api/scheduled/weekly-report", async (req, res) => {
   } catch (err) {
     console.error("[Scheduled] Weekly report error:", err);
     res.status(500).json({ error: "Failed to generate weekly report" });
+  }
+});
+
+type EditorialDraft = {
+  topic: string;
+  buyerDecision: string;
+  originalAngle: string;
+  brief: string;
+  suggestedResearchLeads: Array<{ title: string; url: string; why: string }>;
+  suggestedPropertyLinks: Array<{ label: string; url: string; reason: string }>;
+  claimNotes: string;
+};
+
+async function generatePrivateEditorialDraft(candidate: SwellResourceCandidate, html: string): Promise<{ title: string; description: string | null; draft: EditorialDraft }> {
+  const metadata = extractSourceMetadata(html, candidate.url);
+  const response = await invokeLLM({
+    model: "gpt-5-mini",
+    messages: [
+      { role: "system", content: "You create conservative, private B2B editorial review briefs. Never write public-ready copy, invent citations, copy source wording, or imply external endorsement." },
+      { role: "user", content: buildSwellEditorialPrompt(candidate, metadata) },
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "swell_editorial_review",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            topic: { type: "string" }, buyerDecision: { type: "string" }, originalAngle: { type: "string" }, brief: { type: "string" },
+            suggestedResearchLeads: { type: "array", items: { type: "object", properties: { title: { type: "string" }, url: { type: "string" }, why: { type: "string" } }, required: ["title", "url", "why"], additionalProperties: false } },
+            suggestedPropertyLinks: { type: "array", items: { type: "object", properties: { label: { type: "string" }, url: { type: "string" }, reason: { type: "string" } }, required: ["label", "url", "reason"], additionalProperties: false } },
+            claimNotes: { type: "string" },
+          },
+          required: ["topic", "buyerDecision", "originalAngle", "brief", "suggestedResearchLeads", "suggestedPropertyLinks", "claimNotes"],
+          additionalProperties: false,
+        },
+      },
+    },
+  });
+  const content = response.choices[0]?.message?.content;
+  if (typeof content !== "string") throw new Error("Editorial model returned no structured content");
+  return { title: metadata.title, description: metadata.description, draft: JSON.parse(content) as EditorialDraft };
+}
+
+scheduledRouter.post("/api/scheduled/swell-editorial-monitor", async (req, res) => {
+  let taskUid: string | undefined;
+  try {
+    const user = await sdk.authenticateRequest(req);
+    if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron_only" });
+    taskUid = user.taskUid;
+    const monitor = await getSwellPublicationMonitorByTaskUid(taskUid);
+    if (!monitor || !monitor.enabled) return res.json({ ok: true, skipped: "monitor_disabled_or_orphaned" });
+    if (monitor.sourceSitemapUrl !== SWELL_SITEMAP_URL) return res.status(400).json({ error: "unexpected_source_configuration" });
+
+    const sitemapResponse = await fetch(SWELL_SITEMAP_URL, { headers: { accept: "application/xml,text/xml" }, signal: AbortSignal.timeout(15_000) });
+    if (!sitemapResponse.ok) throw new Error(`Swell sitemap fetch failed: ${sitemapResponse.status}`);
+    const candidates = parseSwellResourceSitemap(await sitemapResponse.text());
+    const created: Array<{ id: number; title: string; url: string }> = [];
+
+    for (const candidate of candidates) {
+      if (await getSwellEditorialReviewBySourceVersion(candidate.url, candidate.lastmod)) continue;
+      const sourceResponse = await fetch(candidate.url, { headers: { accept: "text/html" }, signal: AbortSignal.timeout(15_000) });
+      if (!sourceResponse.ok) continue;
+      const { title, description, draft } = await generatePrivateEditorialDraft(candidate, await sourceResponse.text());
+      const expiresAt = new Date(Date.now() + monitor.retentionDays * 24 * 60 * 60 * 1000);
+      const id = await createSwellEditorialReview({
+        sourceUrl: candidate.url,
+        sourceLastmod: candidate.lastmod,
+        sourceTitle: title,
+        sourceDescription: description,
+        generatedBrief: JSON.stringify({ topic: draft.topic, buyerDecision: draft.buyerDecision, originalAngle: draft.originalAngle, brief: draft.brief }),
+        suggestedSources: JSON.stringify(draft.suggestedResearchLeads),
+        suggestedLinks: JSON.stringify(draft.suggestedPropertyLinks),
+        claimNotes: draft.claimNotes,
+        expiresAt,
+      });
+      created.push({ id, title, url: candidate.url });
+    }
+
+    const expired = await expireStaleSwellEditorialReviews();
+    const summary = `Scanned ${candidates.length} Swell resource version(s); created ${created.length} private review record(s); expired ${expired} stale pending record(s).`;
+    await updateSwellMonitorRun(taskUid, summary);
+    if (created.length) {
+      await notifyOwner({
+        title: `Swell editorial review queue: ${created.length} new item${created.length === 1 ? "" : "s"}`,
+        content: `${summary}\n\nPrivate, unapproved briefs:\n${created.map((item) => `#${item.id} — ${item.title}\n${item.url}`).join("\n")}`,
+      });
+    }
+    return res.json({ ok: true, scanned: candidates.length, created: created.length, expired });
+  } catch (error) {
+    console.error("[Scheduled] Swell editorial monitor failed", error);
+    return res.status(500).json({ error: "swell_editorial_monitor_failed", taskUid, message: String(error), timestamp: new Date().toISOString() });
   }
 });
 

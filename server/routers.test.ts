@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import { stripe } from "./stripe";
-import { createFunnelEvent, createOperatingDecision, getCompletedPurchasesSince, getFunnelEventCounts, getOperatingDecisions, getPendingPurchaseExceptionCount, getUserPurchases, updateOperatingDecisionStatus } from "./db";
+import { createFunnelEvent, createOperatingDecision, getCompletedPurchasesSince, getFunnelEventCounts, getOperatingDecisions, getPendingPurchaseExceptionCount, getSwellEditorialReviews, getSwellPublicationMonitor, getUserPurchases, updateOperatingDecisionStatus, updateSwellEditorialReviewStatus } from "./db";
 import { COOKIE_NAME } from "../shared/const";
 import type { TrpcContext } from "./_core/context";
 
@@ -35,6 +35,9 @@ vi.mock("./db", () => ({
   createOperatingDecision: vi.fn().mockResolvedValue(1),
   getOperatingDecisions: vi.fn().mockResolvedValue([]),
   updateOperatingDecisionStatus: vi.fn().mockResolvedValue(undefined),
+  getSwellPublicationMonitor: vi.fn().mockResolvedValue(undefined),
+  getSwellEditorialReviews: vi.fn().mockResolvedValue([]),
+  updateSwellEditorialReviewStatus: vi.fn().mockResolvedValue(undefined),
   getUserPurchases: vi.fn().mockResolvedValue([
     { id: 1, email: "test@example.com", name: "Test User", packageName: "GEO Mastery Course", amount: 29700, stripePaymentIntentId: "pi_test", stripeSessionId: "cs_test", status: "completed", createdAt: new Date() },
   ]),
@@ -456,5 +459,28 @@ describe("owner operating decisions", () => {
     const decisions = await caller.admin.operatingDecisions();
     expect(decisions).toHaveLength(1);
     expect(decisions[0].status).toBe("open");
+  });
+});
+
+describe("Swell editorial review queue", () => {
+  it("keeps the monitor and private reviews restricted to admins", async () => {
+    const caller = appRouter.createCaller(createAuthContext("user"));
+    await expect(caller.admin.swellEditorial.monitor()).rejects.toThrow();
+    await expect(caller.admin.swellEditorial.reviews()).rejects.toThrow();
+    await expect(caller.admin.swellEditorial.updateReview({ id: 1, status: "approved" })).rejects.toThrow();
+  });
+
+  it("returns the monitor and private source-attributed review records to an admin", async () => {
+    vi.mocked(getSwellPublicationMonitor).mockResolvedValueOnce({ id: "swell-marketing-resources", enabled: true, retentionDays: 90 } as any);
+    vi.mocked(getSwellEditorialReviews).mockResolvedValueOnce([{ id: 1, sourceUrl: "https://swellmarketing.xyz/resources/example/", sourceLastmod: "2026-08-18", sourceTitle: "Example", generatedBrief: "{}", status: "pending_review", expiresAt: new Date(), detectedAt: new Date() }] as any);
+    const caller = appRouter.createCaller(createAuthContext("admin"));
+    await expect(caller.admin.swellEditorial.monitor()).resolves.toMatchObject({ enabled: true, retentionDays: 90 });
+    await expect(caller.admin.swellEditorial.reviews()).resolves.toHaveLength(1);
+  });
+
+  it("allows the owner to update a private review status but never creates a public page", async () => {
+    const caller = appRouter.createCaller(createAuthContext("admin"));
+    await expect(caller.admin.swellEditorial.updateReview({ id: 1, status: "approved", reviewNotes: "Verify sources before publishing." })).resolves.toEqual({ success: true });
+    expect(updateSwellEditorialReviewStatus).toHaveBeenCalledWith(1, "approved", "Verify sources before publishing.");
   });
 });

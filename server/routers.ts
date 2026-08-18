@@ -15,6 +15,7 @@ import {
   createEmailSequence,
   getUserPurchases, updateUserStripeCustomerId, createFunnelEvent, getFunnelEventCounts,
   createOperatingDecision, getOperatingDecisions, updateOperatingDecisionStatus,
+  getSwellPublicationMonitor, getSwellEditorialReviews, updateSwellEditorialReviewStatus,
 } from "./db";
 import type Stripe from "stripe";
 
@@ -402,6 +403,19 @@ export const appRouter = router({
           portalViews: eventCounts.portal_viewed || 0,
         },
       };
+    }),
+    swellEditorial: router({
+      monitor: adminProcedure.query(async () => getSwellPublicationMonitor()),
+      reviews: adminProcedure.input(z.object({ limit: z.number().min(1).max(100).optional() }).optional())
+        .query(async ({ input }) => getSwellEditorialReviews(input?.limit ?? 50)),
+      updateReview: adminProcedure.input(z.object({
+        id: z.number().int().positive(),
+        status: z.enum(["approved", "declined", "published"]),
+        reviewNotes: z.string().max(4000).optional(),
+      })).mutation(async ({ input }) => {
+        await updateSwellEditorialReviewStatus(input.id, input.status, input.reviewNotes || null);
+        return { success: true };
+      }),
     }),
   }),
 });
