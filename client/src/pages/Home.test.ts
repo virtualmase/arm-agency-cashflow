@@ -18,4 +18,10 @@ describe("public image SEO conversion path", () => {
     expect(homeSource).toContain("Service terms agreed in writing");
     expect(homeSource).toContain("Scope, timing, participants, and any pilot terms are confirmed during qualification.");
   });
+
+  it("routes direct checkout through an authenticated customer account", () => {
+    expect(homeSource).toContain("Sign in to create a checkout tied to your customer portal.");
+    expect(homeSource).toContain("getLoginUrl()");
+    expect(homeSource).toContain("beginAccountBoundCheckout");
+  });
 });

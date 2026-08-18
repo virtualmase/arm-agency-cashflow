@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
 
 const streamColors: Record<string, { accent: string; dim: string }> = {
@@ -24,8 +25,8 @@ export default function Home() {
       <SignalStrip />
       <Capabilities />
       <EngagementPath />
-      <PricingSection />
-      <QuickStartPackages />
+      <PricingSection user={user} />
+      <QuickStartPackages user={user} />
       <ContactSection />
       <NewsletterSection />
       <Footer />
@@ -167,7 +168,7 @@ function EngagementPath() {
   );
 }
 
-function PricingSection() {
+function PricingSection({ user }: { user: any }) {
   return (
     <section id="pricing" className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto">
       <div className="text-[11px] tracking-[0.2em] uppercase text-[#e8a020] mb-4 flex items-center gap-2.5">Pricing <div className="flex-1 max-w-[60px] h-px bg-[#a06010]" /></div>
@@ -175,21 +176,21 @@ function PricingSection() {
       <p className="text-[15px] font-light text-[#c8cfc8] max-w-[620px] leading-[1.9] mb-4 font-sans">Choose a bounded starting point, a self-serve learning product, or a qualified operating engagement. Every offer names its delivery motion and checkout path.</p>
       <div className="inline-block text-[10px] tracking-[0.15em] uppercase text-[#3ddc84] border border-[#1a7040] px-3 py-1 mb-12">Stripe Checkout · Buyer Receipt · Customer Portal</div>
 
-      <StreamBlock label="Stream 01 · Swell Marketing" title="GEO Retainers" desc="A qualified operating program for entity clarity, authority content, visual discovery foundations, and an evidence-aware public-surface review." color="signal" insightSlug="geo-readiness" secondaryInsightSlug="image-seo-fundamentals"
+      <StreamBlock label="Stream 01 · Swell Marketing" title="GEO Retainers" desc="A qualified operating program for entity clarity, authority content, visual discovery foundations, and an evidence-aware public-surface review." color="signal" insightSlug="geo-readiness" secondaryInsightSlug="image-seo-fundamentals" user={user}
         cards={[
           { key: "swell-geo-starter", tier: "Starter", name: "GEO Starter", tagline: "Foundation review and content plan", price: "$1,500", period: "/month", features: ["Up to 4 authority-content briefs/month", "Structured-data and entity review", "Monthly public-surface review", "First-party conversion signal review", "AI-readable discovery-file review"], cta: "Start Starter" },
           { key: "swell-geo-growth", tier: "Growth", name: "GEO Growth", tagline: "Content and discovery governance", price: "$2,500", period: "/month", features: ["Up to 8 authority-content briefs/month", "Structured-data maintenance plan", "Public discovery review cadence", "Monthly strategy call", "Entity relationship documentation", "Distribution planning"], cta: "Start Growth", featured: true },
           { key: "swell-geo-scale", tier: "Scale", name: "GEO Scale", tagline: "Expanded governance cadence", price: "$3,500", period: "/month", features: ["Up to 12 authority-content briefs/month", "Content governance system", "Weekly reporting cadence", "Bi-weekly strategy calls", "Priority scoped support", "Annual roadmap review"], cta: "Start Scale" },
         ]} />
 
-      <StreamBlock label="Stream 02 · ARM" title="Mandate Services" desc="Sovereign agentic infrastructure consulting. ARM designs, deploys, and governs AI agent stacks for businesses that need human-accountable autonomous systems." color="amber" insightSlug="ai-infrastructure-audit"
+      <StreamBlock label="Stream 02 · ARM" title="Mandate Services" desc="Sovereign agentic infrastructure consulting. ARM designs, deploys, and governs AI agent stacks for businesses that need human-accountable autonomous systems." color="amber" insightSlug="ai-infrastructure-audit" user={user}
         cards={[
           { key: "arm-mandate-core", tier: "Core", name: "ARM Core", tagline: "Mandate and workflow design", price: "$3,000", period: "/month", features: ["Mandate chain design", "Entity and content foundation", "Scoped workflow definition", "Decision record and review cadence", "Monthly operating review"], cta: "Start Core" },
           { key: "arm-mandate-pro", tier: "Pro", name: "ARM Pro", tagline: "Governed implementation planning", price: "$5,000", period: "/month", features: ["Governed implementation plan", "Role and review model", "Scheduled operating brief", "Quarterly scope review", "Recovery and handoff plan", "Escalation pathway"], cta: "Start Pro", featured: true },
           { key: "arm-mandate-sovereign", tier: "Sovereign", name: "ARM Sovereign", tagline: "Enterprise governance design", price: "$8,000", period: "/month", features: ["Enterprise governance design", "Custom mandate chain design", "Defined operator support scope", "Service terms agreed in writing", "Audit-evidence plan", "Governance review cadence"], cta: "Start Sovereign" },
         ]} />
 
-      <StreamBlock label="Stream 03 · Arctura" title="Network Memberships" desc="Join the Arctura Collective — a sovereign network of humans, agents, and infrastructure operating as a unified signal network." color="violet" insightSlug="network-participation"
+      <StreamBlock label="Stream 03 · Arctura" title="Network Memberships" desc="Join the Arctura Collective — a sovereign network of humans, agents, and infrastructure operating as a unified signal network." color="violet" insightSlug="network-participation" user={user}
         cards={[
           { key: "arctura-node", tier: "Node", name: "Node Member", tagline: "Signal network access", price: "$500", period: "/month", features: ["Arctura signal network access", "ARM Framework license", "Weekly Signal Report", "Community access"], cta: "Join as Node" },
           { key: "arctura-hub", tier: "Hub", name: "Hub Member", tagline: "Co-creation + revenue share", price: "$1,000", period: "/month", features: ["Full ARM Framework license", "Co-creation rights", "Referral revenue share", "Monthly council call", "Priority network routing"], cta: "Join as Hub", featured: true },
@@ -201,7 +202,7 @@ function PricingSection() {
 
 type CardProps = { key: string; tier: string; name: string; tagline: string; price: string; period: string; features: string[]; cta: string; featured?: boolean };
 
-function StreamBlock({ label, title, desc, color, cards, insightSlug, secondaryInsightSlug }: { label: string; title: string; desc: string; color: string; cards: CardProps[]; insightSlug: string; secondaryInsightSlug?: string }) {
+function StreamBlock({ label, title, desc, color, cards, insightSlug, secondaryInsightSlug, user }: { label: string; title: string; desc: string; color: string; cards: CardProps[]; insightSlug: string; secondaryInsightSlug?: string; user: any }) {
   const c = streamColors[color] || streamColors.signal;
   return (
     <div className="mb-16">
@@ -213,13 +214,13 @@ function StreamBlock({ label, title, desc, color, cards, insightSlug, secondaryI
         {secondaryInsightSlug ? <Link href={`/insights/${secondaryInsightSlug}`} className="inline-block text-[10px] tracking-[0.14em] uppercase no-underline border-b pb-1 text-[#e8a020] border-[#a06010]">Read the visual discovery guide →</Link> : null}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {cards.map(card => <PricingCard {...card} productKey={card.key} color={color} key={card.key} />)}
+        {cards.map(card => <PricingCard {...card} productKey={card.key} color={color} user={user} key={card.key} />)}
       </div>
     </div>
   );
 }
 
-function PricingCard({ productKey, tier, name, tagline, price, period, features, cta, featured, color }: CardProps & { productKey: string; color: string }) {
+function PricingCard({ productKey, tier, name, tagline, price, period, features, cta, featured, color, user }: CardProps & { productKey: string; color: string; user: any }) {
   const c = streamColors[color] || streamColors.signal;
   const trackCta = trpc.analytics.track.useMutation();
   const checkout = trpc.stripe.createCheckout.useMutation({
@@ -231,6 +232,14 @@ function PricingCard({ productKey, tier, name, tagline, price, period, features,
   const beginQualifiedConversation = () => {
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
     toast.info(`Tell us about your ${name} objective so we can confirm scope and fit.`);
+  };
+  const beginAccountBoundCheckout = () => {
+    if (!user) {
+      toast.info("Sign in to create a checkout tied to your customer portal.");
+      window.location.href = getLoginUrl();
+      return;
+    }
+    checkout.mutate({ productKey });
   };
   return (
     <div className="p-8 bg-[#0b1210] border border-white/[0.07] relative transition-all hover:-translate-y-0.5"
@@ -246,7 +255,7 @@ function PricingCard({ productKey, tier, name, tagline, price, period, features,
       <ul className="space-y-2.5 mb-8">
         {features.map((f, i) => <li key={i} className="flex items-start gap-2.5 text-[14px] text-[#c8cfc8]"><span className="text-[12px] mt-0.5 shrink-0" style={{ color: c.accent }}>→</span>{f}</li>)}
       </ul>
-      <button onClick={() => { trackCta.mutate({ eventName: "cta_click", path: "/", productKey, stream }); requiresQualification ? beginQualifiedConversation() : checkout.mutate({ productKey }); }} disabled={checkout.isPending}
+      <button onClick={() => { trackCta.mutate({ eventName: "cta_click", path: "/", productKey, stream }); requiresQualification ? beginQualifiedConversation() : beginAccountBoundCheckout(); }} disabled={checkout.isPending}
         className="w-full py-3.5 px-6 border text-[11px] font-semibold tracking-[0.15em] uppercase text-center transition-all"
         style={{ borderColor: c.accent, color: featured ? "#080a08" : c.accent, background: featured ? c.accent : "transparent" }}
         onMouseEnter={(e) => { if (!featured) { e.currentTarget.style.background = c.accent; e.currentTarget.style.color = "#080a08"; } }}
@@ -257,7 +266,7 @@ function PricingCard({ productKey, tier, name, tagline, price, period, features,
   );
 }
 
-function QuickStartPackages() {
+function QuickStartPackages({ user }: { user: any }) {
   const trackCta = trpc.analytics.track.useMutation();
   const checkout = trpc.stripe.createCheckout.useMutation({
     onSuccess: (data) => { if (data.url) { toast.info("Redirecting to checkout..."); window.open(data.url, "_blank"); } },
@@ -291,7 +300,7 @@ function QuickStartPackages() {
               <div className="text-base font-semibold text-[#eaf0ea] mb-1.5">{pkg.name}</div>
               <div className="text-[13px] text-[#667066] mb-4 leading-relaxed">{pkg.desc}</div>
               <div className="text-3xl font-light mb-4" style={{ color: c.accent }}>{pkg.price}</div>
-              <button onClick={() => { const stream = pkg.key.startsWith("academy-") ? "academy" : pkg.key.startsWith("coreweaver-") ? "coreweaver" : "arm"; trackCta.mutate({ eventName: "cta_click", path: "/", productKey: pkg.key, stream }); checkout.mutate({ productKey: pkg.key }); }} disabled={checkout.isPending}
+              <button onClick={() => { const stream = pkg.key.startsWith("academy-") ? "academy" : pkg.key.startsWith("coreweaver-") ? "coreweaver" : "arm"; trackCta.mutate({ eventName: "cta_click", path: "/", productKey: pkg.key, stream }); if (!user) { toast.info("Sign in to create a checkout tied to your customer portal."); window.location.href = getLoginUrl(); return; } checkout.mutate({ productKey: pkg.key }); }} disabled={checkout.isPending}
                 className="w-full py-3 border text-[11px] font-semibold tracking-[0.15em] uppercase transition-all"
                 style={{ borderColor: c.accent, color: c.accent, background: "transparent" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = c.accent; e.currentTarget.style.color = "#080a08"; }}

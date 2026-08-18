@@ -96,7 +96,7 @@ export const appRouter = router({
 
   stripe: router({
     // Universal checkout for any product by key
-    createCheckout: publicProcedure.input(z.object({
+    createCheckout: protectedProcedure.input(z.object({
       productKey: z.string(),
       email: z.string().email().optional(),
     })).mutation(async ({ input, ctx }) => {
@@ -119,13 +119,13 @@ export const appRouter = router({
       const session = await stripe.checkout.sessions.create({
         mode: isSubscription ? "subscription" : "payment",
         line_items: [lineItem],
-        customer_email: input.email || ctx.user?.email || undefined,
-        client_reference_id: ctx.user?.id?.toString(),
+        customer_email: ctx.user.email || input.email || undefined,
+        client_reference_id: ctx.user.id.toString(),
         metadata: {
           product_key: product.key,
           product_name: product.name,
           stream: product.stream,
-          user_id: ctx.user?.id?.toString() || "",
+          user_id: ctx.user.id.toString(),
         },
         success_url: `${origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/#pricing`,
@@ -135,8 +135,8 @@ export const appRouter = router({
       // Track one-time purchases
       if (!isSubscription) {
         await createPurchase({
-          email: input.email || ctx.user?.email || "unknown",
-          name: ctx.user?.name || null,
+          email: ctx.user.email || input.email || "unknown",
+          name: ctx.user.name || null,
           packageName: product.name,
           productKey: product.key,
           stream: product.stream,

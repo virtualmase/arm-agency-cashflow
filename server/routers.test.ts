@@ -150,22 +150,33 @@ describe("newsletter.subscribe", () => {
 });
 
 describe("stripe.createCheckout", () => {
+  it("requires an authenticated purchasing account", async () => {
+    const caller = appRouter.createCaller(createPublicContext());
+    await expect(caller.stripe.createCheckout({ productKey: "academy-geo-mastery" })).rejects.toThrow();
+  });
+
   it("creates a checkout session for a subscription product", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthContext();
     const caller = appRouter.createCaller(ctx);
     const result = await caller.stripe.createCheckout({ productKey: "swell-geo-starter" });
     expect(result.url).toBeTruthy();
+    expect(stripe.checkout.sessions.create).toHaveBeenCalledWith(expect.objectContaining({
+      client_reference_id: "1",
+      customer_email: "test@example.com",
+      success_url: "https://test.example.com/thank-you?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://test.example.com/#pricing",
+    }));
   });
 
   it("creates a checkout session for a one-time product", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthContext();
     const caller = appRouter.createCaller(ctx);
     const result = await caller.stripe.createCheckout({ productKey: "academy-geo-mastery" });
     expect(result.url).toBeTruthy();
   });
 
   it("throws for unknown product key", async () => {
-    const ctx = createPublicContext();
+    const ctx = createAuthContext();
     const caller = appRouter.createCaller(ctx);
     await expect(caller.stripe.createCheckout({ productKey: "nonexistent" })).rejects.toThrow();
   });

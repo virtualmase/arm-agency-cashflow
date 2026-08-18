@@ -50,13 +50,14 @@
 - [x] Add passing cross-user data-isolation tests for purchases, subscriptions, invoices, and cancellation actions
 - [x] Add revenue-funnel instrumentation and an owner dashboard for acquisition, conversion, retention, and customer-health signals
 - [x] Validate critical customer and owner flows, run automated tests and type checks, then checkpoint the production-ready release
-- [ ] Restore public availability for the primary custom domain before any paid acquisition or SEO launch
+- [x] Restore public availability for the primary custom domain before any paid acquisition or SEO launch
 - [ ] After August 24, verify `arm-agency.xyz` serves the live site, confirm canonical routing and Stripe return URLs, then clear the launch hold
-- [ ] Verify arm-agency.xyz and www HTTPS, redirect behavior, and the intended public deployment identity
-- [ ] Publish the current validated evidence-safe checkpoint to arm-agency.xyz and www before continuing launch gates
-- [ ] Change primary-host canonical, Open Graph, sitemap, and AI-discovery metadata from the temporary deployment host to arm-agency.xyz
-- [ ] Verify canonical metadata, public discovery files, and private-route indexing boundaries on arm-agency.xyz
+- [x] Verify arm-agency.xyz and www HTTPS, redirect behavior, and the intended public deployment identity
+- [x] Publish the current validated evidence-safe checkpoint to arm-agency.xyz and www before continuing launch gates
+- [x] Change primary-host canonical, Open Graph, sitemap, and AI-discovery metadata from the temporary deployment host to arm-agency.xyz
+- [x] Verify canonical metadata, public discovery files, and private-route indexing boundaries on arm-agency.xyz
 - [ ] Verify offer and lead-capture routing plus the safe Stripe return configuration on arm-agency.xyz
+- [ ] Enforce authenticated checkout creation so Stripe return, portal linkage, and buyer ownership are bound to the purchasing account
 - [ ] Record client-success capacity, support ownership, and owner launch approval before any initial promotion
 - [x] Add a reusable technical launch-verification script for primary-domain, public-route, private-route, canonical, and security-header checks
 - [x] Audit the complete client lifecycle for missing pre-sale, delivery, renewal, and referral assets
