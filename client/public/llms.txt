@@ -12,6 +12,17 @@ ARM Agency helps accountable teams design, deploy, and govern autonomous AI work
 
 ## Customer paths
 
+## Agentic commerce resources
+
+This `.xyz` property is the independent legacy/operating branch of ARM Agency. The current `.com` property owns the strategic x402/AiFi pillar at https://www.arm-agency.com/resources/agentic-commerce-x402-aifi/. These `.xyz` guides provide deeper implementation and readiness treatment; they are not mirrors or cross-domain canonicals.
+
+- Agentic commerce infrastructure: https://arm-agency.xyz/insights/agentic-commerce-infrastructure
+- x402 agent payments: https://arm-agency.xyz/insights/x402-agent-payments
+- AiFi governance controls: https://arm-agency.xyz/insights/aifi-governance-controls
+- Agent payment readiness: https://arm-agency.xyz/insights/agent-payment-readiness
+
+ARM Agency uses AiFi as a category label for governed AI-native financial operations, not as a claim of affiliation with any AiFi-branded company or institute. x402 protocol support does not by itself establish budget authority, compliance, safe fulfillment, or operational readiness.
+
 - Browse public offerings: https://arm-agency.xyz/#pricing
 - Request a qualified conversation: https://arm-agency.xyz/#contact
 - Existing customers use the authenticated client portal at /portal.

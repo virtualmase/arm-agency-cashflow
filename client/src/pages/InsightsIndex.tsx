@@ -15,6 +15,12 @@ export const insightLibraryGroups = [
     slugs: ["ai-infrastructure-audit", "bounded-agent-stack-setup"],
   },
   {
+    label: "Agentic Commerce Operations",
+    title: "Connect machine payments to bounded authority, fulfillment, and financial evidence.",
+    body: "This cluster separates x402 payment transport from AiFi governance, then turns both into an inspectable readiness and implementation path for autonomous economic activity.",
+    slugs: ["agentic-commerce-infrastructure", "x402-agent-payments", "aifi-governance-controls", "agent-payment-readiness"],
+  },
+  {
     label: "AI Mastery and Operator Decisions",
     title: "Build accountable internal capability before treating AI as an outsourced black box.",
     body: "These guides help agency operators and accountable leaders choose an appropriate learning path, define bounded practice conditions, and recognize when a diagnostic or implementation scope is the better next step.",

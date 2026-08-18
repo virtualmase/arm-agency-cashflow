@@ -80,6 +80,7 @@
 - [x] Deepen client-facing delivery, onboarding, and service-quality assets through iterative review
 - [x] Add a concrete evidence-based pipeline-learning review and then complete the commercial account-planning and partnership workstream
 - [ ] Maintain an iterative five-stream authority-content and conversion optimization program
+- [x] Publish an evidence-led agentic commerce silo connecting x402 payment mechanics, AiFi governance, and production-readiness controls
 - [x] Create the public-claim registry and evidence-review protocol for ongoing authority-content quality control
 - [x] Establish image SEO standards for filenames, formats, dimensions, alt text, captions, metadata, and visual evidence controls
 - [x] Audit current public image usage and document that semantic image metadata is deferred until an approved meaningful visual asset exists

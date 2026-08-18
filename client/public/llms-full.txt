@@ -36,6 +36,19 @@ The library describes controllable foundations: useful public information, acces
 
 ## Customer experience
 
+## Agentic commerce content silo
+
+Publishing boundary: `arm-agency.xyz` is the independent legacy/operating branch. `www.arm-agency.com` is the current ARM Agency branch and owns the strategic x402/AiFi pillar. The pages below are `.xyz` implementation guides with self-canonical URLs, not duplicated `.com` pages.
+
+ARM Agency publishes an evidence-led x402 and AiFi resource cluster for teams evaluating machine-to-machine payments and bounded financial autonomy:
+
+- Pillar: https://arm-agency.xyz/insights/agentic-commerce-infrastructure
+- Protocol mechanics: https://arm-agency.xyz/insights/x402-agent-payments
+- Financial governance: https://arm-agency.xyz/insights/aifi-governance-controls
+- Production gate: https://arm-agency.xyz/insights/agent-payment-readiness
+
+x402 is represented as an open payment protocol, not a complete financial-control system. AiFi is defined on these pages as the operating layer for delegated agent authority, wallets, budgets, approvals, settlement, reconciliation, and audit evidence. The label does not imply affiliation with a named AiFi company or institute.
+
 Public visitors can review offers, submit a contact request, subscribe to research updates, or purchase a bounded public offer. Authenticated customers can view eligible purchases, subscriptions, and invoices in the client portal. Cancellation requests are verified against the customer’s Stripe identity before a subscription is changed.
 
 ## Citation guidance

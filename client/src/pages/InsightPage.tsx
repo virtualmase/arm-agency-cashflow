@@ -14,11 +14,107 @@ type Insight = {
   cta: string;
   ctaHref: string;
   sources?: Source[];
-  related?: Array<{ slug: string; label: string; description: string }>;
+  related?: Array<{ slug?: string; label: string; description?: string; href?: string }>;
   image?: { src: string; alt: string; width: number; height: number; caption: string };
 };
 
 export const insights: Record<string, Insight> = {
+  "agentic-commerce-infrastructure": {
+    stream: "ARM Agency · Agent operations",
+    eyebrow: "Pillar guide · x402 and AiFi",
+    title: "Agentic commerce infrastructure: from x402 payment to governed AiFi operation",
+    description: "The legacy ARM operating branch's implementation framework for teams preparing agents to buy APIs, data, tools, or services without confusing payment transport with financial authority.",
+    decision: "Use this pillar when an agent may initiate a real economic action and the organization must connect payment protocol, wallet authority, budget policy, fulfillment, settlement, and audit evidence.",
+    sections: [
+      { title: "x402 is a payment transport, not a spending policy", body: "x402 standardizes how a client encounters a paid resource, receives payment requirements, returns signed authorization, and receives the resource after verification and settlement. The protocol does not decide which agent should be funded, which vendor is approved, or how much an agent may spend." },
+      { title: "AiFi begins where autonomous action meets financial control", body: "AiFi is used here as a category label for AI-native financial operations: agents acting under delegated authority across wallets, budgets, payments, settlement, reconciliation, and compliance controls. The term is emerging and is also used by named companies and institutes, so every publication should define the intended meaning rather than imply one universal standard." },
+      { title: "The operating chain must remain inspectable", body: "A production path should preserve the requester, mandate, policy decision, quoted resource, amount, asset, network, authorization, facilitator response, settlement reference, delivered result, and exception outcome. A transaction hash alone does not explain why the action was permitted or whether fulfillment met the mandate." },
+      { title: "Bounded autonomy is the credible launch posture", body: "Begin with one resource type, one network, fixed or tightly bounded amounts, allowlisted counterparties, explicit timeouts, idempotent fulfillment, and human review above a defined threshold. Expand only after observed failure modes, reconciliation, and incident response are understood." },
+    ],
+    checklist: ["One paid agent job and its business owner are named.", "The payment scheme, network, asset, facilitator, and settlement evidence are understood.", "Wallet authority, per-call limits, aggregate budgets, and approval thresholds are enforced outside the model.", "Replay, duplicate fulfillment, timeout, refund, dispute, and failed-settlement behavior are testable.", "Finance and operations owners can reconcile payment intent, settlement, and delivered resource."],
+    deliverables: ["Agentic commerce architecture and trust-boundary map", "x402 resource-server or client integration specification", "AiFi mandate, budget, and approval policy", "Settlement, fulfillment, and reconciliation evidence contract"],
+    cta: "Scope an agentic commerce audit",
+    ctaHref: "/#contact",
+    related: [
+      { label: "Understand the x402 payment flow", href: "/insights/x402-agent-payments" },
+      { label: "Design AiFi controls", href: "/insights/aifi-governance-controls" },
+      { label: "Use the readiness checklist", href: "/insights/agent-payment-readiness" },
+    ],
+    sources: [
+      { label: "x402 Foundation: protocol specification v2", href: "https://github.com/x402-foundation/x402/blob/main/specs/x402-specification-v2.md" },
+      { label: "Coinbase Developer Platform: how x402 works", href: "https://docs.cdp.coinbase.com/x402/core-concepts/how-it-works" },
+      { label: "IMF: How Agentic AI Will Reshape Payments", href: "https://www.imf.org/en/publications/imf-notes/issues/2026/04/22/how-agentic-ai-will-reshape-payments-575560" },
+    ],
+  },
+  "x402-agent-payments": {
+    stream: "Agentic commerce infrastructure",
+    eyebrow: "Protocol guide · x402",
+    title: "x402 agent payments: what the protocol handles—and what your operation still owns",
+    description: "A plain operating guide to HTTP 402 payment requirements, signed authorization, facilitator verification, settlement, and resource delivery.",
+    decision: "Use this guide when deciding whether x402 is suitable for a paid API, MCP tool, data resource, or agent-to-agent service and what must exist around the protocol before production use.",
+    sections: [
+      { title: "The core exchange is request, requirement, payment, resource", body: "A client requests a protected resource. The resource server returns payment requirements. The client constructs a supported payment payload and retries. The server verifies and settles directly or through a facilitator, then returns the resource and settlement response." },
+      { title: "Version and header details matter", body: "The current x402 v2 specification separates core types, scheme logic, and transport representation. For HTTP, payment requirements and signatures use defined headers and encoded schemas. Implement against the selected specification and SDK version rather than copying an older demonstration." },
+      { title: "The facilitator reduces infrastructure, not accountability", body: "A facilitator can verify and settle supported scheme and network pairs. The resource server still owns accurate pricing, correct recipient configuration, authorization handling, fulfillment idempotency, error behavior, logs, and the decision to release the protected resource." },
+      { title: "Security is larger than signature validity", body: "Nonce and time-window controls address replay at the payment layer. Production design must also consider compromised agent credentials, prompt-driven spend, duplicate requests, vendor substitution, denial of service, stale quotes, reconciliation gaps, and unsafe retry behavior." },
+    ],
+    checklist: ["The protected resource and price are explicit.", "The client, resource server, facilitator, scheme, network, asset, and recipient are identified.", "Retries cannot create duplicate charges or duplicate fulfillment.", "Payment failure and settlement uncertainty fail safely.", "Secrets and wallet signing authority remain outside prompts and browser-visible code."],
+    deliverables: ["x402 integration decision record", "Payment and fulfillment sequence diagram", "Error, retry, and idempotency test plan", "Settlement evidence and operational handoff"],
+    cta: "Review an x402 implementation",
+    ctaHref: "/#contact",
+    related: [{ label: "Return to the agentic commerce pillar", href: "/insights/agentic-commerce-infrastructure" }, { label: "Add AiFi governance", href: "/insights/aifi-governance-controls" }],
+    sources: [
+      { label: "x402 Foundation: protocol specification v2", href: "https://github.com/x402-foundation/x402/blob/main/specs/x402-specification-v2.md" },
+      { label: "Coinbase Developer Platform: quickstart for sellers", href: "https://docs.cdp.coinbase.com/x402/quickstart-for-sellers" },
+      { label: "Cloudflare: x402 Foundation and agent payment support", href: "https://blog.cloudflare.com/x402/" },
+    ],
+  },
+  "aifi-governance-controls": {
+    stream: "Agentic commerce infrastructure",
+    eyebrow: "Operating guide · AiFi",
+    title: "AiFi governance: the controls required before an AI agent can spend",
+    description: "A bounded-autonomy model for wallets, mandates, budgets, counterparties, approvals, settlement, and financial evidence.",
+    decision: "Use this guide when a team is moving from an agent that recommends a transaction to one that can authorize, initiate, or complete a financial action.",
+    sections: [
+      { title: "Define AiFi before using the label", body: "AiFi can refer broadly to AI-native finance, agentic finance, or a particular company or institute. ARM Agency uses it here for the operating layer that governs delegated financial actions by software agents. This is a category definition, not a claim of affiliation with AiFi-branded organizations." },
+      { title: "Authority must be machine-enforced", body: "A system prompt is not a financial control. Allowed assets, networks, recipients, tools, per-action limits, time windows, aggregate budgets, and escalation thresholds should be enforced by deterministic policy and signing infrastructure outside the model." },
+      { title: "Separate intent, authorization, execution, and settlement", body: "The record should distinguish what the user or system requested, what the policy engine approved, what the agent attempted, what the payment rail executed, and what ultimately settled. Keeping these states separate supports investigation, reconciliation, and safe recovery." },
+      { title: "Design for exception ownership", body: "Named owners need procedures for insufficient funds, invalid signatures, price changes, compromised credentials, duplicate charges, partial fulfillment, refunds, disputes, sanctions or compliance flags, and facilitator or chain outages." },
+    ],
+    checklist: ["A legal or accountable principal delegates a bounded mandate.", "Policy and signing controls are independent of model output.", "Counterparties and resources can be allowlisted or risk-classified.", "Every action produces an immutable correlation and evidence trail.", "Finance, security, and operations owners agree on exception handling."],
+    deliverables: ["AiFi authority and mandate model", "Wallet and budget control matrix", "Financial-action state machine", "Audit, reconciliation, and incident-response requirements"],
+    cta: "Design bounded financial autonomy",
+    ctaHref: "/#contact",
+    related: [{ label: "Return to the agentic commerce pillar", href: "/insights/agentic-commerce-infrastructure" }, { label: "Review x402 mechanics", href: "/insights/x402-agent-payments" }],
+    sources: [
+      { label: "IMF: How Agentic AI Will Reshape Payments", href: "https://www.imf.org/en/publications/imf-notes/issues/2026/04/22/how-agentic-ai-will-reshape-payments-575560" },
+      { label: "Visa: Agentic payments from the ground up", href: "https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up" },
+      { label: "x402 v2: security considerations", href: "https://github.com/x402-foundation/x402/blob/main/specs/x402-specification-v2.md#10-security-considerations" },
+    ],
+  },
+  "agent-payment-readiness": {
+    stream: "Agentic commerce infrastructure",
+    eyebrow: "Decision tool · Production gate",
+    title: "Agent payment readiness: a production gate for x402 and AiFi systems",
+    description: "A go, pilot, or stop framework for teams deciding whether an agent should receive real payment authority.",
+    decision: "Use this checklist before funding a wallet, enabling a paid resource, or letting an agent cross from recommendation into financial execution.",
+    sections: [
+      { title: "Go only when the job is bounded", body: "The agent should have a named principal, defined resource class, approved counterparties, deterministic limits, known data boundary, and testable success condition. Broad purchasing authority is not a minimum viable pilot." },
+      { title: "Pilot when the protocol works but operations are unproven", body: "Testnet, sandbox, or tightly capped production pilots are appropriate when payment formation and settlement work but reconciliation, exception ownership, vendor quality, or fulfillment evidence still need observation." },
+      { title: "Stop when authority is implicit", body: "Do not proceed when the model chooses wallets, recipients, networks, assets, or budgets without independent controls; when secrets enter prompts; when fulfillment is not idempotent; or when no owner can freeze spending and investigate." },
+      { title: "Expand from evidence, not novelty", body: "Higher limits, more counterparties, dynamic pricing, and broader autonomy should follow documented transaction history, failure review, reconciliation accuracy, and owner approval—not protocol popularity or social attention." },
+    ],
+    checklist: ["Mandate owner and wallet owner are named.", "Spend limits and approved resources are enforced outside the model.", "Test cases cover success, replay, timeout, duplicate request, settlement failure, and partial fulfillment.", "Monitoring can freeze the agent without waiting for model cooperation.", "A reviewer can trace each resource to intent, authorization, payment, settlement, and result."],
+    deliverables: ["Go/pilot/stop readiness assessment", "Control and evidence gap register", "Bounded pilot specification", "Expansion criteria and human approval gate"],
+    cta: "Run an agent-payment readiness review",
+    ctaHref: "/#contact",
+    related: [{ label: "Return to the agentic commerce pillar", href: "/insights/agentic-commerce-infrastructure" }, { label: "Understand x402", href: "/insights/x402-agent-payments" }, { label: "Design AiFi controls", href: "/insights/aifi-governance-controls" }],
+    sources: [
+      { label: "Coinbase Developer Platform: x402 client and server roles", href: "https://docs.cdp.coinbase.com/x402/core-concepts/client-server" },
+      { label: "x402 Foundation: protocol specification v2", href: "https://github.com/x402-foundation/x402/blob/main/specs/x402-specification-v2.md" },
+      { label: "IMF: How Agentic AI Will Reshape Payments", href: "https://www.imf.org/en/publications/imf-notes/issues/2026/04/22/how-agentic-ai-will-reshape-payments-575560" },
+    ],
+  },
   "ai-infrastructure-audit": {
     stream: "ARM Mandate",
     eyebrow: "Decision guide · bounded diagnostic",
@@ -352,7 +448,7 @@ export default function InsightPage() {
       <div className="mt-14 space-y-10">{insight.sections.map((section) => <section key={section.title}><h2 className="text-2xl font-light text-[#eaf0ea] mb-3">{section.title}</h2><p className="text-[15px] leading-[1.9] text-[#c8cfc8] font-sans">{section.body}</p>{section.citations?.length ? <p className="mt-3 text-[11px] leading-[1.7] text-[#8e988e] font-sans">Sources: {section.citations.map((source, index) => <span key={source.href}>{index ? " · " : ""}<a href={source.href} target="_blank" rel="noreferrer" className="text-[#e8a020] hover:underline">[{index + 1}] {source.label}</a></span>)}</p> : null}</section>)}</div>
       <div className="mt-16 grid md:grid-cols-2 gap-6"><section className="p-6 bg-[#0d100d] border border-white/[0.07]"><h2 className="text-lg font-light text-[#eaf0ea] mb-4">Readiness questions</h2><ul className="space-y-3">{insight.checklist.map((item) => <li key={item} className="flex gap-3 text-[14px] leading-[1.7] font-sans"><span className="text-[#3ddc84]">→</span>{item}</li>)}</ul></section><section className="p-6 bg-[#0d100d] border border-white/[0.07]"><h2 className="text-lg font-light text-[#eaf0ea] mb-4">What a scoped next step can deliver</h2><ul className="space-y-3">{insight.deliverables.map((item) => <li key={item} className="flex gap-3 text-[14px] leading-[1.7] font-sans"><span className="text-[#e8a020]">→</span>{item}</li>)}</ul></section></div>
       <section className="mt-16 p-8 bg-[#111411] border border-[#1a7040] text-center"><div className="text-[10px] tracking-[0.18em] uppercase text-[#3ddc84] mb-3">A bounded next step</div><h2 className="text-2xl font-light text-[#eaf0ea] mb-3">Need help applying this to your operating context?</h2><p className="text-[14px] leading-[1.8] text-[#c8cfc8] max-w-xl mx-auto font-sans mb-6">We begin by clarifying the decision, scope, ownership, and constraints. The appropriate next step may be a diagnostic, a workshop, a bounded implementation, or a respectful no-go decision.</p><a href={insight.ctaHref} className="inline-block px-6 py-3 bg-[#e8a020] text-[#080a08] text-[11px] font-medium tracking-[0.13em] uppercase no-underline hover:opacity-85">{insight.cta} →</a></section>
-      {insight.related?.length ? <section className="mt-10"><h2 className="text-[11px] tracking-[0.14em] uppercase text-[#667066] mb-4">Continue the decision path</h2><div className="grid md:grid-cols-3 gap-4">{insight.related.map((item) => <Link key={item.slug} href={`/insights/${item.slug}`} className="block p-5 bg-[#0d100d] border border-white/[0.07] no-underline hover:border-[#3ddc84]/60 transition-colors"><h3 className="text-[14px] font-medium text-[#eaf0ea] mb-2">{item.label} <span className="text-[#3ddc84]">→</span></h3><p className="text-[12px] leading-[1.7] text-[#8e988e] font-sans">{item.description}</p></Link>)}</div></section> : null}
+      {insight.related?.length ? <section className="mt-10"><h2 className="text-[11px] tracking-[0.14em] uppercase text-[#667066] mb-4">Continue the decision path</h2><div className="grid md:grid-cols-3 gap-4">{insight.related.map((item) => { const href = item.href ?? `/insights/${item.slug}`; return <Link key={href} href={href} className="block p-5 bg-[#0d100d] border border-white/[0.07] no-underline hover:border-[#3ddc84]/60 transition-colors"><h3 className="text-[14px] font-medium text-[#eaf0ea] mb-2">{item.label} <span className="text-[#3ddc84]">→</span></h3>{item.description ? <p className="text-[12px] leading-[1.7] text-[#8e988e] font-sans">{item.description}</p> : null}</Link>; })}</div></section> : null}
       {insight.sources?.length ? <section className="mt-10 border-t border-white/[0.07] pt-7"><h2 className="text-[11px] tracking-[0.14em] uppercase text-[#667066] mb-4">Sources</h2><ul className="space-y-2">{insight.sources.map((source) => <li key={source.href}><a href={source.href} target="_blank" rel="noreferrer" className="text-[12px] text-[#e8a020] hover:underline">{source.label} ↗</a></li>)}</ul></section> : null}
     </article>
   </main>;
