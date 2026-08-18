@@ -4,7 +4,8 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, adminProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { notifyOwner } from "./_core/notification";
-import { stripe, ALL_PRODUCTS, getProductByKey } from "./stripe";
+import { stripe, ALL_PRODUCTS, assertStripeConfigured, getProductByKey } from "./stripe";
+import { getCanonicalOrigin } from "./_core/canonicalOrigin";
 import {
   createLead, getLeads, updateLeadStatus, getLeadCount,
   subscribeNewsletter, getNewsletterCount,
@@ -100,7 +101,8 @@ export const appRouter = router({
       productKey: z.string(),
       email: z.string().email().optional(),
     })).mutation(async ({ input, ctx }) => {
-      const origin = ctx.req.headers.origin || ctx.req.headers.referer?.replace(/\/$/, '') || "http://localhost:3000";
+      assertStripeConfigured();
+      const origin = getCanonicalOrigin();
       const product = getProductByKey(input.productKey);
       if (!product) throw new Error(`Product not found: ${input.productKey}`);
 

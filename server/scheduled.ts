@@ -1,12 +1,36 @@
-import { Router } from "express";
+import { Router, type NextFunction, type Request, type Response } from "express";
 import { getPendingEmails, markEmailSent, getRevenueTotal, getPendingPurchaseExceptionCount, getSubscriberCount, getLeadCount, getNewsletterCount, getCompletedPurchasesSince, getFunnelEventCounts } from "./db";
 import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
+import { timingSafeEqual } from "node:crypto";
 
 const scheduledRouter = Router();
 
+function requireScheduledJobSecret(req: Request, res: Response, next: NextFunction) {
+  const configured = process.env.SCHEDULED_JOB_SECRET;
+  const supplied = req.headers.authorization?.replace(/^Bearer\s+/i, "");
+  if (!configured || !supplied) return res.status(401).json({ error: "unauthorized" });
+
+  const expected = Buffer.from(configured);
+  const actual = Buffer.from(supplied);
+  if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
+    return res.status(401).json({ error: "unauthorized" });
+  }
+  next();
+}
+
+scheduledRouter.use("/api/scheduled", requireScheduledJobSecret);
+
 // Email sequence processor - triggered by heartbeat cron
 scheduledRouter.post("/api/scheduled/email-sequences", async (req, res) => {
+  // Never advance sequence state until a delivery provider confirms acceptance.
+  if (process.env.EMAIL_DELIVERY_ENABLED !== "true") {
+    return res.status(503).json({
+      error: "email_delivery_not_configured",
+      message: "Email delivery is disabled; no sequence records were changed.",
+    });
+  }
+
   try {
     const pendingEmails = await getPendingEmails();
     let sent = 0;

@@ -43,6 +43,7 @@ vi.mock("./db", () => ({
 
 // Mock stripe
 vi.mock("./stripe", () => ({
+  assertStripeConfigured: vi.fn(),
   stripe: {
     checkout: {
       sessions: {
@@ -163,8 +164,8 @@ describe("stripe.createCheckout", () => {
     expect(stripe.checkout.sessions.create).toHaveBeenCalledWith(expect.objectContaining({
       client_reference_id: "1",
       customer_email: "test@example.com",
-      success_url: "https://test.example.com/thank-you?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "https://test.example.com/#pricing",
+      success_url: "https://arm-agency.xyz/thank-you?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://arm-agency.xyz/#pricing",
     }));
   });
 

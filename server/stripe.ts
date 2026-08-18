@@ -1,10 +1,16 @@
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+// A non-secret sentinel keeps metadata-only imports testable. Every operation
+// must still pass assertStripeConfigured before making a Stripe API request.
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_unconfigured", {
   apiVersion: "2026-04-22.dahlia",
 });
 
 export { stripe };
+
+export function assertStripeConfigured() {
+  if (!process.env.STRIPE_SECRET_KEY) throw new Error("Stripe is not configured");
+}
 
 // ── STREAM 1: Swell GEO Retainers (Recurring) ──
 // ── STREAM 2: ARM Mandate Services (Recurring) ──
