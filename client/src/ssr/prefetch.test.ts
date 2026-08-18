@@ -25,6 +25,7 @@ describe("SSR indexing policy", () => {
       "/insights/technical-seo-ai-discovery",
       "/insights/structured-data-governance",
       "/insights/evidence-led-content-architecture",
+      "/insights/ai-discovery-measurement",
     ];
 
     for (const route of routes) {

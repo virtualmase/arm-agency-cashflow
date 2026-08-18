@@ -21,6 +21,7 @@ ARM Agency helps accountable teams design, deploy, and govern autonomous AI work
 ARM Agency publishes an interlinked public decision library about controllable AI-discovery foundations. It distinguishes technical SEO, structured-data governance, evidence-led content, visual discovery, and qualified GEO readiness from claims about third-party search or model outcomes.
 
 - Hub: https://arm-agency.xyz/insights/ai-discovery-readiness
+- AI discovery measurement: https://arm-agency.xyz/insights/ai-discovery-measurement
 - Technical SEO for AI discovery: https://arm-agency.xyz/insights/technical-seo-ai-discovery
 - Structured data governance: https://arm-agency.xyz/insights/structured-data-governance
 - Evidence-led content architecture: https://arm-agency.xyz/insights/evidence-led-content-architecture

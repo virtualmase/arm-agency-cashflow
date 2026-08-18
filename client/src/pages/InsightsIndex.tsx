@@ -6,7 +6,7 @@ export const insightLibraryGroups = [
     label: "AI Discovery Operating System",
     title: "Build a public information system that can be understood, reviewed, and improved.",
     body: "This cluster separates controllable foundations—technical delivery, accurate machine-readable information, evidence-led content, visual context, and qualification—from claims about external search or model outcomes.",
-    slugs: ["ai-discovery-readiness", "technical-seo-ai-discovery", "structured-data-governance", "evidence-led-content-architecture", "image-seo-fundamentals", "geo-readiness"],
+    slugs: ["ai-discovery-readiness", "technical-seo-ai-discovery", "structured-data-governance", "evidence-led-content-architecture", "ai-discovery-measurement", "image-seo-fundamentals", "geo-readiness"],
   },
   {
     label: "Accountable AI Operations",

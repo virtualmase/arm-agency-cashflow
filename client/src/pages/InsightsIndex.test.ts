@@ -16,6 +16,7 @@ describe("public authority library", () => {
       "technical-seo-ai-discovery",
       "structured-data-governance",
       "evidence-led-content-architecture",
+      "ai-discovery-measurement",
       "image-seo-fundamentals",
       "geo-readiness",
     ]));

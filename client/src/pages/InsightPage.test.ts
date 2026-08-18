@@ -14,6 +14,7 @@ describe("public stream guides", () => {
       ["technical-seo-ai-discovery", "AI Discovery Operating System"],
       ["structured-data-governance", "AI Discovery Operating System"],
       ["evidence-led-content-architecture", "AI Discovery Operating System"],
+      ["ai-discovery-measurement", "AI Discovery Operating System"],
     ] as const;
 
     expected.forEach(([slug, stream]) => {
@@ -48,9 +49,10 @@ describe("public stream guides", () => {
       "technical-seo-ai-discovery",
       "structured-data-governance",
       "evidence-led-content-architecture",
+      "ai-discovery-measurement",
     ]));
 
-    ["technical-seo-ai-discovery", "structured-data-governance", "evidence-led-content-architecture"].forEach((slug) => {
+    ["technical-seo-ai-discovery", "structured-data-governance", "evidence-led-content-architecture", "ai-discovery-measurement"].forEach((slug) => {
       const guide = insights[slug];
       expect(guide.sources?.length).toBeGreaterThanOrEqual(3);
       expect(guide.sections.some((section) => section.citations?.length)).toBe(true);

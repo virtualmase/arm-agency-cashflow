@@ -110,3 +110,6 @@
 - [x] Build an indexable public authority-library page that groups the AI Discovery Operating System and five-stream decision guides
 - [x] Add library-level navigation, canonical metadata, sitemap coverage, and regression tests for the content index
 - [x] Surface the AI Discovery Operating System on the homepage with a source-backed authority-library entry path and relevant technical/content spokes
+- [x] Define a responsible AI-discovery measurement and first-party conversion-learning decision framework without third-party visibility guarantees
+- [x] Research and publish a source-backed AI-discovery measurement guide with internal links, metadata, library coverage, and qualified conversion routing
+- [x] Validate the measurement guide’s rendering, citations, boundaries, and authority-silo connections before publishing

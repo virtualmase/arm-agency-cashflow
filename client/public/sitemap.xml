@@ -46,6 +46,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://arm-agency.xyz/insights/ai-discovery-measurement</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://arm-agency.xyz/insights/technical-seo-ai-discovery</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

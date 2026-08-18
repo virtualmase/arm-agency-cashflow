@@ -28,7 +28,7 @@ Academy products are self-guided or cohort-based learning offers. They are separ
 
 ## AI Discovery Operating System
 
-ARM Agency’s public authority library is organized around buyer and operator decisions rather than keyword volume or model-citation promises. The central guide, **AI Discovery Readiness**, connects to three supporting guides: **Technical SEO for AI Discovery**, **Structured Data Governance**, and **Evidence-Led Content Architecture**. The cluster also links to existing GEO Readiness and Image SEO Fundamentals guides where those are the reader’s next decision.
+ARM Agency’s public authority library is organized around buyer and operator decisions rather than keyword volume or model-citation promises. The central guide, **AI Discovery Readiness**, connects to four supporting guides: **Technical SEO for AI Discovery**, **Structured Data Governance**, **Evidence-Led Content Architecture**, and **AI Discovery Measurement**. The cluster also links to existing GEO Readiness and Image SEO Fundamentals guides where those are the reader’s next decision.
 
 The library describes controllable foundations: useful public information, accessible technical delivery, visible-content and structured-data alignment, source and claim review, and first-party conversion learning. It does not claim control of Google Search, generative models, rankings, citations, rich-result display, traffic, or revenue outcomes.
 
