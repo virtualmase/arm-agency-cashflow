@@ -24,6 +24,7 @@ export default function Home() {
       <Hero />
       <SignalStrip />
       <Capabilities />
+      <AuthoritySystem />
       <EngagementPath />
       <PricingSection user={user} />
       <QuickStartPackages user={user} />
@@ -143,6 +144,25 @@ function Capabilities() {
       </div>
     </section>
   );
+}
+
+function AuthoritySystem() {
+  const pillars = [
+    { code: "01", title: "Technical clarity", body: "Public routes, rendering, canonical decisions, and meaningful internal links make the information people need easier to reach and review.", href: "/insights/technical-seo-ai-discovery", cta: "Technical SEO guide" },
+    { code: "02", title: "Information integrity", body: "Visible statements, structured data, sources, and change ownership should describe the same truthful operating reality.", href: "/insights/structured-data-governance", cta: "Structured data guide" },
+    { code: "03", title: "Decision-led authority", body: "Useful content answers a real buyer question, cites external system behavior where relevant, and directs readers to the next appropriate decision.", href: "/insights/evidence-led-content-architecture", cta: "Content architecture guide" },
+  ];
+  return <section className="py-24 px-6 lg:px-12 max-w-[1400px] mx-auto border-y border-white/[0.07]">
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-12 items-start">
+      <div>
+        <div className="text-[11px] tracking-[0.2em] uppercase text-[#3ddc84] mb-4 flex items-center gap-2.5">AI Discovery Operating System <div className="flex-1 max-w-[60px] h-px bg-[#1a7040]" /></div>
+        <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-light text-[#eaf0ea] tracking-tight leading-[1.15] mb-4">A blue-ocean alternative to content volume and visibility promises.</h2>
+        <p className="text-[15px] font-light text-[#c8cfc8] leading-[1.9] font-sans">ARM Agency treats AI discovery as an operating system: accurate public information, technical delivery, evidence controls, and first-party conversion learning. The work improves controllable foundations; it does not promise rankings, citations, rich results, model mentions, traffic, or revenue outcomes.</p>
+        <Link href="/insights" className="inline-block mt-7 text-[11px] tracking-[0.14em] uppercase text-[#e8a020] border-b border-[#e8a020] pb-1 no-underline hover:text-[#eaf0ea] hover:border-[#eaf0ea] transition-colors">Explore the authority library →</Link>
+      </div>
+      <div className="grid gap-px border border-white/[0.07]">{pillars.map((pillar) => <Link key={pillar.code} href={pillar.href} className="p-7 bg-[#0d100d] grid grid-cols-[48px_1fr] gap-5 no-underline hover:bg-[#111411] transition-colors group"><div className="text-[12px] text-[#3ddc84] tracking-[0.12em]">{pillar.code}</div><div><h3 className="text-lg font-medium text-[#eaf0ea] mb-2">{pillar.title}</h3><p className="text-[14px] leading-[1.8] text-[#8e988e] font-sans">{pillar.body}</p><div className="mt-4 text-[10px] tracking-[0.14em] uppercase text-[#e8a020] group-hover:text-[#eaf0ea] transition-colors">{pillar.cta} →</div></div></Link>)}</div>
+    </div>
+  </section>;
 }
 
 function EngagementPath() {

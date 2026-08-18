@@ -24,4 +24,12 @@ describe("public image SEO conversion path", () => {
     expect(homeSource).toContain("getLoginUrl()");
     expect(homeSource).toContain("beginAccountBoundCheckout");
   });
+
+  it("surfaces the AI Discovery Operating System with authority-library and pillar routes", () => {
+    expect(homeSource).toContain("AI Discovery Operating System");
+    expect(homeSource).toContain('href="/insights"');
+    expect(homeSource).toContain("/insights/technical-seo-ai-discovery");
+    expect(homeSource).toContain("/insights/structured-data-governance");
+    expect(homeSource).toContain("/insights/evidence-led-content-architecture");
+  });
 });

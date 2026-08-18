@@ -109,3 +109,4 @@
 - [x] Establish a repeatable content-silo editorial cadence tied to five-stream authority and first-party conversion learning
 - [x] Build an indexable public authority-library page that groups the AI Discovery Operating System and five-stream decision guides
 - [x] Add library-level navigation, canonical metadata, sitemap coverage, and regression tests for the content index
+- [x] Surface the AI Discovery Operating System on the homepage with a source-backed authority-library entry path and relevant technical/content spokes
