@@ -12,8 +12,8 @@ ARM Agency helps accountable teams design, deploy, and govern autonomous AI work
 
 ## Customer paths
 
-- Browse public offerings: https://armcashflow-gw96qvq2.manus.space/#pricing
-- Request a qualified conversation: https://armcashflow-gw96qvq2.manus.space/#contact
+- Browse public offerings: https://arm-agency.xyz/#pricing
+- Request a qualified conversation: https://arm-agency.xyz/#contact
 - Existing customers use the authenticated client portal at /portal.
 
 ## Data and trust

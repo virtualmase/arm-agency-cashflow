@@ -9,7 +9,7 @@ import viteConfig from "../../vite.config";
 import { buildSsrPrefetch } from "./ssrCaller";
 import type { HeadMeta } from "../../client/src/ssr/prefetch";
 
-const CANONICAL_ORIGIN = (process.env.CANONICAL_ORIGIN || "https://armcashflow-gw96qvq2.manus.space").replace(/\/$/, "");
+const CANONICAL_ORIGIN = (process.env.CANONICAL_ORIGIN || "https://arm-agency.xyz").replace(/\/$/, "");
 const SITE_NAME = process.env.SITE_NAME || "ARM Agency";
 const FRESH_STATIC_FILES = new Set(["robots.txt", "sitemap.xml", "llms.txt", "llms-full.txt", "AGENTS.md"]);
 
