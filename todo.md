@@ -117,4 +117,4 @@
 - [x] Research and record primary sources for AI literacy, risk management, governance, workforce capability, and human oversight
 - [x] Build an interlinked, citation-backed AI Mastery guide cluster with Academy, diagnostic, and bounded-implementation routes
 - [x] Add public metadata, sitemap, authority-library coverage, source references, and regression tests for AI Mastery routes
-- [ ] Validate AI Mastery guide rendering, citations, claim boundaries, internal links, and qualified conversion paths before publication
+- [x] Validate AI Mastery guide rendering, citations, claim boundaries, internal links, and qualified conversion paths before publication
