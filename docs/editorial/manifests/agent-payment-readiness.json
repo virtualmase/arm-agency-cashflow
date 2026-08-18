@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "content_id": "agent-payment-readiness",
+  "canonical_owner": "arm-agency-xyz",
+  "route": "/insights/agent-payment-readiness",
+  "silo": "agentic-commerce-operations",
+  "reader_decision": "Determine whether an agent-payment system must stop, remain in sandbox, or may enter a bounded pilot.",
+  "state": "approved",
+  "owners": {"research":"ARM operating research","claim_review":"ARM claim review","visual_review":"ARM visual review","publication":"ARM publication owner"},
+  "sources": [
+    {"url":"https://github.com/x402-foundation/x402/blob/main/specs/x402-specification-v2.md","role":"x402 protocol boundary","verified":"2026-08-18"},
+    {"url":"https://www.imf.org/en/publications/imf-notes/issues/2026/04/22/how-agentic-ai-will-reshape-payments-575560","role":"Intent, authorization, settlement, and governance framing","verified":"2026-08-18"},
+    {"url":"https://www.nist.gov/news-events/news/2026/02/new-concept-paper-identity-and-authority-software-agents","role":"Agent identity, authorization, audit, and non-repudiation questions","verified":"2026-08-18"},
+    {"url":"https://developer.visa.com/capabilities/trusted-agent-protocol/trusted-agent-protocol-specifications/","role":"Merchant-facing agent recognition and signed intent controls","verified":"2026-08-18"}
+  ],
+  "claim_boundaries": ["The score is a decision-support instrument, not a certification or compliance determination.","A high score does not prove security, legal authority, settlement finality, fulfillment quality, or production readiness.","The generated image is conceptual and is not transaction evidence."],
+  "required_links": [
+    {"href":"/insights/agentic-commerce-infrastructure","role":"parent"},
+    {"href":"/insights/x402-agent-payments","role":"adjacent"},
+    {"href":"/insights/aifi-governance-controls","role":"adjacent"},
+    {"href":"/#contact","role":"next-step"}
+  ],
+  "images": [
+    {
+      "image_id":"agent-payment-readiness-five-gates",
+      "role":"concept",
+      "asset_type":"generated",
+      "status":"approved",
+      "path":"client/public/images/agent-payment-readiness-five-gates.png",
+      "width":1672,
+      "height":941,
+      "alt":"A bounded illuminated path crosses five architectural verification gates before reaching a protected resource.",
+      "caption":"Conceptual illustration of the five readiness dimensions. It is not a transaction record or evidence of a deployed payment system.",
+      "prompt":"Text-free monumental black-stone systems laboratory showing one bounded path through five verification gates toward a protected resource; bronze and warm-white light, sparse cyan verification signals, no text, logos, people, coins, dashboards, transaction records, or cryptocurrency iconography.",
+      "references":[
+        {"path":"/mnt/c/Users/virtu/Downloads/evidence-system.png","role":"style-reference"},
+        {"path":"/mnt/c/Users/virtu/Downloads/representation-gap.png","role":"composition-reference"},
+        {"path":"/mnt/c/Users/virtu/Downloads/first-constraint.png","role":"style-reference"}
+      ],
+      "provenance":"Generated with the built-in image generation workflow on 2026-08-18 from owner-supplied visual references.",
+      "rights_review":"approved",
+      "derivatives":[]
+    }
+  ],
+  "refresh_on":"2026-11-18",
+  "change_log":[{"date":"2026-08-18","change":"Converted the checklist into a scored readiness instrument and added the governed five-gate concept visual."}]
+}

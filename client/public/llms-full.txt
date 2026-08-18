@@ -45,7 +45,7 @@ ARM Agency publishes an evidence-led x402 and AiFi resource cluster for teams ev
 - Pillar: https://arm-agency.xyz/insights/agentic-commerce-infrastructure
 - Protocol mechanics: https://arm-agency.xyz/insights/x402-agent-payments
 - Financial governance: https://arm-agency.xyz/insights/aifi-governance-controls
-- Production gate: https://arm-agency.xyz/insights/agent-payment-readiness
+- Scored production gate: https://arm-agency.xyz/insights/agent-payment-readiness — rates mandate, identity/signing, payment policy, settlement/fulfillment, and exception evidence from absent to tested; critical stop conditions override the total
 
 x402 is represented as an open payment protocol, not a complete financial-control system. AiFi is defined on these pages as the operating layer for delegated agent authority, wallets, budgets, approvals, settlement, reconciliation, and audit evidence. The label does not imply affiliation with a named AiFi company or institute.
 
