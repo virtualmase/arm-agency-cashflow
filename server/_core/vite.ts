@@ -8,8 +8,9 @@ import superjson from "superjson";
 import viteConfig from "../../vite.config";
 import { buildSsrPrefetch } from "./ssrCaller";
 import type { HeadMeta } from "../../client/src/ssr/prefetch";
+import { getCanonicalOrigin } from "./canonicalOrigin";
 
-const CANONICAL_ORIGIN = (process.env.CANONICAL_ORIGIN || "https://arm-agency.xyz").replace(/\/$/, "");
+const CANONICAL_ORIGIN = getCanonicalOrigin();
 const SITE_NAME = process.env.SITE_NAME || "ARM Agency";
 const FRESH_STATIC_FILES = new Set(["robots.txt", "sitemap.xml", "llms.txt", "llms-full.txt", "AGENTS.md"]);
 

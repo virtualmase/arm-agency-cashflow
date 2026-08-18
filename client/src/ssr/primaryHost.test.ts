@@ -9,7 +9,6 @@ const files = [
   "client/public/robots.txt",
   "client/public/sitemap.xml",
   "client/public/llms.txt",
-  "server/_core/vite.ts",
 ];
 
 describe("primary custom-domain public identity", () => {
@@ -19,5 +18,8 @@ describe("primary custom-domain public identity", () => {
       expect(source).toContain("https://arm-agency.xyz");
       expect(source).not.toContain("armcashflow-gw96qvq2.manus.space");
     });
+    const canonicalConfig = fs.readFileSync(path.join(projectRoot, "server/_core/canonicalOrigin.ts"), "utf8");
+    expect(canonicalConfig).toContain("https://arm-agency.xyz");
+    expect(canonicalConfig).not.toContain("armcashflow-gw96qvq2.manus.space");
   });
 });
