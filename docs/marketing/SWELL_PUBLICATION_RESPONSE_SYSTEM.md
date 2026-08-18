@@ -43,3 +43,19 @@ The system may automatically **detect, deduplicate, classify, and draft a privat
 ## Post-publication review
 
 Approved responses should be reviewed against qualified conversations, contextual CTA activity, source freshness, and reader confusion—not page count, generic impressions, or claimed influence on third-party systems. A response should be updated, repurposed, or retired when its source, service boundary, or evidence basis is no longer current.
+
+## Activated operating configuration
+
+The selected operation is **Option A: Daily editorial review queue**. The monitor is scheduled for **09:00 UTC daily**, runs under an authenticated project schedule identity, and creates records visible only through the owner-gated dashboard. The first successful run initializes a source-version baseline without generating analysis, quotes, or editorial briefs from historical Swell content. Only later new or updated sitemap versions are eligible for a private generated brief.
+
+| Control | Activated setting |
+| --- | --- |
+| Detection source | `https://swellmarketing.xyz/sitemap.xml`, limited to direct `/resources/` URLs |
+| Run frequency | Once per day at 09:00 UTC |
+| Model | `gpt-5-mini`, constrained to private classification and review-brief generation |
+| Source retention | 90 days of minimum source metadata and review status |
+| Publication authority | Manual owner approval only; no automatic page, email, social, or external post |
+| First-run behavior | Version baseline only; no historical-content briefing or notification |
+| Later-run behavior | New or updated versions produce a private queue record and owner notification |
+
+To pause the workflow, disable the project schedule and leave existing review records intact. To resume, re-enable the schedule; the next run will preserve source-version deduplication and only process versions not already recorded.

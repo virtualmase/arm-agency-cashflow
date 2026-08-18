@@ -179,6 +179,29 @@ scheduledRouter.post("/api/scheduled/swell-editorial-monitor", async (req, res) 
     const sitemapResponse = await fetch(SWELL_SITEMAP_URL, { headers: { accept: "application/xml,text/xml" }, signal: AbortSignal.timeout(15_000) });
     if (!sitemapResponse.ok) throw new Error(`Swell sitemap fetch failed: ${sitemapResponse.status}`);
     const candidates = parseSwellResourceSitemap(await sitemapResponse.text());
+    if (!monitor.lastCheckedAt) {
+      const expiresAt = new Date(Date.now() + monitor.retentionDays * 24 * 60 * 60 * 1000);
+      let baselineRecorded = 0;
+      for (const candidate of candidates) {
+        if (await getSwellEditorialReviewBySourceVersion(candidate.url, candidate.lastmod)) continue;
+        await createSwellEditorialReview({
+          sourceUrl: candidate.url,
+          sourceLastmod: candidate.lastmod,
+          sourceTitle: `Baseline source version: ${new URL(candidate.url).pathname}`,
+          sourceDescription: null,
+          status: "expired",
+          generatedBrief: JSON.stringify({ baseline: true, note: "Existing source version observed at monitor activation; no editorial brief was generated." }),
+          suggestedSources: null,
+          suggestedLinks: null,
+          claimNotes: "Baseline record only. No quotation, editorial analysis, or publication recommendation was generated.",
+          expiresAt,
+        });
+        baselineRecorded++;
+      }
+      const summary = `Baseline initialized from ${candidates.length} existing Swell resource version(s); recorded ${baselineRecorded} source version(s) without generating editorial briefs. Future new or updated versions will enter private review.`;
+      await updateSwellMonitorRun(taskUid, summary);
+      return res.json({ ok: true, initialized: true, scanned: candidates.length, baselineRecorded });
+    }
     const created: Array<{ id: number; title: string; url: string }> = [];
 
     for (const candidate of candidates) {

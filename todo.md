@@ -119,9 +119,9 @@
 - [x] Build an interlinked, citation-backed AI Mastery guide cluster with Academy, diagnostic, and bounded-implementation routes
 - [x] Add public metadata, sitemap, authority-library coverage, source references, and regression tests for AI Mastery routes
 - [x] Validate AI Mastery guide rendering, citations, claim boundaries, internal links, and qualified conversion paths before publication
-- [ ] Assess Swell Marketing publication feeds or APIs and define a governed new-publication detection and deduplication design
-- [ ] Design a source-attributed, original-response workflow with explicit quote limits, claim review, reputable citations, and contextual internal links
-- [ ] Compare owner-review automation options and agree the monitoring frequency, delivery channel, retention, and publication-approval boundary
-- [ ] Implement the selected Swell publication-monitoring and ARM editorial-review workflow with scheduled execution, durable records, and owner notifications
+- [x] Assess Swell Marketing publication feeds or APIs and define a governed new-publication detection and deduplication design
+- [x] Design a source-attributed, original-response workflow with explicit quote limits, claim review, reputable citations, and contextual internal links
+- [x] Compare owner-review automation options and agree the monitoring frequency, delivery channel, retention, and publication-approval boundary
+- [x] Implement the selected Swell publication-monitoring and ARM editorial-review workflow with scheduled execution, durable records, and owner notifications
 - [ ] Validate the workflow’s detection, deduplication, attribution, originality, source, link, claim-safety, and approval controls before activation
-- [ ] Configure the selected daily Swell sitemap review queue with owner-only access, 90-day source-metadata retention, and manual publication approval
+- [x] Configure the selected daily Swell sitemap review queue with owner-only access, 90-day source-metadata retention, and manual publication approval
