@@ -137,7 +137,13 @@
 - [x] Record owner-confirmed capacity stance and conditional promotion approval in the launch activation record
 - [ ] Submit a labeled test lead and verify database persistence plus delivery through the support route
 - [ ] Create a labeled unpaid authenticated Checkout Session and verify primary-domain returns plus account-bound portal linkage
-- [ ] Correct the public contact support address to the owner-confirmed `ops@arm-agency.xyz` and validate the rendered production contact route
+- [x] Correct the public contact support address to the owner-confirmed `ops@arm-agency.xyz` and validate the rendered production contact route
 - [ ] Configure a real authenticated email-delivery provider for `ops@arm-agency.xyz` without marking queued messages as sent before provider acceptance
 - [ ] Send and verify a labeled controlled-launch support-delivery test to `ops@arm-agency.xyz`
 - [ ] Verify the owner-configured `ops@arm-agency.xyz` to `ops@arm-agency.com` forwarding route with a labeled external delivery test
+- [x] Inspect public mail records and connected mail services for a delegated production sender option before requesting any owner-only credential
+- [x] Define a governed customer-service fleet covering campaign management, sales, marketing, operations, and finance with role-specific approval boundaries
+- [x] Create reusable campaign-marketing skills for evidence-safe positioning, campaign planning, outreach preparation, qualification, sales handoff, and measurement
+- [x] Inspect Vapi and `inbox.aigoal` availability before integrating voice or inbox automation
+- [x] Create a future-agent operating-document system for products, sales, customer service, marketing, governance, and human escalation
+- [x] Create a multi-year owner-transition and exit-readiness plan with value-driver, diligence, risk, and continuity controls rather than unsupported valuation claims

@@ -10,6 +10,10 @@ vi.mock("./_core/notification", () => ({
   notifyOwner: vi.fn().mockResolvedValue(true),
 }));
 
+vi.mock("./emailDelivery", () => ({
+  sendSupportLeadAlert: vi.fn().mockResolvedValue({ accepted: false, messageId: null, rejected: [], reason: "not_configured" }),
+}));
+
 // Mock db functions
 vi.mock("./db", () => ({
   createLead: vi.fn().mockResolvedValue(1),
@@ -141,6 +145,7 @@ describe("leads.submit", () => {
     });
     expect(result.success).toBe(true);
     expect(result.leadId).toBe(1);
+    expect(result.supportDeliveryAccepted).toBe(false);
   });
 });
 

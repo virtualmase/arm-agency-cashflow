@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, adminProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { notifyOwner } from "./_core/notification";
+import { sendSupportLeadAlert } from "./emailDelivery";
 import { stripe, ALL_PRODUCTS, assertStripeConfigured, getProductByKey } from "./stripe";
 import { getCanonicalOrigin } from "./_core/canonicalOrigin";
 import {
@@ -58,11 +59,15 @@ export const appRouter = router({
         path: "/",
         stream: input.useCase?.includes("geo") ? "swell" : input.useCase?.includes("coreweaver") ? "coreweaver" : input.useCase?.includes("academy") ? "academy" : input.useCase?.includes("arctura") ? "arctura" : "arm",
       });
+      const supportDelivery = await sendSupportLeadAlert(input).catch((error) => {
+        console.error("[Lead] Support alert delivery failed after lead persistence", error);
+        return { accepted: false, messageId: null, rejected: [], reason: "not_configured" as const };
+      });
       await notifyOwner({
         title: `New Lead: ${input.firstName} ${input.lastName}`,
         content: `Email: ${input.email}\nCompany: ${input.company || 'N/A'}\nUse Case: ${input.useCase || 'N/A'}\nMessage: ${input.message || 'N/A'}`,
       });
-      return { success: true, leadId };
+      return { success: true, leadId, supportDeliveryAccepted: supportDelivery.accepted };
     }),
     list: adminProcedure.input(z.object({ limit: z.number().optional(), offset: z.number().optional() }).optional()).query(async ({ input }) => {
       return getLeads(input?.limit ?? 100, input?.offset ?? 0);

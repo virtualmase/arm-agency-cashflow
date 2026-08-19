@@ -1,6 +1,7 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import { getPendingEmails, markEmailSent, getRevenueTotal, getPendingPurchaseExceptionCount, getSubscriberCount, getLeadCount, getNewsletterCount, getCompletedPurchasesSince, getFunnelEventCounts, getSwellPublicationMonitorByTaskUid, getSwellEditorialReviewBySourceVersion, createSwellEditorialReview, expireStaleSwellEditorialReviews, updateSwellMonitorRun } from "./db";
 import { notifyOwner } from "./_core/notification";
+import { isEmailDeliveryEnabled, sendTransactionalEmail } from "./emailDelivery";
 import { invokeLLM } from "./_core/llm";
 import { sdk } from "./_core/sdk";
 import { timingSafeEqual } from "node:crypto";
@@ -32,10 +33,10 @@ scheduledRouter.use("/api/scheduled", requireScheduledJobSecret);
 // Email sequence processor - triggered by heartbeat cron
 scheduledRouter.post("/api/scheduled/email-sequences", async (req, res) => {
   // Never advance sequence state until a delivery provider confirms acceptance.
-  if (process.env.EMAIL_DELIVERY_ENABLED !== "true") {
+  if (!isEmailDeliveryEnabled()) {
     return res.status(503).json({
       error: "email_delivery_not_configured",
-      message: "Email delivery is disabled; no sequence records were changed.",
+      message: "Email delivery is disabled or SMTP is incomplete; no sequence records were changed.",
     });
   }
 
@@ -49,8 +50,12 @@ scheduledRouter.post("/api/scheduled/email-sequences", async (req, res) => {
         const stepNames = ["Welcome to ARM Agency", "Plan a Scoped Next Step", "Book Your Demo Session"];
         const stepContent = await generateEmailContent(email.email, email.step, stepNames[email.step] || "Follow Up");
         
-        // In production, this would send via email service
-        // For now, we mark as sent and notify owner
+        const delivery = await sendTransactionalEmail({
+          to: email.email,
+          subject: stepNames[email.step] || "ARM Agency follow-up",
+          text: stepContent,
+        });
+        if (!delivery.accepted) throw new Error(`Email provider did not accept ${email.email}`);
         await markEmailSent(email.id);
         sent++;
 
@@ -242,9 +247,9 @@ scheduledRouter.post("/api/scheduled/swell-editorial-monitor", async (req, res) 
 
 async function generateEmailContent(email: string, step: number, subject: string): Promise<string> {
   const prompts: Record<number, string> = {
-    0: `Write a brief, professional welcome email for a new lead at ARM Agency (Autonomous Resource Management). The recipient is ${email}. Subject: "${subject}". Keep it under 150 words. Mention our core capabilities: AI-native infrastructure, agentic workflow orchestration, BFT consensus, and real-time attribution. End with a soft CTA to explore our documentation.`,
+    0: `Write a brief, professional welcome email for a new lead at ARM Agency (Autonomous Resource Management). The recipient is ${email}. Subject: "${subject}". Keep it under 150 words. Mention accountable AI workflows, scoped agent infrastructure, and evidence-aware public information. Do not promise outcomes or refer to unverified platform capabilities. End with a soft CTA to explore the documentation.`,
     1: `Write a brief follow-up email that helps a prospective buyer prepare for a scoped AI infrastructure conversation. The recipient is ${email}. Subject: "${subject}". Keep it under 150 words. Invite them to identify the business decision, current workflow, stakeholders, constraints, and a useful next milestone. Do not state customer totals, deployment counts, uptime, performance benchmarks, or unverified outcomes. End with a soft CTA to schedule a technical deep-dive.`,
-    2: `Write a brief email inviting the recipient to book a 60-minute live demo of ARM Agency's platform. The recipient is ${email}. Subject: "${subject}". Keep it under 150 words. Mention the 30-day production pilot available for qualified teams. Include urgency without being pushy.`,
+    2: `Write a brief email inviting the recipient to discuss a scoped AI workflow or public-surface decision with ARM Agency. The recipient is ${email}. Subject: "${subject}". Keep it under 150 words. State that scope, timing, participants, and terms are confirmed during qualification. Include a clear but non-pressured next step.`,
   };
 
   try {
