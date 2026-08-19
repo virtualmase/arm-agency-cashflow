@@ -25,6 +25,11 @@ describe("public image SEO conversion path", () => {
     expect(homeSource).toContain("beginAccountBoundCheckout");
   });
 
+  it("renders the owner-confirmed controlled-launch support address", () => {
+    expect(homeSource).toContain("ops@arm-agency.xyz");
+    expect(homeSource).not.toContain("ops@arm-agency.com");
+  });
+
   it("surfaces the AI Discovery Operating System with authority-library and pillar routes", () => {
     expect(homeSource).toContain("AI Discovery Operating System");
     expect(homeSource).toContain('href="/insights"');

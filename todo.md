@@ -135,3 +135,9 @@
 - [x] Add the supplied Builder base application identifier to the public document head and validate its server-rendered presence
 - [x] Record owner-confirmed client-support ownership for the controlled launch
 - [x] Record owner-confirmed capacity stance and conditional promotion approval in the launch activation record
+- [ ] Submit a labeled test lead and verify database persistence plus delivery through the support route
+- [ ] Create a labeled unpaid authenticated Checkout Session and verify primary-domain returns plus account-bound portal linkage
+- [ ] Correct the public contact support address to the owner-confirmed `ops@arm-agency.xyz` and validate the rendered production contact route
+- [ ] Configure a real authenticated email-delivery provider for `ops@arm-agency.xyz` without marking queued messages as sent before provider acceptance
+- [ ] Send and verify a labeled controlled-launch support-delivery test to `ops@arm-agency.xyz`
+- [ ] Verify the owner-configured `ops@arm-agency.xyz` to `ops@arm-agency.com` forwarding route with a labeled external delivery test

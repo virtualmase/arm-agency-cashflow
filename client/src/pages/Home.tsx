@@ -353,7 +353,7 @@ function ContactSection() {
         <div>
           <p className="text-[14px] text-[#667066] leading-[1.9] mb-8 font-sans">ARM Agency works with accountable teams evaluating and operating scoped AI workflows, agent infrastructure, and discovery programs. Scope, timing, participants, and any pilot terms are confirmed during qualification.</p>
           <div className="space-y-3">
-            {[["Email", "ops@arm-agency.com"], ["Response", "Confirmed after submission"], ["Conversation", "Scope and fit review"], ["Pilot", "Where fit is confirmed"], ["Streams", "5 revenue streams"]].map(([l, v]) => (
+            {[["Email", "ops@arm-agency.xyz"], ["Response", "Confirmed after submission"], ["Conversation", "Scope and fit review"], ["Pilot", "Where fit is confirmed"], ["Streams", "5 revenue streams"]].map(([l, v]) => (
               <div key={l} className="flex gap-4 py-2 border-b border-white/[0.05]"><span className="text-[12px] text-[#667066] w-24 shrink-0">{l}</span><span className="text-[12px] text-[#eaf0ea]">{v}</span></div>
             ))}
           </div>
