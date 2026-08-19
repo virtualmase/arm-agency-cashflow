@@ -92,4 +92,6 @@ Pause promotion immediately if the custom domain is unavailable, checkout return
 
 | Date/time | Gate or check | Result | Evidence link/location | Owner | Follow-up |
 | --- | --- | --- | --- | --- | --- |
+| 2026-08-19 | Support path ownership | Owner identified `ops@arm-agency.xyz` as the client-support inbox. Delivery, access, first-response standard, and escalation coverage are not yet validated. | Owner-provided launch input | Agency owner / client-success owner | Send and receive a controlled support-path test; confirm response owner, sustainable capacity, and conditional launch approval. |
+| 2026-08-19 | Capacity and promotion approval | Owner states no fixed first-30-day client-capacity limit and approves initial promotion only after all P0 gates pass. This does not waive client-success, technical, or owner stop authority. | Owner-provided launch input | Agency owner | Validate the support-path rehearsal, lead routing, approved checkout return, and all remaining P0 checks before any promotion. |
 | | | | | | |

@@ -133,3 +133,5 @@
 - [x] Re-run production validation after the managed-storage migration and save a successful checkpoint
 - [x] Save and confirm the post-migration checkpoint before closing the managed-storage recovery work
 - [x] Add the supplied Builder base application identifier to the public document head and validate its server-rendered presence
+- [x] Record owner-confirmed client-support ownership for the controlled launch
+- [x] Record owner-confirmed capacity stance and conditional promotion approval in the launch activation record
