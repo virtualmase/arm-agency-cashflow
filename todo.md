@@ -125,3 +125,10 @@
 - [x] Implement the selected Swell publication-monitoring and ARM editorial-review workflow with scheduled execution, durable records, and owner notifications
 - [ ] Validate the workflow’s detection, deduplication, attribution, originality, source, link, claim-safety, and approval controls before activation
 - [x] Configure the selected daily Swell sitemap review queue with owner-only access, 90-day source-metadata retention, and manual publication approval
+- [x] Expand the evidence-led keyword cloud across five revenue streams, AI discovery, accountable AI operations, and image SEO without making unverified demand claims
+- [x] Produce and prioritize a source-backed keyword-to-content decision map with search intent, internal-link, and qualified-conversion routes
+- [x] Apply only approved keyword-cloud updates that remain consistent with guide-level funnel-signal hold conditions and evidence-review controls
+- [x] Migrate the legacy agent-payment readiness image from project storage to managed asset storage and retain its visible reference
+- [x] Document whether the migrated agent-payment readiness image was an unused legacy asset or update any verified live reference to the managed-storage URL
+- [x] Re-run production validation after the managed-storage migration and save a successful checkpoint
+- [ ] Save and confirm the post-migration checkpoint before closing the managed-storage recovery work

@@ -5,25 +5,25 @@ export const insightLibraryGroups = [
   {
     label: "AI Discovery Operating System",
     title: "Build a public information system that can be understood, reviewed, and improved.",
-    body: "This cluster separates controllable foundations—technical delivery, accurate machine-readable information, evidence-led content, visual context, and qualification—from claims about external search or model outcomes.",
+    body: "This cluster separates controllable AI discovery foundations—technical discovery, accurate structured information, evidence-led content, visual context, and first-party conversion learning—from claims about external search or model outcomes.",
     slugs: ["ai-discovery-readiness", "technical-seo-ai-discovery", "structured-data-governance", "evidence-led-content-architecture", "ai-discovery-measurement", "image-seo-fundamentals", "geo-readiness"],
   },
   {
     label: "Accountable AI Operations",
     title: "Make the next operating decision explicit before building more infrastructure.",
-    body: "These guides help teams establish scope, decision ownership, technical boundaries, acceptance conditions, and handoff requirements for a bounded AI intervention.",
+    body: "These guides help teams establish AI workflow scope, decision ownership, human review boundaries, acceptance conditions, and handoff requirements for a bounded intervention.",
     slugs: ["ai-infrastructure-audit", "bounded-agent-stack-setup"],
   },
   {
     label: "Agentic Commerce Operations",
     title: "Connect machine payments to bounded authority, fulfillment, and financial evidence.",
-    body: "This cluster separates x402 payment transport from AiFi governance, then turns both into an inspectable readiness and implementation path for autonomous economic activity.",
+    body: "This cluster separates x402 payment transport from AiFi governance and agent-payment controls, then turns both into an inspectable readiness and implementation path for autonomous economic activity.",
     slugs: ["agentic-commerce-infrastructure", "x402-agent-payments", "aifi-governance-controls", "agent-payment-readiness"],
   },
   {
     label: "AI Mastery and Operator Decisions",
     title: "Build accountable internal capability before treating AI as an outsourced black box.",
-    body: "These guides help agency operators and accountable leaders choose an appropriate learning path, define bounded practice conditions, and recognize when a diagnostic or implementation scope is the better next step.",
+    body: "These guides help agency operators and accountable leaders build AI operator capability, define practice boundaries, and recognize when a diagnostic or implementation scope is the better next step.",
     slugs: ["operator-learning-path", "ai-mastery-foundations", "ai-mastery-practice-boundaries", "network-participation"],
   },
 ] as const;

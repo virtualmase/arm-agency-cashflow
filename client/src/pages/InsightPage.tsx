@@ -117,7 +117,7 @@ export const insights: Record<string, Insight> = {
     deliverables: ["Go/pilot/stop readiness assessment", "Control and evidence gap register", "Bounded pilot specification", "Expansion criteria and human approval gate"],
     cta: "Run an agent-payment readiness review",
     ctaHref: "/#contact",
-    image: { src: "/images/agent-payment-readiness-five-gates.png", alt: "A bounded illuminated path crosses five architectural verification gates before reaching a protected resource.", width: 1672, height: 941, caption: "Conceptual illustration of the five readiness dimensions. It is not a transaction record or evidence of a deployed payment system." },
+    image: { src: "/manus-storage/agent-payment-readiness-five-gates_77b5971d.png", alt: "A bounded illuminated path crosses five architectural verification gates before reaching a protected resource.", width: 1672, height: 941, caption: "Conceptual illustration of the five readiness dimensions. It is not a transaction record or evidence of a deployed payment system." },
     related: [{ label: "Return to the agentic commerce pillar", href: "/insights/agentic-commerce-infrastructure" }, { label: "Understand x402", href: "/insights/x402-agent-payments" }, { label: "Design AiFi controls", href: "/insights/aifi-governance-controls" }],
     sources: [
       { label: "Coinbase Developer Platform: x402 client and server roles", href: "https://docs.cdp.coinbase.com/x402/core-concepts/client-server" },

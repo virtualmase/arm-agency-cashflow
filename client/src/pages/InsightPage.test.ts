@@ -45,6 +45,16 @@ describe("public stream guides", () => {
     expect(guide.image?.alt).toContain("five image SEO foundations");
   });
 
+  it("keeps the agent-payment readiness visual in managed storage with its evidence-safe caption", () => {
+    const guide = insights["agent-payment-readiness"];
+    expect(guide.image).toMatchObject({
+      src: "/manus-storage/agent-payment-readiness-five-gates_77b5971d.png",
+      width: 1672,
+      height: 941,
+    });
+    expect(guide.image?.caption).toContain("not a transaction record");
+  });
+
   it("interlinks the AI Discovery Operating System through citation-backed technical and content spokes", () => {
     const hub = insights["ai-discovery-readiness"];
     expect(hub.related?.map((item) => item.slug)).toEqual(expect.arrayContaining([

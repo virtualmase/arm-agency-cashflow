@@ -26,7 +26,7 @@
       "role":"concept",
       "asset_type":"generated",
       "status":"approved",
-      "path":"client/public/images/agent-payment-readiness-five-gates.png",
+      "path":"/manus-storage/agent-payment-readiness-five-gates_77b5971d.png",
       "width":1672,
       "height":941,
       "alt":"A bounded illuminated path crosses five architectural verification gates before reaching a protected resource.",
@@ -43,5 +43,5 @@
     }
   ],
   "refresh_on":"2026-11-18",
-  "change_log":[{"date":"2026-08-18","change":"Converted the checklist into a scored readiness instrument and added the governed five-gate concept visual."}]
+  "change_log":[{"date":"2026-08-18","change":"Converted the checklist into a scored readiness instrument and added the governed five-gate concept visual."},{"date":"2026-08-19","change":"Migrated the approved concept visual from legacy project storage to managed asset storage without changing its visual role, alternative text, caption, dimensions, or claim boundary."}]
 }
