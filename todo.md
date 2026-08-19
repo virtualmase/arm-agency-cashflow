@@ -131,4 +131,5 @@
 - [x] Migrate the legacy agent-payment readiness image from project storage to managed asset storage and retain its visible reference
 - [x] Document whether the migrated agent-payment readiness image was an unused legacy asset or update any verified live reference to the managed-storage URL
 - [x] Re-run production validation after the managed-storage migration and save a successful checkpoint
-- [ ] Save and confirm the post-migration checkpoint before closing the managed-storage recovery work
+- [x] Save and confirm the post-migration checkpoint before closing the managed-storage recovery work
+- [x] Add the supplied Builder base application identifier to the public document head and validate its server-rendered presence
