@@ -156,4 +156,5 @@
 - [ ] Implement and test a dedicated signature-verified `/api/webhooks/agentic-mail` endpoint that cannot trigger unapproved outbound, payment, account, or publication actions
 - [ ] Confirm the published `https://arm-agency.xyz/api/webhooks/agentic-mail` route accepts authenticated POST requests and rejects unverified methods or payloads
 - [ ] Evaluate `https://arm-agency.xyz/webhook` as a possible compatibility route without weakening the dedicated agentic-mail endpoint’s authentication or path controls
+- [ ] Resolve and document the production route-propagation mismatch where the local agentic-mail receiver responds correctly but deployed domains return 404
 - [ ] Securely validate the provided AgentMail API credential and, if separately issued, webhook signing secret before registering any webhook
