@@ -43,6 +43,13 @@
       "when": 1787089546275,
       "tag": "0005_thick_synch",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1787220321664,
+      "tag": "0006_yummy_black_queen",
+      "breakpoints": true
     }
   ]
 }

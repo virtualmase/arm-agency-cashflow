@@ -1,7 +1,7 @@
 import { eq, desc, sql, and, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback, funnelEvents, operatingDecisions, swellPublicationMonitor, swellEditorialReviews } from "../drizzle/schema";
-import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback, InsertFunnelEvent, InsertOperatingDecision, InsertSwellPublicationMonitor, InsertSwellEditorialReview } from "../drizzle/schema";
+import { InsertUser, users, leads, newsletters, purchases, emailSequences, feedback, funnelEvents, operatingDecisions, swellPublicationMonitor, swellEditorialReviews, agenticMailWebhookEvents } from "../drizzle/schema";
+import type { InsertLead, InsertNewsletter, InsertPurchase, InsertEmailSequence, InsertFeedback, InsertFunnelEvent, InsertOperatingDecision, InsertSwellPublicationMonitor, InsertSwellEditorialReview, InsertAgenticMailWebhookEvent } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -259,6 +259,16 @@ export async function expireStaleSwellEditorialReviews(now = new Date()) {
   const result = await db.update(swellEditorialReviews).set({ status: "expired" })
     .where(and(eq(swellEditorialReviews.status, "pending_review"), lt(swellEditorialReviews.expiresAt, now)));
   return Number(result[0].affectedRows ?? 0);
+}
+
+// ── AgentMail webhook event deduplication ──
+export async function reserveAgenticMailWebhookEvent(event: InsertAgenticMailWebhookEvent): Promise<"accepted" | "duplicate"> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(agenticMailWebhookEvents).values(event).onDuplicateKeyUpdate({
+    set: { eventId: sql`${agenticMailWebhookEvents.eventId}` },
+  });
+  return Number(result[0].affectedRows ?? 0) === 1 ? "accepted" : "duplicate";
 }
 
 // ── Email Sequences ──

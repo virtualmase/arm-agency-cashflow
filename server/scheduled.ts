@@ -5,7 +5,7 @@ import { isEmailDeliveryEnabled, sendTransactionalEmail } from "./emailDelivery"
 import { invokeLLM } from "./_core/llm";
 import { sdk } from "./_core/sdk";
 import { timingSafeEqual } from "node:crypto";
-import { SWELL_SITEMAP_URL, buildSwellEditorialPrompt, extractSourceMetadata, parseSwellResourceSitemap, type SwellResourceCandidate } from "./swellEditorial";
+import { SWELL_SITEMAP_URL, buildSwellEditorialPrompt, extractSourceMetadata, parseSwellResourceSitemap, validatePrivateEditorialDraft, type PrivateEditorialDraft, type SwellResourceCandidate } from "./swellEditorial";
 
 const scheduledRouter = Router();
 
@@ -129,17 +129,7 @@ scheduledRouter.post("/api/scheduled/weekly-report", async (req, res) => {
   }
 });
 
-type EditorialDraft = {
-  topic: string;
-  buyerDecision: string;
-  originalAngle: string;
-  brief: string;
-  suggestedResearchLeads: Array<{ title: string; url: string; why: string }>;
-  suggestedPropertyLinks: Array<{ label: string; url: string; reason: string }>;
-  claimNotes: string;
-};
-
-async function generatePrivateEditorialDraft(candidate: SwellResourceCandidate, html: string): Promise<{ title: string; description: string | null; draft: EditorialDraft }> {
+async function generatePrivateEditorialDraft(candidate: SwellResourceCandidate, html: string): Promise<{ title: string; description: string | null; draft: PrivateEditorialDraft }> {
   const metadata = extractSourceMetadata(html, candidate.url);
   const response = await invokeLLM({
     model: "gpt-5-mini",
@@ -168,7 +158,100 @@ async function generatePrivateEditorialDraft(candidate: SwellResourceCandidate, 
   });
   const content = response.choices[0]?.message?.content;
   if (typeof content !== "string") throw new Error("Editorial model returned no structured content");
-  return { title: metadata.title, description: metadata.description, draft: JSON.parse(content) as EditorialDraft };
+  return { title: metadata.title, description: metadata.description, draft: validatePrivateEditorialDraft(candidate, JSON.parse(content) as PrivateEditorialDraft) };
+}
+
+type SwellFetchResponse = {
+  ok: boolean;
+  status: number;
+  text: () => Promise<string>;
+};
+
+export type SwellMonitorDependencies = {
+  getMonitorByTaskUid: typeof getSwellPublicationMonitorByTaskUid;
+  getReviewBySourceVersion: typeof getSwellEditorialReviewBySourceVersion;
+  createReview: typeof createSwellEditorialReview;
+  expireStaleReviews: typeof expireStaleSwellEditorialReviews;
+  updateMonitorRun: typeof updateSwellMonitorRun;
+  notifyOwner: typeof notifyOwner;
+  fetcher: (url: string, init: RequestInit) => Promise<SwellFetchResponse>;
+  generateDraft: typeof generatePrivateEditorialDraft;
+};
+
+const defaultSwellMonitorDependencies: SwellMonitorDependencies = {
+  getMonitorByTaskUid: getSwellPublicationMonitorByTaskUid,
+  getReviewBySourceVersion: getSwellEditorialReviewBySourceVersion,
+  createReview: createSwellEditorialReview,
+  expireStaleReviews: expireStaleSwellEditorialReviews,
+  updateMonitorRun: updateSwellMonitorRun,
+  notifyOwner,
+  fetcher: (url, init) => fetch(url, init),
+  generateDraft: generatePrivateEditorialDraft,
+};
+
+export async function runSwellEditorialMonitor(taskUid: string, dependencies: SwellMonitorDependencies = defaultSwellMonitorDependencies) {
+  const monitor = await dependencies.getMonitorByTaskUid(taskUid);
+  if (!monitor || !monitor.enabled) return { ok: true, skipped: "monitor_disabled_or_orphaned" as const };
+  if (monitor.sourceSitemapUrl !== SWELL_SITEMAP_URL) throw new Error("unexpected_source_configuration");
+
+  const sitemapResponse = await dependencies.fetcher(SWELL_SITEMAP_URL, { headers: { accept: "application/xml,text/xml" }, signal: AbortSignal.timeout(15_000) });
+  if (!sitemapResponse.ok) throw new Error(`Swell sitemap fetch failed: ${sitemapResponse.status}`);
+  const candidates = parseSwellResourceSitemap(await sitemapResponse.text());
+  if (!monitor.lastCheckedAt) {
+    const expiresAt = new Date(Date.now() + monitor.retentionDays * 24 * 60 * 60 * 1000);
+    let baselineRecorded = 0;
+    for (const candidate of candidates) {
+      if (await dependencies.getReviewBySourceVersion(candidate.url, candidate.lastmod)) continue;
+      await dependencies.createReview({
+        sourceUrl: candidate.url,
+        sourceLastmod: candidate.lastmod,
+        sourceTitle: `Baseline source version: ${new URL(candidate.url).pathname}`,
+        sourceDescription: null,
+        status: "expired",
+        generatedBrief: JSON.stringify({ baseline: true, note: "Existing source version observed at monitor activation; no editorial brief was generated." }),
+        suggestedSources: null,
+        suggestedLinks: null,
+        claimNotes: "Baseline record only. No quotation, editorial analysis, or publication recommendation was generated.",
+        expiresAt,
+      });
+      baselineRecorded++;
+    }
+    const summary = `Baseline initialized from ${candidates.length} existing Swell resource version(s); recorded ${baselineRecorded} source version(s) without generating editorial briefs. Future new or updated versions will enter private review.`;
+    await dependencies.updateMonitorRun(taskUid, summary);
+    return { ok: true, initialized: true, scanned: candidates.length, baselineRecorded };
+  }
+
+  const created: Array<{ id: number; title: string; url: string }> = [];
+  for (const candidate of candidates) {
+    if (await dependencies.getReviewBySourceVersion(candidate.url, candidate.lastmod)) continue;
+    const sourceResponse = await dependencies.fetcher(candidate.url, { headers: { accept: "text/html" }, signal: AbortSignal.timeout(15_000) });
+    if (!sourceResponse.ok) continue;
+    const { title, description, draft } = await dependencies.generateDraft(candidate, await sourceResponse.text());
+    const expiresAt = new Date(Date.now() + monitor.retentionDays * 24 * 60 * 60 * 1000);
+    const id = await dependencies.createReview({
+      sourceUrl: candidate.url,
+      sourceLastmod: candidate.lastmod,
+      sourceTitle: title,
+      sourceDescription: description,
+      generatedBrief: JSON.stringify({ topic: draft.topic, buyerDecision: draft.buyerDecision, originalAngle: draft.originalAngle, brief: draft.brief }),
+      suggestedSources: JSON.stringify(draft.suggestedResearchLeads),
+      suggestedLinks: JSON.stringify(draft.suggestedPropertyLinks),
+      claimNotes: draft.claimNotes,
+      expiresAt,
+    });
+    created.push({ id, title, url: candidate.url });
+  }
+
+  const expired = await dependencies.expireStaleReviews();
+  const summary = `Scanned ${candidates.length} Swell resource version(s); created ${created.length} private review record(s); expired ${expired} stale pending record(s).`;
+  await dependencies.updateMonitorRun(taskUid, summary);
+  if (created.length) {
+    await dependencies.notifyOwner({
+      title: `Swell editorial review queue: ${created.length} new item${created.length === 1 ? "" : "s"}`,
+      content: `${summary}\n\nPrivate, unapproved briefs:\n${created.map((item) => `#${item.id} — ${item.title}\n${item.url}`).join("\n")}`,
+    });
+  }
+  return { ok: true, scanned: candidates.length, created: created.length, expired };
 }
 
 scheduledRouter.post("/api/scheduled/swell-editorial-monitor", async (req, res) => {
@@ -177,71 +260,11 @@ scheduledRouter.post("/api/scheduled/swell-editorial-monitor", async (req, res) 
     const user = await sdk.authenticateRequest(req);
     if (!user.isCron || !user.taskUid) return res.status(403).json({ error: "cron_only" });
     taskUid = user.taskUid;
-    const monitor = await getSwellPublicationMonitorByTaskUid(taskUid);
-    if (!monitor || !monitor.enabled) return res.json({ ok: true, skipped: "monitor_disabled_or_orphaned" });
-    if (monitor.sourceSitemapUrl !== SWELL_SITEMAP_URL) return res.status(400).json({ error: "unexpected_source_configuration" });
-
-    const sitemapResponse = await fetch(SWELL_SITEMAP_URL, { headers: { accept: "application/xml,text/xml" }, signal: AbortSignal.timeout(15_000) });
-    if (!sitemapResponse.ok) throw new Error(`Swell sitemap fetch failed: ${sitemapResponse.status}`);
-    const candidates = parseSwellResourceSitemap(await sitemapResponse.text());
-    if (!monitor.lastCheckedAt) {
-      const expiresAt = new Date(Date.now() + monitor.retentionDays * 24 * 60 * 60 * 1000);
-      let baselineRecorded = 0;
-      for (const candidate of candidates) {
-        if (await getSwellEditorialReviewBySourceVersion(candidate.url, candidate.lastmod)) continue;
-        await createSwellEditorialReview({
-          sourceUrl: candidate.url,
-          sourceLastmod: candidate.lastmod,
-          sourceTitle: `Baseline source version: ${new URL(candidate.url).pathname}`,
-          sourceDescription: null,
-          status: "expired",
-          generatedBrief: JSON.stringify({ baseline: true, note: "Existing source version observed at monitor activation; no editorial brief was generated." }),
-          suggestedSources: null,
-          suggestedLinks: null,
-          claimNotes: "Baseline record only. No quotation, editorial analysis, or publication recommendation was generated.",
-          expiresAt,
-        });
-        baselineRecorded++;
-      }
-      const summary = `Baseline initialized from ${candidates.length} existing Swell resource version(s); recorded ${baselineRecorded} source version(s) without generating editorial briefs. Future new or updated versions will enter private review.`;
-      await updateSwellMonitorRun(taskUid, summary);
-      return res.json({ ok: true, initialized: true, scanned: candidates.length, baselineRecorded });
-    }
-    const created: Array<{ id: number; title: string; url: string }> = [];
-
-    for (const candidate of candidates) {
-      if (await getSwellEditorialReviewBySourceVersion(candidate.url, candidate.lastmod)) continue;
-      const sourceResponse = await fetch(candidate.url, { headers: { accept: "text/html" }, signal: AbortSignal.timeout(15_000) });
-      if (!sourceResponse.ok) continue;
-      const { title, description, draft } = await generatePrivateEditorialDraft(candidate, await sourceResponse.text());
-      const expiresAt = new Date(Date.now() + monitor.retentionDays * 24 * 60 * 60 * 1000);
-      const id = await createSwellEditorialReview({
-        sourceUrl: candidate.url,
-        sourceLastmod: candidate.lastmod,
-        sourceTitle: title,
-        sourceDescription: description,
-        generatedBrief: JSON.stringify({ topic: draft.topic, buyerDecision: draft.buyerDecision, originalAngle: draft.originalAngle, brief: draft.brief }),
-        suggestedSources: JSON.stringify(draft.suggestedResearchLeads),
-        suggestedLinks: JSON.stringify(draft.suggestedPropertyLinks),
-        claimNotes: draft.claimNotes,
-        expiresAt,
-      });
-      created.push({ id, title, url: candidate.url });
-    }
-
-    const expired = await expireStaleSwellEditorialReviews();
-    const summary = `Scanned ${candidates.length} Swell resource version(s); created ${created.length} private review record(s); expired ${expired} stale pending record(s).`;
-    await updateSwellMonitorRun(taskUid, summary);
-    if (created.length) {
-      await notifyOwner({
-        title: `Swell editorial review queue: ${created.length} new item${created.length === 1 ? "" : "s"}`,
-        content: `${summary}\n\nPrivate, unapproved briefs:\n${created.map((item) => `#${item.id} — ${item.title}\n${item.url}`).join("\n")}`,
-      });
-    }
-    return res.json({ ok: true, scanned: candidates.length, created: created.length, expired });
+    return res.json(await runSwellEditorialMonitor(taskUid));
   } catch (error) {
     console.error("[Scheduled] Swell editorial monitor failed", error);
-    return res.status(500).json({ error: "swell_editorial_monitor_failed", taskUid, message: String(error), timestamp: new Date().toISOString() });
+    const status = String(error).includes("unexpected_source_configuration") ? 400 : 500;
+    return res.status(status).json({ error: "swell_editorial_monitor_failed", taskUid, message: String(error), timestamp: new Date().toISOString() });
   }
 });
 

@@ -132,6 +132,23 @@ export const swellEditorialReviews = mysqlTable("swellEditorialReviews", {
 export type SwellEditorialReview = typeof swellEditorialReviews.$inferSelect;
 export type InsertSwellEditorialReview = typeof swellEditorialReviews.$inferInsert;
 
+export const agenticMailWebhookEvents = mysqlTable("agenticMailWebhookEvents", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: varchar("eventId", { length: 128 }).notNull().unique(),
+  eventType: varchar("eventType", { length: 64 }).notNull(),
+  inboxId: varchar("inboxId", { length: 128 }).notNull(),
+  messageId: varchar("messageId", { length: 512 }).notNull(),
+  sender: varchar("sender", { length: 320 }),
+  subject: varchar("subject", { length: 512 }),
+  receivedAt: timestamp("receivedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => [
+  index("agentic_mail_inbox_received_idx").on(table.inboxId, table.receivedAt),
+]);
+
+export type AgenticMailWebhookEvent = typeof agenticMailWebhookEvents.$inferSelect;
+export type InsertAgenticMailWebhookEvent = typeof agenticMailWebhookEvents.$inferInsert;
+
 export const emailSequences = mysqlTable("emailSequences", {
   id: int("id").autoincrement().primaryKey(),
   leadId: int("leadId").notNull(),

@@ -12,6 +12,57 @@ export type SourceMetadata = {
   description: string | null;
 };
 
+export type PrivateEditorialDraft = {
+  topic: string;
+  buyerDecision: string;
+  originalAngle: string;
+  brief: string;
+  suggestedResearchLeads: Array<{ title: string; url: string; why: string }>;
+  suggestedPropertyLinks: Array<{ label: string; url: string; reason: string }>;
+  claimNotes: string;
+};
+
+export const ALLOWED_ARM_PROPERTY_LINKS = new Set([
+  "https://arm-agency.xyz/insights",
+  "https://arm-agency.xyz/insights/ai-discovery-readiness",
+  "https://arm-agency.xyz/insights/technical-seo-ai-discovery",
+  "https://arm-agency.xyz/insights/structured-data-governance",
+  "https://arm-agency.xyz/insights/evidence-led-content-architecture",
+  "https://arm-agency.xyz/insights/ai-discovery-measurement",
+  "https://swellmarketing.xyz/resources/",
+  "https://arctura.network/",
+  "https://coreweaverlabs.com/",
+]);
+
+const isHttpsUrl = (value: string): boolean => {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const outcomeClaimPattern = /\b(guarantee(?:d)?|top[- ]?rank(?:ing|ed)?|drive\s+(?:revenue|conversion)|promise\s+(?:revenue|conversion|outcomes?))\b/i;
+
+/**
+ * Reject unsafe draft data before it reaches the private owner queue. This is
+ * intentionally a narrow structural guard, not a substitute for human review.
+ */
+export function validatePrivateEditorialDraft(candidate: SwellResourceCandidate, draft: PrivateEditorialDraft): PrivateEditorialDraft {
+  if (!isAllowedSwellResourceUrl(candidate.url)) throw new Error("Unexpected editorial source URL");
+  const requiredText = [draft.topic, draft.buyerDecision, draft.originalAngle, draft.brief, draft.claimNotes];
+  if (requiredText.some((value) => !value || !value.trim())) throw new Error("Editorial draft is missing a required review field");
+  if (outcomeClaimPattern.test(`${draft.originalAngle}\n${draft.brief}`)) throw new Error("Editorial draft contains a disallowed outcome claim");
+  if (!/review|approval|verify/i.test(draft.claimNotes)) throw new Error("Editorial draft must retain human-review claim notes");
+  if (draft.suggestedResearchLeads.some((lead) => !lead.title.trim() || !lead.why.trim() || !isHttpsUrl(lead.url))) {
+    throw new Error("Editorial research leads must be attributable HTTPS sources");
+  }
+  if (draft.suggestedPropertyLinks.some((link) => !link.label.trim() || !link.reason.trim() || !ALLOWED_ARM_PROPERTY_LINKS.has(link.url))) {
+    throw new Error("Editorial property links must use the approved destination menu");
+  }
+  return draft;
+}
+
 const decodeXml = (value: string) => value
   .replace(/&amp;/g, "&")
   .replace(/&lt;/g, "<")

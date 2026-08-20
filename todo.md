@@ -123,7 +123,7 @@
 - [x] Design a source-attributed, original-response workflow with explicit quote limits, claim review, reputable citations, and contextual internal links
 - [x] Compare owner-review automation options and agree the monitoring frequency, delivery channel, retention, and publication-approval boundary
 - [x] Implement the selected Swell publication-monitoring and ARM editorial-review workflow with scheduled execution, durable records, and owner notifications
-- [ ] Validate the workflow’s detection, deduplication, attribution, originality, source, link, claim-safety, and approval controls before activation
+- [x] Validate the workflow’s detection, deduplication, attribution, originality, source, link, claim-safety, and approval controls before activation
 - [x] Configure the selected daily Swell sitemap review queue with owner-only access, 90-day source-metadata retention, and manual publication approval
 - [x] Expand the evidence-led keyword cloud across five revenue streams, AI discovery, accountable AI operations, and image SEO without making unverified demand claims
 - [x] Produce and prioritize a source-backed keyword-to-content decision map with search intent, internal-link, and qualified-conversion routes
@@ -147,3 +147,13 @@
 - [x] Inspect Vapi and `inbox.aigoal` availability before integrating voice or inbox automation
 - [x] Create a future-agent operating-document system for products, sales, customer service, marketing, governance, and human escalation
 - [x] Create a multi-year owner-transition and exit-readiness plan with value-driver, diligence, risk, and continuity controls rather than unsupported valuation claims
+- [x] Run a controlled new-or-updated Swell source validation and verify the resulting private brief has attribution, source links, originality boundaries, claim-safety checks, and manual-approval gating
+- [x] Record focused regression evidence for Swell private brief-generation controls before clearing the editorial workflow launch gate
+- [x] Add an end-to-end scheduled-monitor test that verifies a simulated new source creates a pending private review record and never publishes automatically
+- [ ] Record and reconcile the owner-confirmed active `ops@arm-agency.xyz` to `ops@arm-agency.com` forwarding route with the controlled-launch support evidence
+- [ ] Capture the actual send and mailbox-receipt evidence for the labeled external forwarding test before clearing the recipient-route launch gate
+- [ ] Define the trusted inbound-mail provider, signature verification contract, data-retention boundary, and human-approval rules for `ops@arm-agency.xyz`
+- [ ] Implement and test a dedicated signature-verified `/api/webhooks/agentic-mail` endpoint that cannot trigger unapproved outbound, payment, account, or publication actions
+- [ ] Confirm the published `https://arm-agency.xyz/api/webhooks/agentic-mail` route accepts authenticated POST requests and rejects unverified methods or payloads
+- [ ] Evaluate `https://arm-agency.xyz/webhook` as a possible compatibility route without weakening the dedicated agentic-mail endpoint’s authentication or path controls
+- [ ] Securely validate the provided AgentMail API credential and, if separately issued, webhook signing secret before registering any webhook

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSwellEditorialPrompt, extractSourceMetadata, isAllowedSwellResourceUrl, parseSwellResourceSitemap } from "./swellEditorial";
+import { buildSwellEditorialPrompt, extractSourceMetadata, isAllowedSwellResourceUrl, parseSwellResourceSitemap, validatePrivateEditorialDraft } from "./swellEditorial";
 
 describe("Swell editorial source safeguards", () => {
   it("accepts only direct Swell resource URLs over HTTPS", () => {
@@ -26,5 +26,34 @@ describe("Swell editorial source safeguards", () => {
     expect(prompt).toContain("Never invent a quote");
     expect(prompt).toContain("Do not imply a partnership or endorsement");
     expect(prompt).toContain("require owner approval");
+  });
+
+  it("accepts a controlled new-source private brief only when its source, links, claims, and review boundary are safe", () => {
+    const candidate = { url: "https://swellmarketing.xyz/resources/new-controlled-version/", lastmod: "2026-08-19" };
+    const result = validatePrivateEditorialDraft(candidate, {
+      topic: "Controlled operating validation",
+      buyerDecision: "Decide whether a public-information workflow needs human review.",
+      originalAngle: "A decision-record perspective for responsible public information operations.",
+      brief: "Draft a private decision brief with review checkpoints and no performance promise.",
+      suggestedResearchLeads: [{ title: "NIST AI RMF", url: "https://www.nist.gov/itl/ai-risk-management-framework", why: "Primary governance reference to verify." }],
+      suggestedPropertyLinks: [{ label: "ARM Insights", url: "https://arm-agency.xyz/insights", reason: "Provides contextual decision resources." }],
+      claimNotes: "Private review only; verify sources and obtain owner approval before any publication.",
+    });
+    expect(result.suggestedPropertyLinks[0].url).toBe("https://arm-agency.xyz/insights");
+  });
+
+  it("rejects controlled new-source briefs with an unapproved link or an outcome claim", () => {
+    const candidate = { url: "https://swellmarketing.xyz/resources/new-controlled-version/", lastmod: "2026-08-19" };
+    const baseDraft = {
+      topic: "Controlled operating validation",
+      buyerDecision: "Decide whether a public-information workflow needs human review.",
+      originalAngle: "A decision-record perspective for responsible public information operations.",
+      brief: "Draft a private decision brief with review checkpoints.",
+      suggestedResearchLeads: [],
+      suggestedPropertyLinks: [],
+      claimNotes: "Private review only; verify sources and obtain owner approval before any publication.",
+    };
+    expect(() => validatePrivateEditorialDraft(candidate, { ...baseDraft, suggestedPropertyLinks: [{ label: "Unsafe", url: "https://example.com/", reason: "Not approved." }] })).toThrow("approved destination menu");
+    expect(() => validatePrivateEditorialDraft(candidate, { ...baseDraft, brief: "This will guarantee revenue growth." })).toThrow("disallowed outcome claim");
   });
 });

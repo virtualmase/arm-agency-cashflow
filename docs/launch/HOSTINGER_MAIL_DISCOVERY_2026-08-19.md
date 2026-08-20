@@ -10,6 +10,8 @@ Hostinger's current configuration guidance identifies `smtp.hostinger.com` on po
 
 The available browser session reached the Hostinger email settings URL but did not load an authenticated mailbox-management interface. No Hostinger credential, mailbox password, or SMTP token is available to this project through the current session.
 
+A repeat check later on 2026-08-19 produced the same Hostinger loading screen with no accessible mailbox-management controls. The delegated browser session therefore cannot be used to create a mailbox, reset its password, or reveal SMTP credentials.
+
 ## Controlled-launch implication
 
 The owner-confirmed `ops@arm-agency.xyz` to `ops@arm-agency.com` forwarder provides a recipient route. The application has been updated to support provider-confirmed SMTP delivery, but it remains intentionally disabled until an authenticated sender credential is supplied. No queued lead email may be marked sent without a provider acceptance response.
